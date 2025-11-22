@@ -64,6 +64,7 @@ export default function LoginPage() {
 
     setIsLoading(true);
     setErrors({}); // Clear previous errors
+    console.log("hey this is ajay")
 
     try {
       // Use AuthContext login function
