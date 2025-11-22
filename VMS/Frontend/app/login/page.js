@@ -44,7 +44,7 @@ export default function LoginPage() {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
+    // Password validation 
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
@@ -61,7 +61,7 @@ export default function LoginPage() {
     if (!validateForm()) {
       return;
     }
-
+      
     setIsLoading(true);
     setErrors({}); // Clear previous errors
     console.log("hey this is ajay")
@@ -119,7 +119,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
+   console .log("hey this is ajay")
   return (
     <div className="min-h-screen flex overflow-hidden -mt-16 pt-16">
       {/* Left side - Form Card */}
