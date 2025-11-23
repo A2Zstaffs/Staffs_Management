@@ -1,3 +1,5 @@
+'use client';
+
 export default function JobCategories() {
   const categories = [
     {
@@ -59,9 +61,9 @@ export default function JobCategories() {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 sm:mb-12 md:mb-16">
           <h2 className="text-3xl font-bold text-secondary-900 mb-4">
             Browse Jobs by Category
           </h2>
@@ -70,23 +72,58 @@ export default function JobCategories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category) => (
             <div
               key={category.id}
-              className="group cursor-pointer bg-white rounded-lg border border-secondary-100 p-6 hover:border-primary-300 hover:shadow-md transition-all duration-200"
+              className="group cursor-pointer relative bg-white/80 backdrop-blur-sm rounded-2xl border border-secondary-100/60 p-6 sm:p-8 transition-all duration-300 ease-out will-change-transform hover:scale-[1.06] hover:-translate-y-1"
+              style={{
+                boxShadow: `
+                  0 2px 8px rgba(0, 0, 0, 0.04),
+                  0 1px 3px rgba(0, 0, 0, 0.06),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                  inset -1px -1px 2px rgba(0, 0, 0, 0.02)
+                `,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = `
+                  0 8px 24px rgba(0, 0, 0, 0.08),
+                  0 4px 12px rgba(0, 0, 0, 0.06),
+                  0 0 0 1px rgba(255, 255, 255, 0.9) inset,
+                  -2px -2px 4px rgba(255, 255, 255, 0.7),
+                  2px 2px 4px rgba(0, 0, 0, 0.05)
+                `;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = `
+                  0 2px 8px rgba(0, 0, 0, 0.04),
+                  0 1px 3px rgba(0, 0, 0, 0.06),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                  inset -1px -1px 2px rgba(0, 0, 0, 0.02)
+                `;
+              }}
             >
               <div className="text-center">
-                <div className="text-3xl mb-4 group-hover:scale-105 transition-transform duration-200">
+                <div 
+                  className="text-4xl sm:text-5xl mb-5 sm:mb-6 transition-all duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-2"
+                  style={{
+                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))',
+                  }}
+                >
                   {category.icon}
                 </div>
-                <h3 className="text-base font-semibold text-secondary-900 mb-3 group-hover:text-primary-600 transition-colors duration-200">
+                <h3 className="text-base sm:text-lg font-semibold text-secondary-900 mb-3 sm:mb-4 group-hover:text-primary-600 transition-colors duration-300">
                   {category.name}
                 </h3>
-                <p className="text-xs text-secondary-500 mb-3">
+                <p className="text-xs sm:text-sm text-secondary-500 mb-4 sm:mb-5">
                   {category.jobs.toLocaleString()} jobs
                 </p>
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${category.color}`}>
+                <div 
+                  className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${category.color} transition-all duration-300 group-hover:scale-105`}
+                  style={{
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+                  }}
+                >
                   View Jobs
                 </div>
               </div>
