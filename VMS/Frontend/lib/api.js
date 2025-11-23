@@ -1,5 +1,5 @@
 // API Configuration and Utilities
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 class ApiClient {
   constructor() {
@@ -152,13 +152,13 @@ export const authAPI = {
   // Login user
   async login(credentials) {
     const response = await apiClient.post('/auth/login', credentials);
-    
+
     if (response.success) {
       apiClient.setToken(response.token);
       // Backend returns 'user' field, not 'data'
       const userData = response.user || response.data;
       apiClient.setUser(userData);
-      
+
       // Save user name and role in localStorage for easy access
       if (userData && typeof window !== 'undefined') {
         if (userData.fullName) {
@@ -169,20 +169,20 @@ export const authAPI = {
         }
       }
     }
-    
+
     return response;
   },
 
   // Register user
   async signup(userData) {
     const response = await apiClient.post('/auth/signup', userData);
-    
+
     if (response.success) {
       apiClient.setToken(response.token);
       // Backend returns 'user' field, not 'data'
       apiClient.setUser(response.user || response.data);
     }
-    
+
     return response;
   },
 
@@ -195,11 +195,11 @@ export const authAPI = {
   // Update profile
   async updateProfile(profileData) {
     const response = await apiClient.put('/auth/profile', profileData);
-    
+
     if (response.success) {
       apiClient.setUser(response.data);
     }
-    
+
     return response;
   },
 
