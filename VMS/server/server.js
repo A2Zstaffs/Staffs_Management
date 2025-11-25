@@ -48,13 +48,27 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static folder for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Logging middleware (development)
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
-    next();
+// Logging middleware - show status code and URL for API requests
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    if (req.originalUrl.startsWith('/api/')) {
+      const statusCode = res.statusCode;
+      const method = req.method;
+      const url = req.originalUrl;
+      
+      // Color coding: green for success, yellow for redirect, red for error
+      let color = '\x1b[32m'; // green for 2xx
+      if (statusCode >= 500) color = '\x1b[31m'; // red for 5xx
+      else if (statusCode >= 400) color = '\x1b[31m'; // red for 4xx
+      else if (statusCode >= 300) color = '\x1b[33m'; // yellow for 3xx
+      
+      const reset = '\x1b[0m';
+      console.log(`${color}${statusCode}${reset} ${method} ${url}`);
+    }
   });
-}
+  
+  next();
+});
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -102,11 +116,9 @@ process.on('uncaughtException', (err) => {
 // Start server
 const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, () => {
-  //console.log(`A2ZStaffs VMS Backend Server running on port ${PORT}`);
-  //console.log(`Environment: ${process.env.NODE_ENV}`);
-  //console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
-  //console.log(`Database:`);
-  //console.log(`⏰ Server started at: ${new Date().toISOString()}`);
+  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 API: http://localhost:${PORT}/api`);
+  console.log(`🌐 Frontend: ${process.env.FRONTEND_URL || 'http://localhost:3000'}\n`);
 });
 
 // Graceful shutdown

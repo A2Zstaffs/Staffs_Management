@@ -81,15 +81,11 @@ const prepareUserData = (userData) => {
 // @access  Public
 const signup = async (req, res) => {
   try {
-    console.log('Signup request received:', { role: req.body.role, email: req.body.email });
-    
     const userData = prepareUserData(req.body);
-    console.log('Prepared user data:', { role: userData.role, email: userData.email, hasLocation: !!userData.location });
 
     // Check if user already exists
     const existingUser = await User.findByEmail(userData.email);
     if (existingUser) {
-      console.log('User already exists:', userData.email);
       return res.status(400).json({
         success: false,
         message: 'User already exists with this email'
@@ -97,39 +93,21 @@ const signup = async (req, res) => {
     }
 
     // Create user
-    console.log('Creating user in database...');
-    console.log('User data to save:', JSON.stringify(userData, null, 2));
-    
     const user = await User.create(userData);
     
     // Verify user was actually saved
     const savedUser = await User.findById(user._id);
     if (!savedUser) {
-      console.error('ERROR: User was not saved to database!');
       return res.status(500).json({
         success: false,
         message: 'Failed to save user to database'
       });
     }
-    
-    console.log('User created successfully:', {
-      id: user._id,
-      email: user.email,
-      role: user.role,
-      fullName: user.fullName
-    });
 
     // Send token response
     sendTokenResponse(user, 201, res);
 
   } catch (error) {
-    console.error('Signup error details:', {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      errors: error.errors
-    });
-
     // Handle duplicate key error
     if (error.code === 11000) {
       return res.status(400).json({
@@ -141,7 +119,6 @@ const signup = async (req, res) => {
     // Handle validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(val => val.message);
-      console.error('Validation errors:', messages);
       return res.status(400).json({
         success: false,
         message: 'Validation Error',

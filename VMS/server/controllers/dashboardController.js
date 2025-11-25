@@ -42,32 +42,21 @@ const upload = multer({
 // RECRUITER DASHBOARD CONTROLLER
 const getRecruiterDashboard = async (req, res) => {
   try {
-    console.log(' Recruiter Dashboard Request Started');
-    console.log(' User from token:', req.user);
-    
     const recruiterId = req.user.id;
-    console.log(' Recruiter ID:', recruiterId);
 
     // Get recruiter profile with onboarding status
-    console.log(' Fetching recruiter profile...');
     const recruiter = await User.findById(recruiterId)
       .select('fullName email recruiterStatus company companyDetails location');
 
-    console.log(' Recruiter found:', recruiter ? 'Yes' : 'No');
     if (!recruiter) {
-      console.log(' Recruiter not found in database');
       return res.status(404).json({
         success: false,
         message: 'Recruiter not found'
       });
     }
 
-    console.log(' Recruiter role check:', recruiter.role);
-    console.log(' RecruiterStatus exists:', !!recruiter.recruiterStatus);
-
     // Initialize recruiterStatus if it doesn't exist
     if (!recruiter.recruiterStatus) {
-      console.log(' Initializing recruiterStatus for existing user...');
       recruiter.recruiterStatus = {
         onboardingCompleted: false,
         onboardingCallScheduled: false,
@@ -82,17 +71,14 @@ const getRecruiterDashboard = async (req, res) => {
         performanceRating: 3
       };
       await recruiter.save();
-      console.log('✅ RecruiterStatus initialized');
     }
 
     // Check if onboarding is required
     const needsOnboarding = !recruiter.recruiterStatus.onboardingCompleted;
-    console.log('🎯 Needs onboarding:', needsOnboarding);
 
     // Get available jobs with detailed information (only if onboarded)
     let availableJobs = [];
     if (!needsOnboarding) {
-      console.log('💼 Fetching available jobs...');
       try {
         availableJobs = await Job.find({
           status: 'active'
@@ -101,9 +87,7 @@ const getRecruiterDashboard = async (req, res) => {
         .select('title description requirements location salary commission category experienceLevel skills createdAt applicationsCount')
         .sort({ createdAt: -1 })
         .limit(20);
-        console.log('✅ Available jobs found:', availableJobs.length);
       } catch (jobError) {
-        console.log('❌ Error fetching jobs:', jobError.message);
         availableJobs = [];
       }
 
@@ -117,7 +101,6 @@ const getRecruiterDashboard = async (req, res) => {
     }
 
     // Get submitted candidates and their status
-    console.log('📝 Fetching submitted candidates...');
     let submittedCandidates = [];
     try {
       submittedCandidates = await Application.find({
@@ -134,14 +117,11 @@ const getRecruiterDashboard = async (req, res) => {
       })
       .select('status appliedVia createdAt clientFeedback cvReviewStatus timeline candidateProfile')
       .sort({ createdAt: -1 });
-      console.log('✅ Submitted candidates found:', submittedCandidates.length);
     } catch (appError) {
-      console.log('❌ Error fetching applications:', appError.message);
       submittedCandidates = [];
     }
 
     // Get commission tracker with release information
-    console.log('💰 Fetching commissions...');
     let commissions = [];
     try {
       commissions = await Commission.find({
@@ -151,9 +131,7 @@ const getRecruiterDashboard = async (req, res) => {
       .populate('client', 'fullName company')
       .populate('candidate', 'fullName')
       .sort({ createdAt: -1 });
-      console.log('✅ Commissions found:', commissions.length);
     } catch (commError) {
-      console.log('❌ Error fetching commissions:', commError.message);
       commissions = [];
     }
 
@@ -179,15 +157,6 @@ const getRecruiterDashboard = async (req, res) => {
         (submittedCandidates.filter(app => app.status === 'joined').length / submittedCandidates.length * 100).toFixed(2) : 0
     };
 
-    console.log('🎉 Dashboard data compiled successfully');
-    console.log('📊 Response summary:', {
-      recruiterFound: !!recruiter,
-      needsOnboarding,
-      jobsCount: availableJobs.length,
-      candidatesCount: submittedCandidates.length,
-      commissionsCount: commissions.length
-    });
-
     res.json({
       success: true,
       data: {
@@ -201,8 +170,6 @@ const getRecruiterDashboard = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Recruiter dashboard error:', error);
-    console.error('📋 Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch recruiter dashboard data',
