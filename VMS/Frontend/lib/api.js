@@ -264,6 +264,56 @@ export const dashboardAPI = {
   }
 };
 
+// Jobs API methods
+export const jobsAPI = {
+  // Get all jobs
+  async getAllJobs() {
+    return apiClient.get('/jobs');
+  },
+
+  // Create job
+  async createJob(jobData) {
+    return apiClient.post('/jobs', jobData);
+  }
+};
+
+// Profile API methods
+export const profileAPI = {
+  // Upload new profile
+  async uploadProfile(profileData) {
+    return apiClient.post('/profiles', profileData);
+  },
+
+  // Get all profiles
+  async getAllProfiles(filters = {}) {
+    const queryParams = new URLSearchParams(filters).toString();
+    return apiClient.get(`/profiles${queryParams ? `?${queryParams}` : ''}`);
+  },
+
+  // Get profile by ID
+  async getProfileById(profileId) {
+    return apiClient.get(`/profiles/${profileId}`);
+  },
+
+  // Update profile
+  async updateProfile(profileId, profileData) {
+    return apiClient.put(`/profiles/${profileId}`, profileData);
+  },
+
+  // Update profile status
+  async updateProfileStatus(profileId, statusData) {
+    return apiClient.request(`/profiles/${profileId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData)
+    });
+  },
+
+  // Delete profile
+  async deleteProfile(profileId) {
+    return apiClient.delete(`/profiles/${profileId}`);
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   // Handle API errors consistently

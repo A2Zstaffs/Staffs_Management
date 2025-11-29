@@ -69,8 +69,12 @@ app.get('/api/health', (req, res) => {
 
 // Mount routers
 const dashboardRoutes = require('./routes/dashboard');
+const jobRoutes = require('./routes/jobs');
+const profileRoutes = require('./routes/profiles');
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/profiles', profileRoutes);
 
 // Handle 404 routes
 app.all('*', (req, res) => {
@@ -113,7 +117,7 @@ const server = app.listen(PORT, () => {
 process.on('SIGTERM', () => {
   console.log('👋 SIGTERM received. Shutting down gracefully');
   server.close(() => {
-  console.log('💤 Process terminated');
+    console.log('💤 Process terminated');
   });
 });
 

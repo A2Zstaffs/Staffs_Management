@@ -33,13 +33,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
 
 # IDE - IntelliJ
 .idea
@@ -81,10 +74,8 @@ lerna-debug.log*
 *.db
 
 # Temporary files
+manoj-kushwaha
 *.tmp
 *.temp
 .cache
 
-# Uploads (if storing files locally)
-/uploads
-/public/uploads

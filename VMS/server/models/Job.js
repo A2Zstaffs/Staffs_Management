@@ -1,106 +1,116 @@
 const mongoose = require('mongoose');
 
 const jobSchema = new mongoose.Schema({
-  title: {
+  company_name: {
+    type: String,
+    required: true,
+    default: 'Blue Kaktus'
+  },
+  company_logo: {
+    type: String,
+    default: '' // URL to logo
+  },
+  job_title: {
     type: String,
     required: true,
     trim: true
   },
-  description: {
+  job_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  posted_date: {
+    type: Date,
+    default: Date.now
+  },
+  locations: [{
     type: String,
     required: true
+  }],
+  salary_min: {
+    type: Number,
+    required: true
+  },
+  salary_max: {
+    type: Number,
+    required: true
+  },
+  experience_min: {
+    type: Number,
+    required: true
+  },
+  experience_max: {
+    type: Number,
+    required: true
+  },
+  notice_period: {
+    type: Number, // in days
+    required: true
+  },
+  num_positions: {
+    type: Number,
+    required: true
+  },
+  relevant_level: {
+    type: Number, // RL
+    default: 0
+  },
+  applications_required: {
+    type: Number,
+    required: true
+  },
+  in_process_applications: {
+    type: Number,
+    default: 0
+  },
+  commission_percent: {
+    type: Number,
+    required: true
+  },
+  commission_amount_min: {
+    type: Number,
+    required: true
+  },
+  commission_amount_max: {
+    type: Number,
+    required: true
+  },
+  commission_payment_terms: {
+    type: String,
+    required: true
+  },
+  r1_bonus_amount: {
+    type: Number,
+    default: 0
+  },
+  r1_bonus_payment_terms: {
+    type: String,
+    default: ''
+  },
+  role_status: {
+    type: String,
+    enum: ['Active', 'Closed', 'Paused'],
+    default: 'Active'
+  },
+  sourcing_status: {
+    type: String,
+    enum: ['Priority', 'Normal', 'Low'],
+    default: 'Priority'
+  },
+  description: {
+    type: String,
+    default: ''
   },
   requirements: {
     type: String,
-    required: true
-  },
-  location: {
-    city: String,
-    state: String,
-    country: String,
-    remote: {
-      type: Boolean,
-      default: false
-    }
-  },
-  salary: {
-    min: Number,
-    max: Number,
-    currency: {
-      type: String,
-      default: 'USD'
-    }
-  },
-  commission: {
-    amount: {
-      type: Number,
-      required: true
-    },
-    type: {
-      type: String,
-      enum: ['fixed', 'percentage'],
-      default: 'fixed'
-    }
-  },
-  postedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  postedByRole: {
-    type: String,
-    enum: ['client', 'consultancy'],
-    required: true
-  },
-  status: {
-    type: String,
-    enum: ['draft', 'active', 'paused', 'closed', 'filled'],
-    default: 'active'
-  },
-  category: {
-    type: String,
-    required: true
-  },
-  experienceLevel: {
-    type: String,
-    enum: ['entry', 'mid', 'senior', 'executive'],
-    required: true
-  },
-  employmentType: {
-    type: String,
-    enum: ['full-time', 'part-time', 'contract', 'freelance'],
-    default: 'full-time'
+    default: ''
   },
   skills: [{
-    type: String,
-    trim: true
-  }],
-  applicationDeadline: Date,
-  isApproved: {
-    type: Boolean,
-    default: true // Auto-approve for now, can be changed later
-  },
-  approvedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  },
-  approvedAt: Date,
-  applicationsCount: {
-    type: Number,
-    default: 0
-  },
-  viewsCount: {
-    type: Number,
-    default: 0
-  }
+    type: String
+  }]
 }, {
   timestamps: true
 });
-
-// Index for better query performance
-jobSchema.index({ status: 1, isApproved: 1 });
-jobSchema.index({ postedBy: 1 });
-jobSchema.index({ category: 1 });
-jobSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Job', jobSchema);

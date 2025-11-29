@@ -2,6 +2,7 @@ const Job = require('../models/Job');
 const Application = require('../models/Application');
 const Commission = require('../models/Commission');
 const User = require('../models/User');
+const Profile = require('../models/Profile');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -30,7 +31,7 @@ const upload = multer({
     const allowedTypes = /pdf|doc|docx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -44,7 +45,7 @@ const getRecruiterDashboard = async (req, res) => {
   try {
     console.log(' Recruiter Dashboard Request Started');
     console.log(' User from token:', req.user);
-    
+
     const recruiterId = req.user.id;
     console.log(' Recruiter ID:', recruiterId);
 
@@ -97,10 +98,10 @@ const getRecruiterDashboard = async (req, res) => {
         availableJobs = await Job.find({
           status: 'active'
         })
-        .populate('postedBy', 'fullName company businessDetails location')
-        .select('title description requirements location salary commission category experienceLevel skills createdAt applicationsCount')
-        .sort({ createdAt: -1 })
-        .limit(20);
+          .populate('postedBy', 'fullName company businessDetails location')
+          .select('title description requirements location salary commission category experienceLevel skills createdAt applicationsCount')
+          .sort({ createdAt: -1 })
+          .limit(20);
         console.log('✅ Available jobs found:', availableJobs.length);
       } catch (jobError) {
         console.log('❌ Error fetching jobs:', jobError.message);
@@ -123,21 +124,37 @@ const getRecruiterDashboard = async (req, res) => {
       submittedCandidates = await Application.find({
         recruiter: recruiterId
       })
-      .populate('candidate', 'fullName email phoneNumber skills experience')
-      .populate({
-        path: 'job',
-        select: 'title commission postedBy',
-        populate: {
-          path: 'postedBy',
-          select: 'company fullName'
-        }
-      })
-      .select('status appliedVia createdAt clientFeedback cvReviewStatus timeline candidateProfile')
-      .sort({ createdAt: -1 });
+        .populate('candidate', 'fullName email phoneNumber skills experience')
+        .populate({
+          path: 'job',
+          select: 'title commission postedBy',
+          populate: {
+            path: 'postedBy',
+            select: 'company fullName'
+          }
+        })
+        .select('status appliedVia createdAt clientFeedback cvReviewStatus timeline candidateProfile')
+        .sort({ createdAt: -1 });
       console.log('✅ Submitted candidates found:', submittedCandidates.length);
     } catch (appError) {
       console.log('❌ Error fetching applications:', appError.message);
       submittedCandidates = [];
+    }
+
+    // Get uploaded profiles
+    console.log('📝 Fetching uploaded profiles...');
+    let uploadedProfiles = [];
+    try {
+      uploadedProfiles = await Profile.find({
+        uploaded_by: recruiterId
+      })
+        .populate('job_id', 'job_title company_name')
+        .select('candidate_name email phone status createdAt')
+        .sort({ createdAt: -1 });
+      console.log('✅ Uploaded profiles found:', uploadedProfiles.length);
+    } catch (profileError) {
+      console.log('❌ Error fetching profiles:', profileError.message);
+      uploadedProfiles = [];
     }
 
     // Get commission tracker with release information
@@ -147,10 +164,10 @@ const getRecruiterDashboard = async (req, res) => {
       commissions = await Commission.find({
         recruiter: recruiterId
       })
-      .populate('job', 'title')
-      .populate('client', 'fullName company')
-      .populate('candidate', 'fullName')
-      .sort({ createdAt: -1 });
+        .populate('job', 'title')
+        .populate('client', 'fullName company')
+        .populate('candidate', 'fullName')
+        .sort({ createdAt: -1 });
       console.log('✅ Commissions found:', commissions.length);
     } catch (commError) {
       console.log('❌ Error fetching commissions:', commError.message);
@@ -170,12 +187,15 @@ const getRecruiterDashboard = async (req, res) => {
       platformFeeDeducted: commissions.reduce((sum, c) => sum + (c.platformFee?.amount || 0), 0)
     };
 
-    // Get performance metrics
+    // Get performance metrics (including both Applications and Profiles)
+    const totalApplications = submittedCandidates.length + uploadedProfiles.length;
     const performanceMetrics = {
-      totalSubmissions: submittedCandidates.length,
+      totalSubmissions: totalApplications,
+      profileUploads: uploadedProfiles.length,
+      applicationSubmissions: submittedCandidates.length,
       successfulPlacements: submittedCandidates.filter(app => app.status === 'joined').length,
       interviewRate: submittedCandidates.filter(app => ['interview_scheduled', 'interviewed', 'offer_made', 'offer_accepted', 'joined'].includes(app.status)).length,
-      conversionRate: submittedCandidates.length > 0 ? 
+      conversionRate: submittedCandidates.length > 0 ?
         (submittedCandidates.filter(app => app.status === 'joined').length / submittedCandidates.length * 100).toFixed(2) : 0
     };
 
@@ -185,6 +205,7 @@ const getRecruiterDashboard = async (req, res) => {
       needsOnboarding,
       jobsCount: availableJobs.length,
       candidatesCount: submittedCandidates.length,
+      profilesCount: uploadedProfiles.length,
       commissionsCount: commissions.length
     });
 
@@ -195,6 +216,7 @@ const getRecruiterDashboard = async (req, res) => {
         needsOnboarding,
         availableJobs,
         submittedCandidates,
+        uploadedProfiles,
         commissions,
         commissionSummary,
         performanceMetrics
@@ -375,9 +397,9 @@ const getCVStatus = async (req, res) => {
       _id: applicationId,
       recruiter: recruiterId
     })
-    .populate('candidate', 'fullName email')
-    .populate('job', 'title commission')
-    .select('status cvReviewStatus timeline createdAt');
+      .populate('candidate', 'fullName email')
+      .populate('job', 'title commission')
+      .select('status cvReviewStatus timeline createdAt');
 
     if (!application) {
       return res.status(404).json({
@@ -423,20 +445,20 @@ const getClientDashboard = async (req, res) => {
       postedBy: clientId,
       postedByRole: 'client'
     })
-    .select('title status applicationsCount createdAt commission')
-    .sort({ createdAt: -1 });
+      .select('title status applicationsCount createdAt commission')
+      .sort({ createdAt: -1 });
 
     // Get applications for client's jobs
     const applications = await Application.find({
       job: { $in: postedJobs.map(job => job._id) }
     })
-    .populate('candidate', 'fullName email phoneNumber skills experience')
-    .populate('recruiter', 'fullName company')
-    .populate('job', 'title')
-    .sort({ createdAt: -1 });
+      .populate('candidate', 'fullName email phoneNumber skills experience')
+      .populate('recruiter', 'fullName company')
+      .populate('job', 'title')
+      .sort({ createdAt: -1 });
 
     // Get shortlisted candidates
-    const shortlistedCandidates = applications.filter(app => 
+    const shortlistedCandidates = applications.filter(app =>
       ['shortlisted', 'interview_scheduled', 'interviewed'].includes(app.status)
     );
 
@@ -445,16 +467,16 @@ const getClientDashboard = async (req, res) => {
       job: { $in: postedJobs.map(job => job._id) },
       status: 'selected'
     })
-    .populate('candidate', 'fullName email')
-    .populate('recruiter', 'fullName company')
-    .populate('job', 'title commission');
+      .populate('candidate', 'fullName email')
+      .populate('recruiter', 'fullName company')
+      .populate('job', 'title commission');
 
     const commissionPayments = await Commission.find({
       client: clientId
     })
-    .populate('recruiter', 'fullName company')
-    .populate('job', 'title')
-    .sort({ createdAt: -1 });
+      .populate('recruiter', 'fullName company')
+      .populate('job', 'title')
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -495,19 +517,19 @@ const getCandidateDashboard = async (req, res) => {
       status: 'active',
       isApproved: true
     })
-    .populate('postedBy', 'fullName company')
-    .select('title description location salary category experienceLevel createdAt skills')
-    .sort({ createdAt: -1 })
-    .limit(20);
+      .populate('postedBy', 'fullName company')
+      .select('title description location salary category experienceLevel createdAt skills')
+      .sort({ createdAt: -1 })
+      .limit(20);
 
     // Get candidate's applications
     const applications = await Application.find({
       candidate: candidateId
     })
-    .populate('job', 'title company location salary')
-    .populate('recruiter', 'fullName company')
-    .select('status appliedVia createdAt clientFeedback interviewDetails')
-    .sort({ createdAt: -1 });
+      .populate('job', 'title company location salary')
+      .populate('recruiter', 'fullName company')
+      .select('status appliedVia createdAt clientFeedback interviewDetails')
+      .sort({ createdAt: -1 });
 
     // Application status summary
     const statusSummary = {
@@ -547,8 +569,8 @@ const getConsultancyDashboard = async (req, res) => {
       postedBy: consultancyId,
       postedByRole: 'consultancy'
     })
-    .select('title status applicationsCount createdAt commission isApproved')
-    .sort({ createdAt: -1 });
+      .select('title status applicationsCount createdAt commission isApproved')
+      .sort({ createdAt: -1 });
 
     // Get approved jobs visible to recruiters
     const approvedJobs = postedJobs.filter(job => job.isApproved);
@@ -557,10 +579,10 @@ const getConsultancyDashboard = async (req, res) => {
     const commissions = await Commission.find({
       job: { $in: postedJobs.map(job => job._id) }
     })
-    .populate('recruiter', 'fullName company')
-    .populate('job', 'title')
-    .populate('candidate', 'fullName')
-    .sort({ createdAt: -1 });
+      .populate('recruiter', 'fullName company')
+      .populate('job', 'title')
+      .populate('candidate', 'fullName')
+      .sort({ createdAt: -1 });
 
     // Calculate earnings after platform fee
     const earningsSummary = {
@@ -669,7 +691,7 @@ const updateApplicationStatus = async (req, res) => {
     }
 
     application.status = status;
-    
+
     if (feedback) {
       application.clientFeedback = {
         ...feedback,
@@ -685,7 +707,7 @@ const updateApplicationStatus = async (req, res) => {
     if (status === 'selected') {
       application.hiredAt = new Date();
       application.commissionEligible = true;
-      
+
       // Create commission record if hired through recruiter
       if (application.recruiter) {
         const commission = new Commission({

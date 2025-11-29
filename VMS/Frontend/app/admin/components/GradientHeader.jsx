@@ -4,7 +4,7 @@ import { Search, Bell, User } from 'lucide-react';
 
 export default function GradientHeader() {
   return (
-    <header className="bg-gradient-to-r from-blue-900/80 via-blue-800/80 to-blue-900/80 backdrop-blur-md border-b border-white/20 shadow-lg shadow-blue-900/20">
+    <header className="bg-gradient-to-r from-primary-900/80 via-primary-800/80 to-primary-900/80 backdrop-blur-md border-b border-white/20 shadow-lg shadow-primary-900/20">
       <div className="flex items-center justify-between p-4 lg:p-6">
         {/* Left: Welcome & Search */}
         <div className="flex-1 max-w-2xl">
@@ -13,7 +13,7 @@ export default function GradientHeader() {
               <h2 className="text-white text-xl lg:text-2xl font-bold">
                 Welcome, Admin <span className="text-2xl lg:text-3xl">👋</span>
               </h2>
-              <p className="text-blue-200 text-sm mt-1">
+              <p className="text-primary-200 text-sm mt-1">
                 Here's what's happening on your platform today
               </p>
             </div>
@@ -25,15 +25,15 @@ export default function GradientHeader() {
           {/* Search */}
           <div className="relative hidden md:block">
             <Search 
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-300" 
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-300" 
               size={20} 
             />
             <input
               type="text"
               placeholder="Search..."
               className="w-64 pl-10 pr-4 py-2 rounded-lg bg-white/10 backdrop-blur-md 
-                       border border-white/20 text-white placeholder-blue-300
-                       focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+                       border border-white/20 text-white placeholder-primary-300
+                       focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
                        transition-all duration-200"
             />
           </div>
@@ -55,7 +55,7 @@ export default function GradientHeader() {
                            bg-white/10 hover:bg-white/20 backdrop-blur-md 
                            border border-white/20 text-white
                            transition-all duration-200">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 
                           flex items-center justify-center">
               <User size={18} />
             </div>
