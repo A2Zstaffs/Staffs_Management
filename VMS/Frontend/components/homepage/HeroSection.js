@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Search, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
   const [searchData, setSearchData] = useState({
@@ -215,7 +216,8 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          {/* CTA Buttons */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/signup/user"
               className="w-full sm:w-auto text-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-semibold text-white transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5"
@@ -252,5 +254,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
-

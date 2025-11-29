@@ -7,56 +7,56 @@ export default function JobCategories() {
       name: 'IT & Software',
       icon: '💻',
       jobs: 2500,
-      color: 'bg-blue-100 text-blue-600'
+      color: 'bg-primary-100 text-primary-600'
     },
     {
       id: 2,
       name: 'Marketing',
       icon: '📈',
       jobs: 1200,
-      color: 'bg-green-100 text-green-600'
+      color: 'bg-accent-100 text-accent-600'
     },
     {
       id: 3,
       name: 'Finance',
       icon: '💰',
       jobs: 1800,
-      color: 'bg-yellow-100 text-yellow-600'
+      color: 'bg-warm-100 text-warm-600'
     },
     {
       id: 4,
       name: 'Education',
       icon: '🎓',
       jobs: 900,
-      color: 'bg-purple-100 text-purple-600'
+      color: 'bg-primary-200 text-primary-700'
     },
     {
       id: 5,
       name: 'Healthcare',
       icon: '🏥',
       jobs: 1500,
-      color: 'bg-red-100 text-red-600'
+      color: 'bg-accent-200 text-accent-700'
     },
     {
       id: 6,
       name: 'Design',
       icon: '🎨',
       jobs: 800,
-      color: 'bg-pink-100 text-pink-600'
+      color: 'bg-primary-300 text-primary-800'
     },
     {
       id: 7,
       name: 'Sales',
       icon: '📞',
       jobs: 1100,
-      color: 'bg-indigo-100 text-indigo-600'
+      color: 'bg-secondary-200 text-secondary-700'
     },
     {
       id: 8,
       name: 'Others',
       icon: '🔧',
       jobs: 2000,
-      color: 'bg-gray-100 text-gray-600'
+      color: 'bg-secondary-100 text-secondary-600'
     }
   ];
 
