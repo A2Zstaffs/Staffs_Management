@@ -128,9 +128,9 @@ export default function LoginPage() {
           {/* Form Card - Glass Effect */}
           <div className="bg-white/20 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/30 p-8">
             {/* Logo */}
-            <div className="text-center mb-8">
+            {/* <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-secondary-800 mb-2">Your logo</h2>
-            </div>
+            </div> */}
 
             {/* Login Heading */}
             <h1 className="text-3xl font-bold text-secondary-800 mb-8">Login</h1>

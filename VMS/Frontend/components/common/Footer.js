@@ -1,3 +1,6 @@
+import Image from 'next/image';
+import Link from 'next/link';
+
 export default function Footer() {
   return (
     <footer className="bg-secondary-900 text-white">
@@ -6,10 +9,27 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="mb-8">
-              <h3 className="text-3xl font-bold mb-4">
-                <span className="text-primary-400">VMS</span>
-                <span className="text-white">Recruit</span>
-              </h3>
+              <Link href="/" className="inline-block mb-4 relative">
+                <div className="relative">
+                  <Image
+                    src="/image/a2zstaff logo.png"
+                    alt="A2Z STAFFS Logo"
+                    width={180}
+                    height={60}
+                    className="h-12 w-auto object-contain relative z-10"
+                    style={{
+                      filter: 'brightness(1.3) contrast(1.2) saturate(1.5) hue-rotate(-5deg)',
+                    }}
+                  />
+                  {/* Subtle blue overlay to match website theme on dark background */}
+                  <div 
+                    className="absolute inset-0 mix-blend-screen opacity-15 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(37, 99, 235, 0.3) 100%)',
+                    }}
+                  />
+                </div>
+              </Link>
               <p className="text-secondary-400 text-lg leading-relaxed">
                 Streamline your recruitment process with our advanced talent management system.
               </p>
