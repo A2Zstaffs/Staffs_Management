@@ -112,13 +112,13 @@ export default function Footer() {
               © 2024 A2Z staffs. All rights reserved.
             </div>
             <div className="flex space-x-8 mt-6 md:mt-0">
-              <a href="#" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
+              <a href="/privacy-policy" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
                 Privacy Policy
               </a>
-              <a href="#" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
+              <a href="/terms-of-service" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
                 Terms of Service
               </a>
-              <a href="#" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
+              <a href="/cookie-policy" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">
                 Cookie Policy
               </a>
             </div>

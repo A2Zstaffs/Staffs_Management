@@ -53,42 +53,42 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Desktop Navigation - changed to space-x-6*/}
+          <nav className="hidden md:flex space-x-6">
             <Link
               href="/"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
             >
               Home
             </Link>
             <Link
               href="/about"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
             >
               About
             </Link>
             <Link
               href="/candidate/explore-jobs"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
             >
               Jobs
             </Link>
             <Link
               href="/contact"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
             >
               Contact
             </Link>
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Auth Buttons - changed to space - x -6 */}
+          <div className="hidden md:flex items-center space-x-6">
             {isAuthenticated ? (
               /* User Dropdown */
               <div className="relative" ref={userDropdownRef}>
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center space-x-2 text-secondary-700 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="flex items-center space-x-2 text-secondary-700 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
                 >
                   <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
@@ -128,7 +128,7 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className="text-secondary-500 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  className="text-secondary-500 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
                 >
                   Login
                 </Link>
@@ -137,7 +137,7 @@ export default function Header() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsSignupDropdownOpen(!isSignupDropdownOpen)}
-                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center"
+                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-base font-medium transition-colors duration-200 flex items-center"
                   >
                     Sign Up
                     <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
