@@ -73,7 +73,8 @@ const prepareUserData = (userData) => {
     default:
       return baseData;
   }
-};
+};     
+
 
 // @desc    Register user
 // @route   POST /api/auth/signup

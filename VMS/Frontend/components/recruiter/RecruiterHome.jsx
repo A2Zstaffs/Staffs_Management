@@ -19,8 +19,8 @@ export default function RecruiterHome() {
   ];
 
   const actions = [
-    { label: 'Book Onboarding Call', color: 'from-blue-500 to-blue-600' },
-    { label: 'View Jobs', color: 'from-emerald-500 to-emerald-600' },
+    { label: 'Book Onboarding Call', color: 'from-blue-500 to-blue-600', link: 'https://calendly.com/azstaffs4/30min' },
+    { label: 'View Jobs', color: 'from-emerald-500 to-emerald-600', link: '/recruiter/jobs' },
     { label: 'Add Candidate', color: 'from-purple-500 to-purple-600' },
   ];
 
@@ -60,12 +60,24 @@ export default function RecruiterHome() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {actions.map((a, i) => (
-            <button
-              key={i}
-              className={`w-full bg-gradient-to-r ${a.color} text-white font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow-md transition`}
-            >
-              {a.label}
-            </button>
+            a.link ? (
+              <a
+                key={i}
+                href={a.link}
+                target={a.link.startsWith('http') ? '_blank' : '_self'}
+                rel={a.link.startsWith('http') ? 'noopener noreferrer' : ''}
+                className={`w-full bg-gradient-to-r ${a.color} text-white font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow-md transition block text-center`}
+              >
+                {a.label}
+              </a>
+            ) : (
+              <button
+                key={i}
+                className={`w-full bg-gradient-to-r ${a.color} text-white font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow-md transition`}
+              >
+                {a.label}
+              </button>
+            )
           ))}
         </div>
       </section>

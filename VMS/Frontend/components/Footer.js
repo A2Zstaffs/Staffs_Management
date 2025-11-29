@@ -7,8 +7,8 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="mb-8">
               <h3 className="text-3xl font-bold mb-4">
-                <span className="text-primary-400">VMS</span>
-                <span className="text-white">Recruit</span>
+                <span className="text-primary-400">A2Z</span>
+                <span className="text-white">Staffs</span>
               </h3>
               <p className="text-secondary-400 text-lg leading-relaxed">
                 Streamline your recruitment process with our advanced talent management system.
@@ -109,7 +109,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-secondary-400 text-lg">
-              © 2024 VMS Recruit. All rights reserved.
+              © 2024 A2Z staffs. All rights reserved.
             </div>
             <div className="flex space-x-8 mt-6 md:mt-0">
               <a href="/privacy-policy" className="text-secondary-400 hover:text-white text-lg transition-colors duration-200">

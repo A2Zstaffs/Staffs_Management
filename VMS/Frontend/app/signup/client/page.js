@@ -326,7 +326,7 @@ export default function ClientSignupPage() {
               <span className="text-white font-bold text-lg">V</span>
             </div>
           </div>
-
+              console.log("hello")
           {/* Welcome Text with Transparent Styling - positioned just below header */}
           <div className="max-w-md mt-20">
             <h1 className="text-3xl font-bold text-white/90 mb-2 drop-shadow-lg">Welcome to the</h1>

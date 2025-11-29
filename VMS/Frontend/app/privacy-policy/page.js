@@ -144,3 +144,7 @@ export default function PrivacyPolicy() {
   );
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 823e7e46767b8da5d81ee98cbd1c78148e364cd4

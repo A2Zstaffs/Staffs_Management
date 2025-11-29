@@ -20,3 +20,8 @@ module.exports = User;
 
 
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
