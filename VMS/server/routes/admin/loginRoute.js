@@ -30,15 +30,3 @@ router.post('/create-admin', createAdmin);
 
 module.exports = router;
 
-
-
-
-
-
-
-
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes
