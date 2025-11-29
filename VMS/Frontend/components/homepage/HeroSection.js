@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, MapPin } from 'lucide-react';
 
@@ -91,6 +91,15 @@ export default function HeroSection() {
               </span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 relative">
                 Hire the Best Talent.
+                <span 
+                  className="absolute inset-0 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 blur-sm opacity-50"
+                  aria-hidden="true"
+                  style={{
+                    filter: 'blur(8px)',
+                  }}
+                >
+                  Hire the Best Talent.
+                </span>
               </span>
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl text-gray-600 drop-shadow-[0_1px_4px_rgba(255,255,255,0.8)] font-medium">
@@ -167,8 +176,7 @@ export default function HeroSection() {
                   </Link>
                 </div>
               </div>
-            </Link>
-
+            </div>
             {/* Recruiters - Enhanced 3D style box */}
             <div className="group cursor-pointer h-full">
               <div 
@@ -204,7 +212,7 @@ export default function HeroSection() {
                   </Link>
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
 
           {/* CTA Buttons */}
