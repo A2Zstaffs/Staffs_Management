@@ -13,10 +13,3 @@ const adminModelMethods = {
 module.exports = User;
 
 
-
-
-
-
-
-
-
