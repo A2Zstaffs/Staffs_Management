@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import CandidateNavbar from '@/components/CandidateNavbar';
+import CandidateNavbar from '@/components/candidate/CandidateNavbar';
 import { authAPI, dashboardAPI } from '@/lib/api';
 
 export default function CandidateHomePage() {
