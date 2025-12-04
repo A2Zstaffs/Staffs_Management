@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function HeroSection() {
@@ -176,7 +176,8 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-            {/* Recruiters - Enhanced 3D style box */}
+
+            {/* Recruiters - Lissnify style box */}
             <div className="group cursor-pointer h-full">
               <div 
                 className="relative w-full max-w-[400px] md:h-[320px] flex flex-col items-center text-center p-10 rounded-[30px] border border-white/60 bg-gradient-to-b from-blue-50/95 to-blue-100/95 backdrop-blur-sm transition-all duration-300 ease-out will-change-transform group-hover:scale-[1.03] group-hover:-translate-y-1"
