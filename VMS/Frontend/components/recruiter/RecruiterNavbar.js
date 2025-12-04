@@ -130,5 +130,3 @@ export default function RecruiterNavbar() {
 
 
 >>>>>>> Stashed changes
-=======
->>>>>>> edb5f0059bdc71fbc87831b17e2d8335f0536193

@@ -31,6 +31,7 @@ router.post('/create-admin', createAdmin);
 module.exports = router;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
@@ -48,3 +49,5 @@ module.exports = router;
 >>>>>>> Stashed changes
 =======
 >>>>>>> edb5f0059bdc71fbc87831b17e2d8335f0536193
+=======
+>>>>>>> 8d967e6a74f53dce63db89fa1e850971bc3f9019
