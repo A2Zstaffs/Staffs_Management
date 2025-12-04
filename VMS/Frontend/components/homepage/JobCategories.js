@@ -14,49 +14,49 @@ export default function JobCategories() {
       name: 'Marketing',
       icon: '📈',
       jobs: 1200,
-      color: 'bg-accent-100 text-accent-600'
+      color: 'bg-green-100 text-green-600'
     },
     {
       id: 3,
       name: 'Finance',
       icon: '💰',
       jobs: 1800,
-      color: 'bg-warm-100 text-warm-600'
+      color: 'bg-yellow-100 text-yellow-600'
     },
     {
       id: 4,
       name: 'Education',
       icon: '🎓',
       jobs: 900,
-      color: 'bg-primary-200 text-primary-700'
+      color: 'bg-purple-100 text-purple-600'
     },
     {
       id: 5,
       name: 'Healthcare',
       icon: '🏥',
       jobs: 1500,
-      color: 'bg-accent-200 text-accent-700'
+      color: 'bg-red-100 text-red-600'
     },
     {
       id: 6,
       name: 'Design',
       icon: '🎨',
       jobs: 800,
-      color: 'bg-primary-300 text-primary-800'
+      color: 'bg-pink-100 text-pink-600'
     },
     {
       id: 7,
       name: 'Sales',
       icon: '📞',
       jobs: 1100,
-      color: 'bg-secondary-200 text-secondary-700'
+      color: 'bg-primary-100 text-primary-600'
     },
     {
       id: 8,
       name: 'Others',
       icon: '🔧',
       jobs: 2000,
-      color: 'bg-secondary-100 text-secondary-600'
+      color: 'bg-gray-100 text-gray-600'
     }
   ];
 
@@ -64,7 +64,7 @@ export default function JobCategories() {
     <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 sm:mb-12 md:mb-16">
-          <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+          <h2 className="text-3xl font-bold text-primary-500 mb-4">
             Browse Jobs by Category
           </h2>
           <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
@@ -112,7 +112,7 @@ export default function JobCategories() {
                 >
                   {category.icon}
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-secondary-900 mb-3 sm:mb-4 group-hover:text-primary-600 transition-colors duration-300">
+                <h3 className="text-base sm:text-lg font-semibold text-primary-500 mb-3 sm:mb-4 group-hover:text-primary-600 transition-colors duration-300">
                   {category.name}
                 </h3>
                 <p className="text-xs sm:text-sm text-secondary-500 mb-4 sm:mb-5">

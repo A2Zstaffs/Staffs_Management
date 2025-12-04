@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { Search, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
   const [searchData, setSearchData] = useState({

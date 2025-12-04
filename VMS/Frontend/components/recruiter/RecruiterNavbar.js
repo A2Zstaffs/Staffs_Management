@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Logo from '../common/Logo';
 
 export default function RecruiterNavbar() {
   const router = useRouter();
@@ -76,12 +77,7 @@ export default function RecruiterNavbar() {
     <header className="bg-white shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-between">
-          <Link href="/recruiter/home" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">V</span>
-            </div>
-            <span className="font-bold text-gray-800">VMS Recruit</span>
-          </Link>
+          <Logo href="/recruiter/home" />
 
           <nav className="hidden md:flex items-center space-x-8">
             <Link href="/recruiter/home" className="text-gray-700 hover:text-blue-600">Home</Link>
