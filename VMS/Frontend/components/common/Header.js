@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../../contexts/AuthContext';
+import Logo from './Logo';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,16 +42,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 relative">
-              <Image
-                src="/image/a2zstaff logo.png"
-                alt="A2Z STAFFS Logo"
-                width={150}
-                height={50}
-                className="h-12 w-auto object-contain"
-                priority
-              />
-            </Link>
+            <Logo href="/" />
           </div>
 
           {/* Desktop Navigation - changed to space-x-6*/}
@@ -150,21 +142,21 @@ export default function Header() {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <Link
                         href="/signup/recruiter"
-                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
                         onClick={() => setIsSignupDropdownOpen(false)}
                       >
                         <div className="flex items-center">
-                          <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                          <div className="w-2 h-2 bg-primary-600 rounded-full mr-3"></div>
                           Recruiter
                         </div>
                       </Link>
                       <Link
                         href="/signup/user"
-                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
                         onClick={() => setIsSignupDropdownOpen(false)}
                       >
                         <div className="flex items-center">
-                          <div className="w-2 h-2 bg-indigo-600 rounded-full mr-3"></div>
+                          <div className="w-2 h-2 bg-primary-600 rounded-full mr-3"></div>
                           Candidate
                         </div>
                       </Link>
