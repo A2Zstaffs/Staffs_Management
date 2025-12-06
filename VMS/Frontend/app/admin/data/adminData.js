@@ -54,4 +54,3 @@ export const adminFlowSteps = [
     borderColor: 'border-purple-400/50'
   }
 ];
-

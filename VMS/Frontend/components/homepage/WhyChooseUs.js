@@ -26,7 +26,7 @@ export default function WhyChooseUs() {
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+          <h2 className="text-3xl font-bold text-primary-500 mb-4">
             Why Choose VMS Recruit?
           </h2>
           <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
@@ -43,7 +43,7 @@ export default function WhyChooseUs() {
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-200 transition-colors duration-200">
                 <span className="text-3xl">{feature.icon}</span>
               </div>
-              <h3 className="text-lg font-semibold text-secondary-900 mb-4 group-hover:text-primary-600 transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-primary-500 mb-4 group-hover:text-primary-600 transition-colors duration-200">
                 {feature.title}
               </h3>
               <p className="text-sm text-secondary-600 leading-relaxed">

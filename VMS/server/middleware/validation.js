@@ -159,11 +159,9 @@ const validateSignup = (req, res, next) => {
   // Run validation
   Promise.all(validationRules.map(validation => validation.run(req)))
     .then(() => {
-      console.log('Validation passed for role:', role);
       handleValidationErrors(req, res, next);
     })
     .catch((error) => {
-      console.error('Validation error:', error);
       next(error);
     });
 };
