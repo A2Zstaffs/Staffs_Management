@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, Clock, Bell, User } from 'lucide-react';
 
-export default function ClientTopbar() {
+export default function ClientTopbar({ onMenuClick }) {
   const { user } = useAuth();
   const [userName, setUserName] = useState('');
 
@@ -30,24 +30,34 @@ export default function ClientTopbar() {
 
   return (
     <header className="bg-gradient-to-r from-[#0F172A] to-[#1e293b] border-b border-gray-700/50 sticky top-0 z-30">
-      <div className="px-8 py-4">
+      <div className="px-4 md:px-8 py-4">
         <div className="flex items-center justify-between">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={onMenuClick}
+            className="md:hidden p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           {/* Search Bar */}
-          <div className="flex-1 max-w-md">
+          <div className="flex-1 max-w-md ml-4 md:ml-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A73FF] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A73FF] focus:border-transparent text-sm md:text-base"
               />
             </div>
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
-            {/* History Icon */}
-            <button className="p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {/* History Icon - Hidden on mobile */}
+            <button className="hidden md:block p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200">
               <Clock className="w-5 h-5" />
             </button>
 
