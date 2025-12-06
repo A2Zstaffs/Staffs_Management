@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function UploadProfileModal({ isOpen, onClose, job }) {
+export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) {
     const [formData, setFormData] = useState({
         candidate_name: '',
         email: '',
@@ -77,32 +77,42 @@ export default function UploadProfileModal({ isOpen, onClose, job }) {
                 throw new Error('User not authenticated');
             }
 
-            // Prepare profile data
-            const profileData = {
-                candidate_name: formData.candidate_name,
-                email: formData.email,
-                phone: formData.phone,
-                location: formData.location,
-                total_experience: parseFloat(formData.total_experience),
-                current_ctc: parseFloat(formData.current_ctc),
-                expected_ctc: parseFloat(formData.expected_ctc),
-                notice_period: parseInt(formData.notice_period),
-                current_company: formData.current_company,
-                current_designation: formData.current_designation,
-                skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
-                notes: formData.notes,
-                job_id: job._id,
-                uploaded_by: user._id,
-                uploaded_by_name: user.fullName || user.name,
-                status: 'Available'
-            };
+            // Create FormData object
+            const formDataToSend = new FormData();
+            formDataToSend.append('candidate_name', formData.candidate_name);
+            formDataToSend.append('email', formData.email);
+            formDataToSend.append('phone', formData.phone);
+            formDataToSend.append('location', formData.location);
+            formDataToSend.append('total_experience', formData.total_experience);
+            formDataToSend.append('current_ctc', formData.current_ctc);
+            formDataToSend.append('expected_ctc', formData.expected_ctc);
+            formDataToSend.append('notice_period', formData.notice_period);
+            formDataToSend.append('current_company', formData.current_company || '');
+            formDataToSend.append('current_designation', formData.current_designation || '');
+            formDataToSend.append('notes', formData.notes || '');
+            formDataToSend.append('job_id', job._id);
+            formDataToSend.append('uploaded_by', user._id);
+            formDataToSend.append('uploaded_by_name', user.fullName || user.name);
+            formDataToSend.append('status', 'Available');
+
+            // Handle skills array
+            const skillsList = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+            skillsList.forEach(skill => {
+                formDataToSend.append('skills', skill);
+            });
+
+            // Handle file
+            if (formData.resume) {
+                formDataToSend.append('resume', formData.resume);
+            }
 
             // Import the API
             const { profileAPI } = await import('@/lib/api');
-            const response = await profileAPI.uploadProfile(profileData);
+            const response = await profileAPI.uploadProfile(formDataToSend);
 
             if (response.success) {
                 alert('Profile uploaded successfully!');
+                if (onSuccess) onSuccess();
                 onClose();
                 // Reset form
                 setFormData({
@@ -117,7 +127,8 @@ export default function UploadProfileModal({ isOpen, onClose, job }) {
                     expected_ctc: '',
                     notice_period: '',
                     skills: '',
-                    notes: ''
+                    notes: '',
+                    resume: null
                 });
             }
         } catch (err) {

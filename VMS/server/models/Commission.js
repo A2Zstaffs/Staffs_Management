@@ -4,7 +4,11 @@ const commissionSchema = new mongoose.Schema({
   application: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Application',
-    required: true
+    required: false // Changed from true to support Profile-based hires
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
   },
   job: {
     type: mongoose.Schema.Types.ObjectId,
@@ -24,7 +28,7 @@ const commissionSchema = new mongoose.Schema({
   candidate: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false // Changed from true to support Profiles without User accounts
   },
   grossCommission: {
     type: Number,
@@ -61,7 +65,7 @@ const commissionSchema = new mongoose.Schema({
     },
     releaseDate: {
       type: Date,
-      required: function() {
+      required: function () {
         return this.candidateJoinDate && this.releasePeriodDays;
       }
     },
@@ -87,13 +91,13 @@ const commissionSchema = new mongoose.Schema({
 });
 
 // Calculate net commission and release date before saving
-commissionSchema.pre('save', function(next) {
+commissionSchema.pre('save', function (next) {
   // Calculate commission amounts
   if (this.isModified('grossCommission') || this.isModified('platformFee.percentage')) {
     this.platformFee.amount = (this.grossCommission * this.platformFee.percentage) / 100;
     this.netCommission = this.grossCommission - this.platformFee.amount;
   }
-  
+
   // Calculate release date
   if (this.isModified('releaseConditions.candidateJoinDate') || this.isModified('releaseConditions.releasePeriodDays')) {
     if (this.releaseConditions.candidateJoinDate && this.releaseConditions.releasePeriodDays) {
@@ -101,23 +105,23 @@ commissionSchema.pre('save', function(next) {
       const releaseDate = new Date(joinDate);
       releaseDate.setDate(joinDate.getDate() + this.releaseConditions.releasePeriodDays);
       this.releaseConditions.releaseDate = releaseDate;
-      
+
       // Check if eligible for release
       this.releaseConditions.isEligibleForRelease = new Date() >= releaseDate;
     }
   }
-  
+
   next();
 });
 
 // Instance method to check if commission can be released
-commissionSchema.methods.canBeReleased = function() {
+commissionSchema.methods.canBeReleased = function () {
   if (!this.releaseConditions.releaseDate) return false;
   return new Date() >= this.releaseConditions.releaseDate && this.status === 'approved';
 };
 
 // Static method to find commissions ready for release
-commissionSchema.statics.findReadyForRelease = function() {
+commissionSchema.statics.findReadyForRelease = function () {
   const now = new Date();
   return this.find({
     status: 'approved',

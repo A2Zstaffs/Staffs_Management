@@ -1,9 +1,12 @@
+'use client';
+
+import { A2ZStaffsLogo } from '@/components/common/Logo';
+
 export default function Sidebar() {
   return (
     <div className="w-64 bg-gray-900 text-white min-h-screen p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">VMS</h1>
-        <p className="text-gray-400 text-sm">Talent Pipeline</p>
+        <A2ZStaffsLogo href="/recruiter/dashboard" size="default" />
       </div>
       
       <nav className="space-y-2">

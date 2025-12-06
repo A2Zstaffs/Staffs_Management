@@ -11,8 +11,12 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
     }
 
+    console.log('🔐 Auth Middleware - Token present:', !!token);
+    console.log('🔐 Auth Middleware - Headers:', req.headers.authorization?.substring(0, 20) + '...');
+
     // Make sure token exists
     if (!token) {
+      console.log('❌ Auth failed: No token provided');
       return res.status(401).json({
         success: false,
         message: 'Not authorized to access this route'
@@ -22,19 +26,24 @@ const protect = async (req, res, next) => {
     try {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('✅ Token decoded successfully, userId:', decoded.id);
 
       // Get user from token
       req.user = await User.findById(decoded.id);
 
       if (!req.user) {
+        console.log('❌ Auth failed: No user found with id:', decoded.id);
         return res.status(401).json({
           success: false,
           message: 'No user found with this token'
         });
       }
 
+      console.log('✅ User found:', req.user.email, 'Role:', req.user.role);
+
       // Check if user is active
       if (!req.user.isActive) {
+        console.log('❌ Auth failed: User account deactivated');
         return res.status(401).json({
           success: false,
           message: 'User account is deactivated'
@@ -43,12 +52,14 @@ const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
+      console.log('❌ Token verification failed:', error.message);
       return res.status(401).json({
         success: false,
         message: 'Not authorized to access this route'
       });
     }
   } catch (error) {
+    console.log('❌ Auth middleware error:', error.message);
     return res.status(500).json({
       success: false,
       message: 'Server error in authentication middleware'

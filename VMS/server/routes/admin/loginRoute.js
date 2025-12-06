@@ -35,11 +35,3 @@ module.exports = router;
 
 
 
-
-
-
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes

@@ -43,32 +43,25 @@ const upload = multer({
 // RECRUITER DASHBOARD CONTROLLER
 const getRecruiterDashboard = async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store');
     console.log(' Recruiter Dashboard Request Started');
     console.log(' User from token:', req.user);
 
     const recruiterId = req.user.id;
-    console.log(' Recruiter ID:', recruiterId);
 
     // Get recruiter profile with onboarding status
-    console.log(' Fetching recruiter profile...');
     const recruiter = await User.findById(recruiterId)
       .select('fullName email recruiterStatus company companyDetails location');
 
-    console.log(' Recruiter found:', recruiter ? 'Yes' : 'No');
     if (!recruiter) {
-      console.log(' Recruiter not found in database');
       return res.status(404).json({
         success: false,
         message: 'Recruiter not found'
       });
     }
 
-    console.log(' Recruiter role check:', recruiter.role);
-    console.log(' RecruiterStatus exists:', !!recruiter.recruiterStatus);
-
     // Initialize recruiterStatus if it doesn't exist
     if (!recruiter.recruiterStatus) {
-      console.log(' Initializing recruiterStatus for existing user...');
       recruiter.recruiterStatus = {
         onboardingCompleted: false,
         onboardingCallScheduled: false,
@@ -83,17 +76,14 @@ const getRecruiterDashboard = async (req, res) => {
         performanceRating: 3
       };
       await recruiter.save();
-      console.log('✅ RecruiterStatus initialized');
     }
 
     // Check if onboarding is required
     const needsOnboarding = !recruiter.recruiterStatus.onboardingCompleted;
-    console.log('🎯 Needs onboarding:', needsOnboarding);
 
     // Get available jobs with detailed information (only if onboarded)
     let availableJobs = [];
     if (!needsOnboarding) {
-      console.log('💼 Fetching available jobs...');
       try {
         availableJobs = await Job.find({
           status: 'active'
@@ -104,7 +94,6 @@ const getRecruiterDashboard = async (req, res) => {
           .limit(20);
         console.log('✅ Available jobs found:', availableJobs.length);
       } catch (jobError) {
-        console.log('❌ Error fetching jobs:', jobError.message);
         availableJobs = [];
       }
 
@@ -118,7 +107,6 @@ const getRecruiterDashboard = async (req, res) => {
     }
 
     // Get submitted candidates and their status
-    console.log('📝 Fetching submitted candidates...');
     let submittedCandidates = [];
     try {
       submittedCandidates = await Application.find({
@@ -137,7 +125,6 @@ const getRecruiterDashboard = async (req, res) => {
         .sort({ createdAt: -1 });
       console.log('✅ Submitted candidates found:', submittedCandidates.length);
     } catch (appError) {
-      console.log('❌ Error fetching applications:', appError.message);
       submittedCandidates = [];
     }
 
@@ -158,7 +145,6 @@ const getRecruiterDashboard = async (req, res) => {
     }
 
     // Get commission tracker with release information
-    console.log('💰 Fetching commissions...');
     let commissions = [];
     try {
       commissions = await Commission.find({
@@ -170,7 +156,6 @@ const getRecruiterDashboard = async (req, res) => {
         .sort({ createdAt: -1 });
       console.log('✅ Commissions found:', commissions.length);
     } catch (commError) {
-      console.log('❌ Error fetching commissions:', commError.message);
       commissions = [];
     }
 
@@ -189,10 +174,44 @@ const getRecruiterDashboard = async (req, res) => {
 
     // Get performance metrics (including both Applications and Profiles)
     const totalApplications = submittedCandidates.length + uploadedProfiles.length;
+
+    // Calculate metrics for dashboard cards
+    const shortlistedCount = uploadedProfiles.filter(profile =>
+      ['shortlisted', 'interview_scheduled'].includes(profile.status?.toLowerCase())
+    ).length + submittedCandidates.filter(app =>
+      ['shortlisted', 'interview_scheduled'].includes(app.status?.toLowerCase())
+    ).length;
+
+    const interviewCount = uploadedProfiles.filter(profile =>
+      ['interview_scheduled', 'interviewed'].includes(profile.status?.toLowerCase())
+    ).length + submittedCandidates.filter(app =>
+      ['interview_scheduled', 'interviewed'].includes(app.status?.toLowerCase())
+    ).length;
+
+    const hiresCount = uploadedProfiles.filter(profile =>
+      ['hired', 'placed', 'joined', 'selected'].includes(profile.status?.toLowerCase())
+    ).length + submittedCandidates.filter(app =>
+      ['hired', 'placed', 'joined', 'selected'].includes(app.status?.toLowerCase())
+    ).length;
+
+    const rejectedCount = uploadedProfiles.filter(profile =>
+      ['rejected'].includes(profile.status?.toLowerCase())
+    ).length + submittedCandidates.filter(app =>
+      ['rejected'].includes(app.status?.toLowerCase())
+    ).length;
+
+    const leadsCount = availableJobs.length; // Available active jobs that recruiter can work on
+
     const performanceMetrics = {
       totalSubmissions: totalApplications,
+      totalApplications: totalApplications, // Total applications uploaded by recruiter
       profileUploads: uploadedProfiles.length,
       applicationSubmissions: submittedCandidates.length,
+      shortlisted: shortlistedCount, // Candidates shortlisted by clients
+      interviews: interviewCount, // Candidates in interview stage
+      hires: hiresCount, // Candidates hired/placed
+      rejected: rejectedCount, // Candidates rejected
+      leads: leadsCount, // Available active jobs
       successfulPlacements: submittedCandidates.filter(app => app.status === 'joined').length,
       interviewRate: submittedCandidates.filter(app => ['interview_scheduled', 'interviewed', 'offer_made', 'offer_accepted', 'joined'].includes(app.status)).length,
       conversionRate: submittedCandidates.length > 0 ?
@@ -206,7 +225,23 @@ const getRecruiterDashboard = async (req, res) => {
       jobsCount: availableJobs.length,
       candidatesCount: submittedCandidates.length,
       profilesCount: uploadedProfiles.length,
-      commissionsCount: commissions.length
+      commissionsCount: commissions.length,
+      metrics: {
+        totalApplications: performanceMetrics.totalApplications,
+        shortlisted: performanceMetrics.shortlisted,
+        interviews: performanceMetrics.interviews,
+        hires: performanceMetrics.hires,
+        rejected: performanceMetrics.rejected,
+        leads: performanceMetrics.leads
+      },
+      debug: {
+        submittedCandidatesCount: submittedCandidates.length,
+        uploadedProfilesCount: uploadedProfiles.length,
+        shortlistedDetails: {
+          profiles: uploadedProfiles.filter(p => ['shortlisted', 'interview_scheduled'].includes(p.status?.toLowerCase())).length,
+          apps: submittedCandidates.filter(a => ['shortlisted', 'interview_scheduled'].includes(a.status?.toLowerCase())).length
+        }
+      }
     });
 
     res.json({
@@ -223,8 +258,6 @@ const getRecruiterDashboard = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Recruiter dashboard error:', error);
-    console.error('📋 Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch recruiter dashboard data',
@@ -438,19 +471,30 @@ const getCVStatus = async (req, res) => {
 // CLIENT DASHBOARD CONTROLLERS
 const getClientDashboard = async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store');
     const clientId = req.user.id;
 
-    // Get client's posted jobs
+    // Get client's posted jobs with real data
     const postedJobs = await Job.find({
-      postedBy: clientId,
-      postedByRole: 'client'
+      postedBy: clientId
     })
-      .select('title status applicationsCount createdAt commission')
+      .select('job_title job_id role_status posted_date company_name locations salary_min salary_max experience_min experience_max commission_percent createdAt')
       .sort({ createdAt: -1 });
 
-    // Get applications for client's jobs
+    // Get job IDs for filtering profiles
+    const jobIds = postedJobs.map(job => job._id);
+
+    // Get profiles (applications) for client's jobs
+    const profiles = await Profile.find({
+      job_id: { $in: jobIds }
+    })
+      .populate('uploaded_by', 'fullName company')
+      .populate('job_id', 'job_title')
+      .sort({ createdAt: -1 });
+
+    // Get applications for client's jobs (if using Application model)
     const applications = await Application.find({
-      job: { $in: postedJobs.map(job => job._id) }
+      job: { $in: jobIds }
     })
       .populate('candidate', 'fullName email phoneNumber skills experience')
       .populate('recruiter', 'fullName company')
@@ -458,19 +502,20 @@ const getClientDashboard = async (req, res) => {
       .sort({ createdAt: -1 });
 
     // Get shortlisted candidates
-    const shortlistedCandidates = applications.filter(app =>
-      ['shortlisted', 'interview_scheduled', 'interviewed'].includes(app.status)
+    const shortlistedCandidates = profiles.filter(profile =>
+      ['shortlisted', 'interview_scheduled', 'interviewed'].includes(profile.status?.toLowerCase())
     );
 
-    // Get hires and commission payments
-    const hires = await Application.find({
-      job: { $in: postedJobs.map(job => job._id) },
-      status: 'selected'
-    })
-      .populate('candidate', 'fullName email')
-      .populate('recruiter', 'fullName company')
-      .populate('job', 'title commission');
+    // Get hires
+    const hires = profiles.filter(profile =>
+      ['Placed', 'hired', 'selected'].includes(profile.status)
+    ).concat(
+      applications.filter(app =>
+        ['hired', 'selected', 'joined'].includes(app.status)
+      )
+    );
 
+    // Get commission payments
     const commissionPayments = await Commission.find({
       client: clientId
     })
@@ -478,19 +523,50 @@ const getClientDashboard = async (req, res) => {
       .populate('job', 'title')
       .sort({ createdAt: -1 });
 
+    // Calculate real metrics
+    const activeJobs = postedJobs.filter(job => job.role_status === 'Active').length;
+    const totalApplications = profiles.length + applications.length;
+    const inProcessApplications = profiles.filter(profile =>
+      ['In Process', 'shortlisted', 'interview_scheduled', 'interviewed'].includes(profile.status)
+    ).length;
+    const totalHires = hires.length;
+
+    // Get client profile details
+    const clientProfile = await User.findById(clientId).select('fullName email company companyDetails location phoneNumber');
+
+    // Calculate Application Trends (Last 6 Months)
+    const applicationTrends = [];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const today = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const monthName = months[d.getMonth()];
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() - i + 1, 1);
+
+      const count = profiles.filter(p => p.createdAt >= d && p.createdAt < nextMonth).length +
+        applications.filter(a => a.createdAt >= d && a.createdAt < nextMonth).length;
+
+      applicationTrends.push({ label: monthName, value: count });
+    }
+
     res.json({
       success: true,
       data: {
+        clientProfile,
         postedJobs,
+        profiles,
         applications,
         shortlistedCandidates,
         hires,
         commissionPayments,
+        applicationTrends,
         summary: {
           totalJobs: postedJobs.length,
-          activeJobs: postedJobs.filter(job => job.status === 'active').length,
-          totalApplications: applications.length,
-          totalHires: hires.length
+          activeJobs: activeJobs,
+          totalApplications: totalApplications,
+          inProcessApplications: inProcessApplications,
+          totalHires: totalHires
         }
       }
     });
@@ -498,7 +574,8 @@ const getClientDashboard = async (req, res) => {
     console.error('Client dashboard error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch client dashboard data'
+      message: 'Failed to fetch client dashboard data',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -506,6 +583,7 @@ const getClientDashboard = async (req, res) => {
 // CANDIDATE DASHBOARD CONTROLLERS
 const getCandidateDashboard = async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store');
     const candidateId = req.user.id;
 
     // Get candidate profile
@@ -562,6 +640,7 @@ const getCandidateDashboard = async (req, res) => {
 // CONSULTANCY DASHBOARD CONTROLLERS
 const getConsultancyDashboard = async (req, res) => {
   try {
+    res.set('Cache-Control', 'no-store');
     const consultancyId = req.user.id;
 
     // Get consultancy's posted jobs

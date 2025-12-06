@@ -13,15 +13,11 @@ const adminModelMethods = {
 module.exports = User;
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
 
 
 
-
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes
