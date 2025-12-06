@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
+import Logo from '../common/Logo';
 
 export default function CandidateNavbar() {
   const router = useRouter();
@@ -104,14 +105,7 @@ export default function CandidateNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo on the left */}
-          <Link href="/candidate/home" className="flex items-center">
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold">
-                <span className="text-blue-500">VMS</span>
-                <span className="text-gray-700">Recruit</span>
-              </h1>
-            </div>
-          </Link>
+          <Logo href="/candidate/home" />
 
           {/* Center: EMPTY - No CTA buttons in header */}
           <div className="flex-1"></div>
@@ -121,9 +115,9 @@ export default function CandidateNavbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                className="flex items-center space-x-2 text-gray-700 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
               >
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-semibold">
                     {getUserInitial()}
                   </span>

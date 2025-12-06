@@ -25,6 +25,7 @@ const applicationSchema = new mongoose.Schema({
       'interview_scheduled', // Interview scheduled
       'interviewed',       // Interview completed
       'selected',          // Candidate selected
+      'hired',             // Candidate hired
       'rejected',          // Application rejected
       'withdrawn'          // Candidate withdrew
     ],
@@ -97,7 +98,7 @@ applicationSchema.index({ job: 1, status: 1 });
 applicationSchema.index({ createdAt: -1 });
 
 // Pre-save middleware to update timeline
-applicationSchema.pre('save', function(next) {
+applicationSchema.pre('save', function (next) {
   if (this.isModified('status')) {
     this.timeline.push({
       status: this.status,

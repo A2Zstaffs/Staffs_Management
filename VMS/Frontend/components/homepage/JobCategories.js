@@ -49,7 +49,7 @@ export default function JobCategories() {
       name: 'Sales',
       icon: '📞',
       jobs: 1100,
-      color: 'bg-secondary-200 text-secondary-700'
+      color: 'bg-indigo-100 text-indigo-600'
     },
     {
       id: 8,
@@ -63,7 +63,7 @@ export default function JobCategories() {
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10 sm:mb-12 md:mb-16">
+        <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-secondary-900 mb-4">
             Browse Jobs by Category
           </h2>
@@ -112,7 +112,7 @@ export default function JobCategories() {
                 >
                   {category.icon}
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-secondary-900 mb-3 sm:mb-4 group-hover:text-primary-600 transition-colors duration-300">
+                <h3 className="text-base font-semibold text-secondary-900 mb-3 group-hover:text-primary-600 transition-colors duration-200">
                   {category.name}
                 </h3>
                 <p className="text-xs sm:text-sm text-secondary-500 mb-4 sm:mb-5">

@@ -53,6 +53,13 @@ class ApiClient {
 
   // Make HTTP request with error handling
   async request(endpoint, options = {}) {
+    // Check if API URL is configured
+    if (!this.baseURL) {
+      const error = new Error('API URL is not configured. Please check your environment variables.');
+      console.error('API Configuration Error:', error);
+      throw error;
+    }
+
     const url = `${this.baseURL}${endpoint}`;
     const token = this.getToken();
 
@@ -67,7 +74,17 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+
+      // Check if response is JSON before parsing
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // If not JSON, get text response
+        const text = await response.text();
+        throw new Error(text || `HTTP error! status: ${response.status}`);
+      }
 
       // Handle token expiration
       if (response.status === 401 && data.message?.includes('token')) {
@@ -79,11 +96,24 @@ class ApiClient {
       }
 
       if (!response.ok) {
+        // If there are validation errors, include them in the error message
+        if (data.errors && Array.isArray(data.errors)) {
+          const errorMessages = data.errors.map(err =>
+            typeof err === 'string' ? err : err.message || `${err.field || ''}: ${err.message || err.msg || ''}`
+          ).join(', ');
+          throw new Error(errorMessages || data.message || `HTTP error! status: ${response.status}`);
+        }
         throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
 
       return data;
     } catch (error) {
+      // Enhanced error handling for connection issues
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        const connectionError = new Error('Cannot connect to the server. Please make sure the backend server is running on http://localhost:5001');
+        console.error('API Connection Error:', connectionError);
+        throw connectionError;
+      }
       console.error('API Request Error:', error);
       throw error;
     }
@@ -264,6 +294,59 @@ export const dashboardAPI = {
   }
 };
 
+// Jobs API methods
+export const jobsAPI = {
+  // Get all jobs
+  async getAllJobs() {
+    return apiClient.get('/jobs');
+  },
+
+  // Create job
+  async createJob(jobData) {
+    return apiClient.post('/jobs', jobData);
+  }
+};
+
+// Profile API methods
+export const profileAPI = {
+  // Upload new profile
+  async uploadProfile(profileData) {
+    if (profileData instanceof FormData) {
+      return apiClient.uploadFile('/profiles', profileData);
+    }
+    return apiClient.post('/profiles', profileData);
+  },
+
+  // Get all profiles
+  async getAllProfiles(filters = {}) {
+    const queryParams = new URLSearchParams(filters).toString();
+    return apiClient.get(`/profiles${queryParams ? `?${queryParams}` : ''}`);
+  },
+
+  // Get profile by ID
+  async getProfileById(profileId) {
+    return apiClient.get(`/profiles/${profileId}`);
+  },
+
+  // Update profile
+  async updateProfile(profileId, profileData) {
+    return apiClient.put(`/profiles/${profileId}`, profileData);
+  },
+
+  // Update profile status
+  async updateProfileStatus(profileId, statusData) {
+    return apiClient.request(`/profiles/${profileId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData)
+    });
+  },
+
+  // Delete profile
+  async deleteProfile(profileId) {
+    return apiClient.delete(`/profiles/${profileId}`);
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   // Handle API errors consistently
@@ -293,4 +376,3 @@ export const apiUtils = {
 // Export the API client instance for direct use if needed
 export default apiClient;
 
- 

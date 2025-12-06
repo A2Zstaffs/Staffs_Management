@@ -3,8 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ClientSignupPage() {
+  const router = useRouter();
+  const { signup } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     companyName: '',
     contactPerson: '',
@@ -14,8 +20,11 @@ export default function ClientSignupPage() {
     phoneNumber: '',
     companySize: '',
     industry: '',
+    businessType: '',
+    budget: '',
     website: '',
-    address: ''
+    address: '',
+    country: ''
   });
 
   const handleChange = (e) => {
@@ -24,16 +33,92 @@ export default function ClientSignupPage() {
       ...prevData,
       [name]: value,
     }));
+    // Clear error when user starts typing
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    // Validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
-    console.log('Client Signup Data:', formData);
-    // Implement client signup logic here
+
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long!");
+      return;
+    }
+
+    // Check password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    if (!passwordRegex.test(formData.password)) {
+      setError("Password must contain at least one uppercase letter, one lowercase letter, and one number!");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Prepare data for API - matching backend validation requirements
+      // Format phone number (remove spaces, keep + if present, ensure it's valid)
+      let phoneNumber = formData.phoneNumber.replace(/\s/g, '');
+      if (!phoneNumber.startsWith('+')) {
+        // If no country code, add +1 for US
+        phoneNumber = '+1' + phoneNumber.replace(/\D/g, '');
+      }
+
+      const signupData = {
+        fullName: formData.contactPerson,
+        email: formData.email,
+        password: formData.password,
+        role: 'client',
+        phoneNumber: phoneNumber,
+        company: formData.companyName, // Backend expects 'company', not 'companyName'
+        businessDetails: {
+          type: formData.businessType, // Required: startup, small-business, enterprise, non-profit, government
+          size: formData.companySize, // Required: 1-10, 11-50, 51-200, 201-500, 500+
+          industry: formData.industry // Required
+        },
+        financials: {
+          budget: formData.budget // Required: <10k, 10k-50k, 50k-100k, 100k-500k, 500k+
+        },
+        location: {
+          country: formData.country || 'USA', // Required
+          address: formData.address || undefined // Optional additional address info
+        }
+      };
+
+      const result = await signup(signupData);
+
+      if (result.success) {
+        // Save role explicitly to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('userRole', 'client');
+        }
+        // Small delay to ensure auth state is updated
+        setTimeout(() => {
+          router.push('/client/dashboard');
+        }, 100);
+      } else {
+        setError(result.error || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      // Provide user-friendly error messages
+      let errorMessage = 'An error occurred during registration. Please try again.';
+      
+      if (err.message.includes('Cannot connect to the server') || err.message.includes('Failed to fetch')) {
+        errorMessage = 'Cannot connect to the server. Please make sure the backend server is running on http://localhost:5001';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,6 +138,13 @@ export default function ClientSignupPage() {
 
             {/* Signup Heading */}
             <h1 className="text-3xl font-bold text-secondary-800 mb-8 text-center">Join as Client</h1>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Signup Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -167,7 +259,7 @@ export default function ClientSignupPage() {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleChange}
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+15551234567 or 5551234567"
                     className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500"
                     required
                   />
@@ -221,6 +313,76 @@ export default function ClientSignupPage() {
                 </div>
 
                 <div>
+                  <label htmlFor="businessType" className="block text-sm font-medium text-secondary-700 mb-2">
+                    Business Type
+                  </label>
+                  <select
+                    id="businessType"
+                    name="businessType"
+                    value={formData.businessType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900"
+                    required
+                  >
+                    <option value="">Select business type</option>
+                    <option value="startup">Startup</option>
+                    <option value="small-business">Small Business</option>
+                    <option value="enterprise">Enterprise</option>
+                    <option value="non-profit">Non-Profit</option>
+                    <option value="government">Government</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="budget" className="block text-sm font-medium text-secondary-700 mb-2">
+                    Budget
+                  </label>
+                  <select
+                    id="budget"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900"
+                    required
+                  >
+                    <option value="">Select budget</option>
+                    <option value="<10k">Less than $10k</option>
+                    <option value="10k-50k">$10k - $50k</option>
+                    <option value="50k-100k">$50k - $100k</option>
+                    <option value="100k-500k">$100k - $500k</option>
+                    <option value="500k+">$500k+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="country" className="block text-sm font-medium text-secondary-700 mb-2">
+                    Country
+                  </label>
+                  <select
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900"
+                    required
+                  >
+                    <option value="">Select country</option>
+                    <option value="USA">United States</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="India">India</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                   <label htmlFor="website" className="block text-sm font-medium text-secondary-700 mb-2">
                     Website (Optional)
                   </label>
@@ -232,6 +394,22 @@ export default function ClientSignupPage() {
                     onChange={handleChange}
                     placeholder="https://www.company.com"
                     className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium text-secondary-700 mb-2">
+                    Company Address
+                  </label>
+                  <textarea
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    placeholder="Enter company address"
+                    rows={3}
+                    className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-warm-500 focus:border-warm-500 text-secondary-900 placeholder-gray-500 resize-none"
+                    required
                   />
                 </div>
               </div>
@@ -255,9 +433,10 @@ export default function ClientSignupPage() {
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+                  disabled={isLoading}
+                  className="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Register as Client
+                  {isLoading ? 'Registering...' : 'Register as Client'}
                 </button>
               </div>
             </form>

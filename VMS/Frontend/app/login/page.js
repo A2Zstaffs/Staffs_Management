@@ -99,7 +99,7 @@ export default function LoginPage() {
             admin: '/admin',
             recruiter: '/recruiter/home',
             candidate: '/candidate/home',
-            client: '/dashboard',
+            client: '/client/dashboard',
             consultancy: '/dashboard'
           };
           

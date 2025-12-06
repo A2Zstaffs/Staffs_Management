@@ -23,8 +23,7 @@ const connectDB = async () => {
       dbName: dbName // This will override if database is in URI
     });
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-    console.log(`Database: ${conn.connection.name}`);
+    console.log(`✅ MongoDB: ${conn.connection.name} @ ${conn.connection.host}`);
     
     // Handle connection events
     mongoose.connection.on('error', (err) => {

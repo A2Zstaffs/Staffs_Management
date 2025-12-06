@@ -1,8 +1,13 @@
+'use client';
+
+import RecruiterNavbar from '@/components/common/RecruiterNavbar';
+import RecruiterHome from '@/components/recruiter/RecruiterHome';
+
 export default function RecruiterDashboard() {
     return (
-        <div className="p-8">
-            <h1 className="text-2xl font-bold">Recruiter Dashboard</h1>
-            <p>Coming soon...</p>
+        <div className="min-h-screen bg-gray-50">
+            <RecruiterNavbar />
+            <RecruiterHome />
         </div>
     );
 }
