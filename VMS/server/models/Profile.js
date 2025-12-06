@@ -7,6 +7,12 @@ const profileSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    unique_id: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
     email: {
         type: String,
         required: true,
@@ -65,8 +71,13 @@ const profileSchema = new mongoose.Schema({
     // Status Tracking
     status: {
         type: String,
-        enum: ['Available', 'In Process', 'Placed', 'Rejected', 'On Hold'],
-        default: 'Available'
+        enum: [
+            'Available', 'In Process', 'Placed', 'Rejected', 'On Hold', // Legacy/Profile specific
+            'applied', 'submitted', 'under_review', 'shortlisted',
+            'interview_scheduled', 'interviewed', 'selected', 'hired', 'withdrawn', // Application specific
+            'rejected' // Lowercase rejected to match Application schema
+        ],
+        default: 'applied'
     },
 
     // Job Association
@@ -111,5 +122,6 @@ const profileSchema = new mongoose.Schema({
 profileSchema.index({ job_id: 1, status: 1 });
 profileSchema.index({ uploaded_by: 1 });
 profileSchema.index({ email: 1 });
+profileSchema.index({ unique_id: 1 });
 
 module.exports = mongoose.model('Profile', profileSchema);

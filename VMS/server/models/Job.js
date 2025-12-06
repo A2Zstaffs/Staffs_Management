@@ -64,6 +64,10 @@ const jobSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  applicationsCount: {
+    type: Number,
+    default: 0
+  },
   commission_percent: {
     type: Number,
     required: true
@@ -108,7 +112,18 @@ const jobSchema = new mongoose.Schema({
   },
   skills: [{
     type: String
-  }]
+  }],
+  // Posted By Information
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  postedByRole: {
+    type: String,
+    enum: ['client', 'consultancy', 'admin'],
+    default: 'client'
+  }
 }, {
   timestamps: true
 });

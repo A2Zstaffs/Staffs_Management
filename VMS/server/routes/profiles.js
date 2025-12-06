@@ -8,11 +8,16 @@ const {
     updateProfile,
     deleteProfile
 } = require('../controllers/profileController');
+const { protect } = require('../middleware/auth');
+const { uploadS3 } = require('../utils/s3Upload');
 
 // Profile routes
+// Apply protect middleware to all routes if they require authentication
+router.use(protect);
+
 router.route('/')
     .get(getProfiles)
-    .post(uploadProfile);
+    .post(uploadS3.single('resume'), uploadProfile); // Add multer middleware for resume upload
 
 router.route('/:id')
     .get(getProfileById)

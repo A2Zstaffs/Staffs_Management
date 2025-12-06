@@ -1,8 +1,35 @@
 import React, { useState } from 'react';
 import UploadProfileModal from './UploadProfileModal';
+import { profileAPI } from '@/lib/api';
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, user, hasSubmission, onProfileUploaded }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showSubmitted, setShowSubmitted] = useState(false);
+    const [submittedProfiles, setSubmittedProfiles] = useState([]);
+    const [loadingProfiles, setLoadingProfiles] = useState(false);
+
+    const handleViewSubmitted = async () => {
+        if (showSubmitted) {
+            setShowSubmitted(false);
+            return;
+        }
+
+        setLoadingProfiles(true);
+        setShowSubmitted(true);
+        try {
+            const response = await profileAPI.getAllProfiles({
+                job_id: job._id,
+                uploaded_by: user?._id || user?.id // Handle both potential ID fields
+            });
+            if (response.success) {
+                setSubmittedProfiles(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch profiles:', error);
+        } finally {
+            setLoadingProfiles(false);
+        }
+    };
 
     return (
         <>
@@ -117,6 +144,23 @@ const JobCard = ({ job }) => {
                                 </svg>
                                 Upload Profile
                             </button>
+                            {hasSubmission && (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Profile Already Submitted
+                                </span>
+                            )}
+                            <button
+                                onClick={handleViewSubmitted}
+                                className={`flex items-center gap-2 border px-4 py-2 rounded-lg font-medium transition-colors ${showSubmitted ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                </svg>
+                                {showSubmitted ? 'Hide Submitted' : 'Submitted Candidates'}
+                            </button>
                             <button className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -126,12 +170,58 @@ const JobCard = ({ job }) => {
                         </div>
                     </div>
                 </div>
+
+                {/* Submitted Candidates Section */}
+                {showSubmitted && (
+                    <div className="mt-6 pt-6 border-t border-gray-200 animate-fadeIn">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-4">Your Submitted Candidates</h4>
+                        {loadingProfiles ? (
+                            <div className="flex justify-center py-4">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                            </div>
+                        ) : submittedProfiles.length > 0 ? (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full text-sm text-left text-gray-500">
+                                    <thead className="bg-gray-50 text-xs text-gray-700 uppercase">
+                                        <tr>
+                                            <th className="px-4 py-2">Candidate Name</th>
+                                            <th className="px-4 py-2">Email</th>
+                                            <th className="px-4 py-2">Applied Date</th>
+                                            <th className="px-4 py-2">Current Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {submittedProfiles.map((profile) => (
+                                            <tr key={profile._id} className="hover:bg-gray-50">
+                                                <td className="px-4 py-2 font-medium text-gray-900">{profile.candidate_name}</td>
+                                                <td className="px-4 py-2">{profile.email}</td>
+                                                <td className="px-4 py-2">{new Date(profile.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-4 py-2">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold
+                                                        ${profile.status === 'Available' ? 'bg-green-100 text-green-800' :
+                                                            profile.status === 'In Process' ? 'bg-blue-100 text-blue-800' :
+                                                                profile.status === 'Rejected' ? 'bg-red-100 text-red-800' :
+                                                                    'bg-gray-100 text-gray-800'}`}>
+                                                        {profile.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500 italic">You haven't submitted any candidates for this job yet.</p>
+                        )}
+                    </div>
+                )}
             </div>
 
             <UploadProfileModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 job={job}
+                onSuccess={onProfileUploaded}
             />
         </>
     );

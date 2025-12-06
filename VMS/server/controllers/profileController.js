@@ -1,21 +1,52 @@
 const Profile = require('../models/Profile');
+const Job = require('../models/Job');
+const { uploadToS3 } = require('../utils/s3Upload');
 
 // @desc    Upload a new profile
 // @route   POST /api/profiles
 // @access  Protected (Recruiter)
 exports.uploadProfile = async (req, res, next) => {
     try {
-        const profile = await Profile.create(req.body);
+        // Handle resume upload if file is present
+        let resumeUrl = '';
+        if (req.file) {
+            console.log('📁 File received:', req.file.originalname);
+            resumeUrl = await uploadToS3(req.file, 'resumes');
+            console.log('✅ Resume uploaded to S3:', resumeUrl);
+        }
+
+        // Generate unique ID
+        const uniqueId = `PID${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+
+        // Create profile with resume URL
+        const profileData = {
+            ...req.body,
+            unique_id: uniqueId,
+            resume_url: resumeUrl || req.body.resume_url || '',
+            uploaded_by: req.user.id // Ensure this is set from the authenticated user
+        };
+
+        const profile = await Profile.create(profileData);
 
         // Populate job and recruiter details
         await profile.populate('job_id', 'job_title company_name');
-        await profile.populate('uploaded_by', 'name email');
+        await profile.populate('uploaded_by', 'fullName email');
+
+        // Update Job application count
+        await Job.findByIdAndUpdate(profile.job_id._id, {
+            $inc: {
+                in_process_applications: 1,
+                applicationsCount: 1
+            }
+        });
 
         res.status(201).json({
             success: true,
-            data: profile
+            data: profile,
+            message: 'Profile uploaded successfully'
         });
     } catch (err) {
+        console.error('Profile upload error:', err);
         next(err);
     }
 };
@@ -147,6 +178,14 @@ exports.deleteProfile = async (req, res, next) => {
                 message: 'Profile not found'
             });
         }
+
+        // Decrement Job application count
+        await Job.findByIdAndUpdate(profile.job_id, {
+            $inc: {
+                in_process_applications: -1,
+                applicationsCount: -1
+            }
+        });
 
         res.status(200).json({
             success: true,

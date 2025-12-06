@@ -1,34 +1,60 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import RecruiterNavbar from '@/components/common/RecruiterNavbar';
-import { jobsAPI } from '@/lib/api';
+import { jobsAPI, profileAPI } from '@/lib/api';
 import JobCard from '@/components/recruiter/JobCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RecruiterJobsPage() {
+    const { user } = useAuth();
     const [jobs, setJobs] = useState([]);
+    const [submittedJobIds, setSubmittedJobIds] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const response = await jobsAPI.getAllJobs();
-                if (response.success) {
-                    setJobs(response.data);
-                } else {
-                    setError('Failed to fetch jobs');
-                }
-            } catch (err) {
-                setError('An error occurred while fetching jobs');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchData = useCallback(async () => {
+        try {
+            setLoading(true);
 
-        fetchJobs();
-    }, []);
+            // Fetch jobs regardless of user state
+            const jobsPromise = jobsAPI.getAllJobs();
+
+            // Only fetch profiles if user is authenticated
+            const profilesPromise = user
+                ? profileAPI.getProfiles({ uploaded_by: user._id || user.id })
+                : Promise.resolve({ success: true, data: [] });
+
+            const [jobsRes, profilesRes] = await Promise.all([jobsPromise, profilesPromise]);
+
+            if (jobsRes.success) {
+                setJobs(jobsRes.data);
+            } else {
+                setError('Failed to fetch jobs');
+            }
+
+            if (profilesRes.success && profilesRes.data.length > 0) {
+                const ids = new Set(profilesRes.data.map(p =>
+                    // Handle populated job_id object or direct ID string
+                    p.job_id && typeof p.job_id === 'object' ? p.job_id._id : p.job_id
+                ));
+                setSubmittedJobIds(ids);
+            }
+        } catch (err) {
+            setError('An error occurred while fetching data');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const handleProfileUploaded = (jobId) => {
+        setSubmittedJobIds(prev => new Set(prev).add(jobId));
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -53,7 +79,13 @@ export default function RecruiterJobsPage() {
                 ) : (
                     <div className="space-y-4">
                         {jobs.map((job) => (
-                            <JobCard key={job._id} job={job} />
+                            <JobCard
+                                key={job._id}
+                                job={job}
+                                user={user}
+                                hasSubmission={submittedJobIds.has(job._id)}
+                                onProfileUploaded={() => handleProfileUploaded(job._id)}
+                            />
                         ))}
                     </div>
                 )}

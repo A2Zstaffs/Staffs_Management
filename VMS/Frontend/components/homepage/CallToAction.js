@@ -7,7 +7,7 @@ export default function CallToAction() {
           <div className="bg-white rounded-xl p-8 text-center lg:text-left">
             <div className="mb-6">
               <div className="text-4xl mb-4">👨‍💼</div>
-              <h3 className="text-2xl font-bold text-secondary-900 mb-4">
+              <h3 className="text-2xl font-bold text-primary-500 mb-4">
                 Looking for a Job?
               </h3>
               <p className="text-base text-secondary-600 mb-6">
@@ -29,7 +29,7 @@ export default function CallToAction() {
           <div className="bg-white rounded-xl p-8 text-center lg:text-left">
             <div className="mb-6">
               <div className="text-4xl mb-4">🏢</div>
-              <h3 className="text-2xl font-bold text-secondary-900 mb-4">
+              <h3 className="text-2xl font-bold text-primary-500 mb-4">
                 Want to Hire Talent?
               </h3>
               <p className="text-base text-secondary-600 mb-6">
@@ -38,7 +38,7 @@ export default function CallToAction() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-accent-500 hover:bg-accent-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md">
+              <button className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md">
                 Post a Job Today
               </button>
               <button className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200">
