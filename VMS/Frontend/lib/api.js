@@ -110,7 +110,7 @@ class ApiClient {
     } catch (error) {
       // Enhanced error handling for connection issues
       if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-        const connectionError = new Error('Cannot connect to the server. Please make sure the backend server is running on http://localhost:5001');
+        const connectionError = new Error('Cannot connect to the server. Please try again later.');
         console.error('API Connection Error:', connectionError);
         throw connectionError;
       }
