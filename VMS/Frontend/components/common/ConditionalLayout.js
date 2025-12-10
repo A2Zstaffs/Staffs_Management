@@ -7,9 +7,10 @@ import Footer from './Footer';
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
   const isClientRoute = pathname?.startsWith('/client');
+  const isAdminRoute = pathname?.startsWith('/admin');
 
-  if (isClientRoute) {
-    // Client routes use their own layout without Header/Footer
+  if (isClientRoute || isAdminRoute) {
+    // Client and Admin routes use their own layout without Header/Footer
     return <>{children}</>;
   }
 
@@ -24,6 +25,7 @@ export default function ConditionalLayout({ children }) {
     </>
   );
 }
+
 
 
 

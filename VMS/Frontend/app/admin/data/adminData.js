@@ -55,3 +55,37 @@ export const adminFlowSteps = [
   }
 ];
 
+
+export const candidatesMock = [
+  { id: 1, name: 'Alice Walker', role: 'Frontend Developer', status: 'Applied', date: '2024-03-15' },
+  { id: 2, name: 'Bob Harris', role: 'Backend Engineer', status: 'Interview', date: '2024-03-12' },
+  { id: 3, name: 'Charlie Kim', role: 'Product Manager', status: 'Rejected', date: '2024-03-10' },
+  { id: 4, name: 'David Lee', role: 'UX Designer', status: 'Shortlisted', date: '2024-03-14' }
+];
+
+export const jobsMock = [
+  { id: 101, title: 'Senior React Dev', company: 'Tech Corp', status: 'Active', applicants: 12 },
+  { id: 102, title: 'Node.js Architect', company: 'Innovate Inc', status: 'Pending', applicants: 0 },
+  { id: 103, title: 'Product Owner', company: 'StartUp Ltd', status: 'Closed', applicants: 45 }
+];
+
+export const pipelineMock = {
+  internal_review: [
+    { id: 201, candidate: 'Evan Wright', job: 'Senior React Dev' },
+    { id: 202, candidate: 'Fiona Green', job: 'Node.js Architect' }
+  ],
+  shortlisted: [
+    { id: 203, candidate: 'George Hall', job: 'Product Owner' }
+  ],
+  shared_with_client: [],
+  interview: [
+    { id: 204, candidate: 'Hannah Scott', job: 'Senior React Dev' }
+  ],
+  selected: [],
+  rejected: []
+};
+
+export const payoutsMock = [
+  { id: 301, recruiter: 'John Doe', candidate: 'Ian Black', amount: 5000, date: '2024-02-28', status: 'Paid' },
+  { id: 302, recruiter: 'Mike Johnson', candidate: 'Jane Doe', amount: 3500, date: '2024-03-15', status: 'Pending' }
+];

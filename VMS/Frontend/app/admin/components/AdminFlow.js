@@ -18,11 +18,11 @@ export default function AdminFlow({ steps }) {
       transition={{ duration: 0.5, delay: 0.4 }}
     >
       <div className="mb-6">
-        <h3 className="text-white font-bold text-2xl flex items-center gap-3">
+        <h3 className="text-secondary-900 font-bold text-2xl flex items-center gap-3">
           <span className="w-1 h-8 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full" />
           Admin / Coordinator Flow
         </h3>
-        <p className="text-blue-200 text-sm mt-2 ml-4">
+        <p className="text-secondary-600 text-sm mt-2 ml-4">
           Manage the entire A2Z Staffs platform ecosystem
         </p>
       </div>
@@ -30,7 +30,7 @@ export default function AdminFlow({ steps }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {steps.map((step, index) => {
           const Icon = iconMap[step.icon] || Users;
-          
+
           return (
             <motion.div
               key={step.id}
@@ -42,10 +42,10 @@ export default function AdminFlow({ steps }) {
             >
               {/* Card */}
               <div className={`
-                h-full rounded-xl bg-white/5 backdrop-blur-md 
-                border ${step.borderColor}
-                p-6 shadow-lg shadow-blue-900/20
-                hover:bg-white/10 transition-all duration-300
+                h-full rounded-xl bg-white/50 backdrop-blur-md 
+                border border-white/60
+                p-6 shadow-xl shadow-blue-900/5
+                hover:bg-white/60 transition-all duration-300
                 overflow-hidden
               `}>
                 {/* Gradient overlay on hover */}
@@ -66,12 +66,12 @@ export default function AdminFlow({ steps }) {
                   </div>
 
                   {/* Title */}
-                  <h4 className="text-white font-bold text-lg mb-2">
+                  <h4 className="text-secondary-900 font-bold text-lg mb-2">
                     {step.title}
                   </h4>
 
                   {/* Description */}
-                  <p className="text-blue-200 text-sm leading-relaxed">
+                  <p className="text-secondary-600 text-sm leading-relaxed">
                     {step.description}
                   </p>
 

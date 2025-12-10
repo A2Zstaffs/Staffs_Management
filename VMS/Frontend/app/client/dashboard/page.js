@@ -65,7 +65,7 @@ export default function ClientDashboard() {
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="#1e293b"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
         className="text-sm font-semibold"
@@ -76,10 +76,10 @@ export default function ClientDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="-mx-8 -my-6 p-6 min-h-[calc(100vh-4rem)] bg-[#DFEEFD] space-y-6 text-slate-900">
       {/* Welcome Section */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
           Welcome, {clientName || 'Client'} 👋
         </h1>
       </div>
@@ -87,18 +87,18 @@ export default function ClientDashboard() {
       {/* Stats Grid - 4 Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Jobs Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-lg flex items-center justify-center">
               <Briefcase className="w-6 h-6 text-white" />
             </div>
           </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.activeJobs}</div>
-          <div className="text-sm text-gray-300">Active Jobs</div>
+          <div className="text-4xl font-bold text-slate-900 mb-1">{stats.activeJobs}</div>
+          <div className="text-sm text-slate-500">Active Jobs</div>
         </div>
 
         {/* Applications Received Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#0099CC] rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,12 +106,12 @@ export default function ClientDashboard() {
               </svg>
             </div>
           </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.applicationsReceived}</div>
-          <div className="text-sm text-gray-300">Applications Received</div>
+          <div className="text-4xl font-bold text-slate-900 mb-1">{stats.applicationsReceived}</div>
+          <div className="text-sm text-slate-500">Applications Received</div>
         </div>
 
         {/* In-Process Applications Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,12 +119,12 @@ export default function ClientDashboard() {
               </svg>
             </div>
           </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.inProcessApplications}</div>
-          <div className="text-sm text-gray-300">In-Process Applications</div>
+          <div className="text-4xl font-bold text-slate-900 mb-1">{stats.inProcessApplications}</div>
+          <div className="text-sm text-slate-500">In-Process Applications</div>
         </div>
 
         {/* Total Hires Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,78 +132,78 @@ export default function ClientDashboard() {
               </svg>
             </div>
           </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.totalHires}</div>
-          <div className="text-sm text-gray-300">Total Hires</div>
+          <div className="text-4xl font-bold text-slate-900 mb-1">{stats.totalHires}</div>
+          <div className="text-sm text-slate-500">Total Hires</div>
         </div>
       </div>
 
       {/* Middle Section - Recent Jobs and Applications Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Jobs Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">Recent Jobs</h2>
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <h2 className="text-xl font-semibold text-slate-900">Recent Jobs</h2>
+            <button className="text-slate-400 hover:text-slate-600 transition-colors">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-gray-900/50 rounded-lg p-5 border border-gray-700/30">
+            <div className="bg-slate-50 rounded-lg p-5 border border-slate-200">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-lg flex items-center justify-center flex-shrink-0">
                   <Briefcase className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-lg font-semibold text-slate-900">
                       {recentJob.title} {recentJob.id}
                     </h3>
                   </div>
-                  <p className="text-sm text-gray-400 mb-3">{recentJob.industry}</p>
+                  <p className="text-sm text-slate-500 mb-3">{recentJob.industry}</p>
 
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="flex items-center text-sm text-gray-300">
-                      <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-slate-600">
+                      <MapPin className="w-4 h-4 mr-2 text-slate-400" />
                       {recentJob.location}
                     </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <Briefcase className="w-4 h-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Briefcase className="w-4 h-4 mr-2 text-slate-400" />
                       {recentJob.experience}
                     </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Calendar className="w-4 h-4 mr-2 text-slate-400" />
                       {recentJob.daysOpen}
                     </div>
-                    <div className="flex items-center text-sm text-gray-300">
-                      <DollarSign className="w-4 h-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-slate-600">
+                      <DollarSign className="w-4 h-4 mr-2 text-slate-400" />
                       {recentJob.salaryRange}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-2">
-                      <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-medium rounded-full border border-blue-500/30">
+                      <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-100">
                         {recentJob.status}
                       </span>
-                      <span className="px-3 py-1 bg-teal-500/20 text-teal-300 text-xs font-medium rounded-full border border-teal-500/30">
+                      <span className="px-3 py-1 bg-teal-50 text-teal-600 text-xs font-medium rounded-full border border-teal-100">
                         {recentJob.priority}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between text-sm mb-4">
-                    <div className="text-gray-300">
-                      <span className="text-gray-400">Commission: </span>
+                    <div className="text-slate-600">
+                      <span className="text-slate-400">Commission: </span>
                       {recentJob.commission}
                     </div>
-                    <div className="text-gray-300">
-                      <span className="text-gray-400">Bonus: </span>
+                    <div className="text-slate-600">
+                      <span className="text-slate-400">Bonus: </span>
                       {recentJob.bonus}
                     </div>
                   </div>
 
-                  <button className="w-full flex items-center justify-center px-4 py-2 bg-gray-700/50 hover:bg-gray-700 text-white rounded-lg transition-colors border border-gray-600/50">
+                  <button className="w-full flex items-center justify-center px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-colors border border-slate-200 shadow-sm">
                     <Pause className="w-4 h-4 mr-2" />
                     Pause
                     <ChevronDown className="w-4 h-4 ml-2" />
@@ -215,10 +215,10 @@ export default function ClientDashboard() {
         </div>
 
         {/* Applications Chart Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
+        <div className="bg-white border border-blue-100 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-white">Applications</h2>
-            <button className="text-gray-400 hover:text-white transition-colors">
+            <h2 className="text-xl font-semibold text-slate-900">Applications</h2>
+            <button className="text-slate-400 hover:text-slate-600 transition-colors">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -243,10 +243,11 @@ export default function ClientDashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                    border: '1px solid rgba(148, 163, 184, 0.3)',
+                    backgroundColor: '#fff',
+                    border: '1px solid #e2e8f0',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: '#0f172a',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                   }}
                 />
               </PieChart>
@@ -261,7 +262,7 @@ export default function ClientDashboard() {
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: item.color }}
                 ></div>
-                <span className="text-sm text-gray-300">{item.name}</span>
+                <span className="text-sm text-slate-600">{item.name}</span>
               </div>
             ))}
           </div>
@@ -269,14 +270,14 @@ export default function ClientDashboard() {
       </div>
 
       {/* Workflow Steps Section */}
-      <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-8 shadow-xl">
+      <div className="bg-white border border-blue-100 rounded-xl p-8 shadow-sm">
         <div className="flex items-center justify-center space-x-6">
           {/* Post Job */}
           <button className="flex flex-col items-center group">
             <div className="w-20 h-20 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 mb-3">
               <Briefcase className="w-10 h-10 text-white" />
             </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors">Post Job</span>
+            <span className="text-sm font-semibold text-slate-700 group-hover:text-[#1A73FF] transition-colors">Post Job</span>
           </button>
 
           <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
@@ -288,7 +289,7 @@ export default function ClientDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors text-center">Receive Applications</span>
+            <span className="text-sm font-semibold text-slate-700 group-hover:text-[#1A73FF] transition-colors text-center">Receive Applications</span>
           </button>
 
           <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
@@ -300,7 +301,7 @@ export default function ClientDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors">Review CVs</span>
+            <span className="text-sm font-semibold text-slate-700 group-hover:text-[#1A73FF] transition-colors">Review CVs</span>
           </button>
 
           <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
@@ -312,7 +313,7 @@ export default function ClientDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors text-center">Interview & Hire</span>
+            <span className="text-sm font-semibold text-slate-700 group-hover:text-[#1A73FF] transition-colors text-center">Interview & Hire</span>
           </button>
         </div>
       </div>

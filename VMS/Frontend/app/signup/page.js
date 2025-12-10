@@ -174,9 +174,10 @@ export default function SignupPage() {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Enter your full name"
-                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 ${
+                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 focus:bg-white/90 ${
                       errors.fullName ? 'border-red-500' : 'border-white/50'
                     }`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                     required
                   />
                   {errors.fullName && (
@@ -195,9 +196,10 @@ export default function SignupPage() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="username@gmail.com"
-                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 ${
+                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 focus:bg-white/90 ${
                       errors.email ? 'border-red-500' : 'border-white/50'
                     }`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                     required
                   />
                   {errors.email && (
@@ -219,9 +221,10 @@ export default function SignupPage() {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Password"
-                      className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 pr-10 ${
+                      className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 pr-10 focus:bg-white/90 ${
                         errors.password ? 'border-red-500' : 'border-white/50'
                       }`}
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                       required
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
@@ -248,9 +251,10 @@ export default function SignupPage() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Confirm Password"
-                      className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 pr-10 ${
+                      className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 placeholder-gray-500 pr-10 focus:bg-white/90 ${
                         errors.confirmPassword ? 'border-red-500' : 'border-white/50'
                       }`}
+                      style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                       required
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
@@ -277,9 +281,10 @@ export default function SignupPage() {
                     name="dateOfBirth"
                     value={formData.dateOfBirth}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 ${
+                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 focus:bg-white/90 ${
                       errors.dateOfBirth ? 'border-red-500' : 'border-white/50'
                     }`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                     required
                   />
                   {errors.dateOfBirth && (
@@ -296,9 +301,10 @@ export default function SignupPage() {
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 ${
+                    className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-secondary-900 focus:bg-white/90 ${
                       errors.role ? 'border-red-500' : 'border-white/50'
                     }`}
+                    style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
                     required
                   >
                     <option value="">Select your role</option>
