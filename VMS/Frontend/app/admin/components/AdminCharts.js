@@ -1,7 +1,9 @@
 'use client';
 
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
-         Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
 import { motion } from 'framer-motion';
 
 export default function AdminCharts({ barData, pieData }) {
@@ -12,49 +14,50 @@ export default function AdminCharts({ barData, pieData }) {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="rounded-xl bg-white/5 backdrop-blur-md border border-white/20 
-                 p-6 shadow-lg shadow-blue-900/20"
+        className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 
+                 p-6 shadow-xl shadow-blue-900/5"
       >
-        <h3 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+        <h3 className="text-secondary-900 font-bold text-lg mb-2 flex items-center gap-2">
           <span className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full" />
           Performance Overview
         </h3>
-        <p className="text-blue-200 text-sm mb-6">Recruiters vs Clients Growth</p>
-        
+        <p className="text-secondary-600 text-sm mb-6">Recruiters vs Clients Growth</p>
+
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis 
-              dataKey="name" 
-              stroke="#93c5fd"
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+            <XAxis
+              dataKey="name"
+              stroke="#64748b"
               style={{ fontSize: '12px' }}
             />
-            <YAxis 
-              stroke="#93c5fd"
+            <YAxis
+              stroke="#64748b"
               style={{ fontSize: '12px' }}
             />
-            <Tooltip 
+            <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(59, 130, 246, 0.5)',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: '1px solid rgba(59, 130, 246, 0.2)',
                 borderRadius: '8px',
-                color: '#fff'
+                color: '#1e293b',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
               cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
             />
-            <Legend 
-              wrapperStyle={{ color: '#93c5fd', fontSize: '12px' }}
+            <Legend
+              wrapperStyle={{ color: '#64748b', fontSize: '12px' }}
               iconType="circle"
             />
-            <Bar 
-              dataKey="recruiters" 
-              fill="url(#colorRecruiters)" 
+            <Bar
+              dataKey="recruiters"
+              fill="url(#colorRecruiters)"
               radius={[8, 8, 0, 0]}
               animationDuration={1000}
             />
-            <Bar 
-              dataKey="clients" 
-              fill="url(#colorClients)" 
+            <Bar
+              dataKey="clients"
+              fill="url(#colorClients)"
               radius={[8, 8, 0, 0]}
               animationDuration={1000}
             />
@@ -77,15 +80,15 @@ export default function AdminCharts({ barData, pieData }) {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="rounded-xl bg-white/5 backdrop-blur-md border border-white/20 
-                 p-6 shadow-lg shadow-blue-900/20"
+        className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 
+                 p-6 shadow-xl shadow-blue-900/5"
       >
-        <h3 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+        <h3 className="text-secondary-900 font-bold text-lg mb-2 flex items-center gap-2">
           <span className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full" />
           Commission Distribution
         </h3>
-        <p className="text-blue-200 text-sm mb-6">Revenue Share Split</p>
-        
+        <p className="text-secondary-600 text-sm mb-6">Revenue Share Split</p>
+
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -100,22 +103,23 @@ export default function AdminCharts({ barData, pieData }) {
               animationDuration={1000}
             >
               {pieData.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
+                <Cell
+                  key={`cell-${index}`}
                   fill={entry.color}
                 />
               ))}
             </Pie>
-            <Tooltip 
+            <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                border: '1px solid rgba(59, 130, 246, 0.5)',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: '1px solid rgba(59, 130, 246, 0.2)',
                 borderRadius: '8px',
-                color: '#fff'
+                color: '#1e293b',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
             />
-            <Legend 
-              wrapperStyle={{ color: '#93c5fd', fontSize: '12px' }}
+            <Legend
+              wrapperStyle={{ color: '#64748b', fontSize: '12px' }}
               iconType="circle"
             />
           </PieChart>

@@ -74,7 +74,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       // Check if response is JSON before parsing
       let data;
       const contentType = response.headers.get('content-type');
@@ -98,7 +98,7 @@ class ApiClient {
       if (!response.ok) {
         // If there are validation errors, include them in the error message
         if (data.errors && Array.isArray(data.errors)) {
-          const errorMessages = data.errors.map(err => 
+          const errorMessages = data.errors.map(err =>
             typeof err === 'string' ? err : err.message || `${err.field || ''}: ${err.message || err.msg || ''}`
           ).join(', ');
           throw new Error(errorMessages || data.message || `HTTP error! status: ${response.status}`);
@@ -294,6 +294,34 @@ export const dashboardAPI = {
   }
 };
 
+// Admin API methods
+export const adminAPI = {
+  // Get admin stats
+  async getStats() {
+    return apiClient.get('/admin/stats');
+  },
+
+  // Get all recruiters
+  async getRecruiters() {
+    return apiClient.get('/admin/recruiters');
+  },
+
+  // Get all clients
+  async getClients() {
+    return apiClient.get('/admin/clients');
+  },
+
+  // Get all jobs
+  async getJobs() {
+    return apiClient.get('/admin/jobs');
+  },
+
+  // Verify/Approve user
+  async verifyUser(userId, role, status) {
+    return apiClient.put(`/admin/users/${userId}/verify`, { role, status });
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   // Handle API errors consistently
@@ -323,4 +351,3 @@ export const apiUtils = {
 // Export the API client instance for direct use if needed
 export default apiClient;
 
- 
