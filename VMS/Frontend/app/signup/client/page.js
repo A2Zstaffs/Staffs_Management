@@ -103,12 +103,7 @@ export default function ClientSignupPage() {
               Client Registration
             </div>
           </div>
-
-          {/* Signup Heading */}
-          <h1 className="text-2xl font-bold text-secondary-800 mb-6 text-center">Join as Client</h1>
-
-          {/* Signup Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+git          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="fullName" className="block text-xs font-medium text-secondary-700 mb-1">
