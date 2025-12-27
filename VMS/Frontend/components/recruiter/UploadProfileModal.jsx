@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) {
+export default function UploadProfileModal({ isOpen, onClose, job, submittedCandidates = new Set(), onSuccess }) {
     const [formData, setFormData] = useState({
         candidate_name: '',
         email: '',
@@ -20,6 +20,8 @@ export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) 
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isDuplicate, setIsDuplicate] = useState(false);
+    const [duplicateWarning, setDuplicateWarning] = useState('');
     const [recruiterName, setRecruiterName] = useState('');
 
     // Get recruiter name on component mount
@@ -37,6 +39,22 @@ export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) 
             ...prev,
             [name]: value
         }));
+
+        // Check for duplicate email
+        if (name === 'email' && value) {
+            checkDuplicateEmail(value);
+        }
+    };
+
+    const checkDuplicateEmail = (email) => {
+        const normalizedEmail = email.toLowerCase().trim();
+        if (submittedCandidates.has(normalizedEmail)) {
+            setIsDuplicate(true);
+            setDuplicateWarning('⚠️ This candidate has already been submitted for this job');
+        } else {
+            setIsDuplicate(false);
+            setDuplicateWarning('');
+        }
     };
 
     const handleFileChange = (e) => {
@@ -65,6 +83,13 @@ export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Prevent duplicate submission
+        if (isDuplicate) {
+            alert('❌ Profile Already Submitted\n\nThis candidate has already been submitted for this job. You cannot submit duplicate profiles for the same candidate.');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -111,8 +136,8 @@ export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) 
             const response = await profileAPI.uploadProfile(formDataToSend);
 
             if (response.success) {
-                alert('Profile uploaded successfully!');
-                if (onSuccess) onSuccess();
+                alert('✅ Profile uploaded successfully!');
+                if (onSuccess) onSuccess(formData.email);
                 onClose();
                 // Reset form
                 setFormData({
@@ -195,8 +220,19 @@ export default function UploadProfileModal({ isOpen, onClose, job, onSuccess }) 
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${isDuplicate
+                                            ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                            : 'border-gray-300 focus:ring-blue-500'
+                                        }`}
                                 />
+                                {duplicateWarning && (
+                                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                                        <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                        <p className="text-sm text-red-700 font-semibold">{duplicateWarning}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

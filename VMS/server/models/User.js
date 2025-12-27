@@ -24,40 +24,98 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: [true, 'Phone number is required'],
+    required: false, // Optional at signup, required for profile completion
     trim: true
   },
   role: {
     type: String,
     required: [true, 'Role is required'],
-    enum: ['candidate', 'recruiter', 'client', 'consultancy', 'admin'],
+    enum: ['candidate', 'recruiter', 'client', 'consultancy', 'admin', 'kam', 'recruiter_manager'],
     default: 'candidate'
   },
-  
+  // Permissions for RBAC (primarily for KAM and Recruiter Manager roles)
+  permissions: {
+    type: [String],
+    default: [],
+    enum: [
+      'client:view_assigned',
+      'client:manage_assigned',
+      'job:view_assigned',
+      'cv:view_assigned',
+      'cv:shortlist',
+      'cv:share_with_client',
+      'feedback:view',
+      'recruiter:view_assigned',
+      'recruiter:manage_assigned',
+      'job:view_all',
+      'profile:view_all',
+      'profile:upload',
+      'application:manage'
+    ]
+  },
   // Location Information
   location: {
     country: {
       type: String,
-      required: function() {
-        return this.role === 'recruiter' || this.role === 'client' || this.role === 'consultancy';
+      required: function () {
+        // Only required when profile is complete
+        return this.profileCompleted && (this.role === 'recruiter' || this.role === 'client' || this.role === 'consultancy');
       }
     },
     city: String,
     state: String,
     address: String
   },
-
   // Candidate-specific fields
   skills: {
     type: [String],
-    required: function() {
-      return this.role === 'candidate';
+    required: function () {
+      return this.profileCompleted && this.role === 'candidate';
     }
   },
+  // Detailed Profile Fields
+  linkedinProfile: String,
+  portfolio: [{
+    title: String,
+    link: String,
+    description: String
+  }],
+  workExperience: [{
+    company: String,
+    role: String,
+    startDate: Date,
+    endDate: Date,
+    isCurrent: Boolean,
+    description: String
+  }],
+  education: [{
+    institution: String,
+    degree: String,
+    fieldOfStudy: String,
+    graduationYear: String,
+    description: String
+  }],
+  certifications: [{
+    name: String,
+    issuer: String,
+    year: String
+  }],
+  preferences: {
+    expectedSalary: {
+      min: Number,
+      max: Number,
+      currency: { type: String, default: 'USD' }
+    },
+    preferredLocations: [String],
+    jobTypes: [{ type: String, enum: ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship'] }],
+    noticePeriod: String
+  },
+
+  // Legacy simple experience field (kept for backward compatibility if needed, or migration)
   experience: {
     type: String,
-    required: function() {
-      return this.role === 'candidate';
+    required: function () {
+      return this.profileCompleted && this.role === 'candidate';
     },
     enum: ['0-1', '2-5', '6-10', '10+']
   },
@@ -68,26 +126,25 @@ const userSchema = new mongoose.Schema({
     size: Number,
     uploadDate: Date
   },
-
   // Recruiter-specific fields
   company: {
     type: String,
-    required: function() {
-      return this.role === 'recruiter' || this.role === 'client' || this.role === 'consultancy';
+    required: function () {
+      return this.profileCompleted && (this.role === 'recruiter' || this.role === 'client' || this.role === 'consultancy');
     }
   },
   companyDetails: {
     size: {
       type: String,
-      required: function() {
-        return this.role === 'recruiter';
+      required: function () {
+        return this.profileCompleted && this.role === 'recruiter';
       },
       enum: ['1-10', '11-50', '51-200', '201-500', '500+']
     },
     industry: {
       type: String,
-      required: function() {
-        return this.role === 'recruiter';
+      required: function () {
+        return this.profileCompleted && this.role === 'recruiter';
       }
     },
     website: String,
@@ -98,30 +155,30 @@ const userSchema = new mongoose.Schema({
   businessDetails: {
     type: {
       type: String,
-      required: function() {
-        return this.role === 'client';
+      required: function () {
+        return this.profileCompleted && this.role === 'client';
       },
       enum: ['startup', 'small-business', 'enterprise', 'non-profit', 'government']
     },
     size: {
       type: String,
-      required: function() {
-        return this.role === 'client';
+      required: function () {
+        return this.profileCompleted && this.role === 'client';
       },
       enum: ['1-10', '11-50', '51-200', '201-500', '500+']
     },
     industry: {
       type: String,
-      required: function() {
-        return this.role === 'client';
+      required: function () {
+        return this.profileCompleted && this.role === 'client';
       }
     }
   },
   financials: {
     budget: {
       type: String,
-      required: function() {
-        return this.role === 'client';
+      required: function () {
+        return this.profileCompleted && this.role === 'client';
       },
       enum: ['<10k', '10k-50k', '50k-100k', '100k-500k', '500k+']
     }
@@ -136,8 +193,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  profileCompleted: {
+    type: Boolean,
+    default: false
+  },
   lastLogin: Date,
-  
+
   // Profile Information
   profilePicture: {
     filename: String,
@@ -155,9 +216,10 @@ userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 userSchema.index({ 'location.country': 1 });
 userSchema.index({ skills: 1 });
+userSchema.index({ permissions: 1 });
 
 // Pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Only hash the password if it has been modified (or is new)
   if (!this.isModified('password')) return next();
 
@@ -172,24 +234,29 @@ userSchema.pre('save', async function(next) {
 });
 
 // Instance method to check password
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // Instance method to get public profile
-userSchema.methods.getPublicProfile = function() {
+userSchema.methods.getPublicProfile = function () {
   const userObject = this.toObject();
   delete userObject.password;
   return userObject;
 };
 
+// Instance method to check if user has a specific permission
+userSchema.methods.hasPermission = function (permission) {
+  return this.permissions && this.permissions.includes(permission);
+};
+
 // Static method to find by email
-userSchema.statics.findByEmail = function(email) {
+userSchema.statics.findByEmail = function (email) {
   return this.findOne({ email: email.toLowerCase() });
 };
 
 // Virtual for full location
-userSchema.virtual('fullLocation').get(function() {
+userSchema.virtual('fullLocation').get(function () {
   const parts = [];
   if (this.location.city) parts.push(this.location.city);
   if (this.location.state) parts.push(this.location.state);

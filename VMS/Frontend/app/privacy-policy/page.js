@@ -28,7 +28,11 @@ export default function PrivacyPolicy() {
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">1. Introduction</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                VMS Recruit ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our recruitment platform and services.
+                A2Z Staffs ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our recruitment platform and services.
+
+                {/* ... existing text ... */}
+
+                <strong>Email:</strong> info@a2zstaffs.com<br />
               </p>
             </div>
 
@@ -133,8 +137,8 @@ export default function PrivacyPolicy() {
                 If you have any questions about this Privacy Policy, please contact us at:
               </p>
               <p className="text-lg text-secondary-500 leading-relaxed">
-                <strong>Email:</strong> privacy@vmsrecruit.com<br />
-                <strong>Address:</strong> VMS Recruit, Privacy Department
+                <strong>Email:</strong> info@a2zstaffs.com<br />
+                <strong>Address:</strong> A2Z Staffs, Privacy Department
               </p>
             </div>
           </div>

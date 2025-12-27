@@ -24,16 +24,24 @@ connectDB();
 // Security middleware
 app.use(helmet());
 
-// Rate limiting
+// Rate limiting - more permissive in development
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests in dev, 100 in production
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
+  },
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/api/health';
   }
 });
-app.use('/api/', limiter);
+
+// Only apply rate limiting in production
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api/', limiter);
+}
 
 // CORS configuration
 const allowedOrigins = [
@@ -108,8 +116,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/profiles', profileRoutes);
-const clientRoutes = require('./routes/client');
+const clientRoutes = require('./routes/client.routes');
 app.use('/api/client', clientRoutes);
+const adminRoutes = require('./routes/admin.routes');
+app.use('/api/admin', adminRoutes);
+const kamRoutes = require('./routes/kamRoutes');
+app.use('/api/kam', kamRoutes);
+const recruiterManagerRoutes = require('./routes/recruiterManagerRoutes');
+app.use('/api/recruiter-manager', recruiterManagerRoutes);
 
 // Handle 404 routes
 app.all('*', (req, res) => {

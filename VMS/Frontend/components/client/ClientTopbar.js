@@ -32,10 +32,10 @@ export default function ClientTopbar({ onMenuClick }) {
     <header className="bg-gradient-to-r from-[#0F172A] to-[#1e293b] border-b border-gray-700/50 sticky top-0 z-30">
       <div className="px-4 md:px-8 py-4">
         <div className="flex items-center justify-between">
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Now visible on all screens */}
           <button
             onClick={onMenuClick}
-            className="md:hidden p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200"
+            className="p-2 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-200"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

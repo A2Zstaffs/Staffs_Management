@@ -1,22 +1,24 @@
+import { MousePointerClick, ShieldCheck, BrainCircuit, Wallet } from 'lucide-react';
+
 export default function WhyChooseUs() {
   const features = [
     {
-      icon: '✅',
+      icon: <MousePointerClick className="w-8 h-8" />,
       title: 'Easy Job Applications',
       description: 'Apply to multiple jobs with just one click. Save time and effort with our streamlined application process.'
     },
     {
-      icon: '🏢',
+      icon: <ShieldCheck className="w-8 h-8" />,
       title: 'Verified Companies',
       description: 'All companies on our platform are thoroughly verified to ensure legitimate opportunities and safe job hunting.'
     },
     {
-      icon: '🤖',
+      icon: <BrainCircuit className="w-8 h-8" />,
       title: 'Smart Matching Algorithm',
       description: 'Our AI-powered system matches you with the most relevant job opportunities based on your skills and preferences.'
     },
     {
-      icon: '🆓',
+      icon: <Wallet className="w-8 h-8" />,
       title: 'Free for Job Seekers',
       description: 'No hidden fees or premium subscriptions required. Access all features completely free for job seekers.'
     }
@@ -27,7 +29,7 @@ export default function WhyChooseUs() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-primary-500 mb-4">
-            Why Choose VMS Recruit?
+            Why Choose A2Z Staffs?
           </h2>
           <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
             We make job hunting and hiring simple, efficient, and successful
@@ -40,8 +42,8 @@ export default function WhyChooseUs() {
               key={index}
               className="text-center group hover:transform hover:scale-105 transition-all duration-200"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-200 transition-colors duration-200">
-                <span className="text-3xl">{feature.icon}</span>
+              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-200 transition-colors duration-200 text-primary-600">
+                {feature.icon}
               </div>
               <h3 className="text-lg font-semibold text-primary-500 mb-4 group-hover:text-primary-600 transition-colors duration-200">
                 {feature.title}

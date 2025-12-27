@@ -6,24 +6,31 @@ const Profile = require('../models/Profile');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { S3Client } = require('@aws-sdk/client-s3');
+const multerS3 = require('multer-s3');
 
-// Configure multer for CV uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = 'uploads/cvs';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'cv-' + uniqueSuffix + path.extname(file.originalname));
+// Configure S3 Client
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   }
 });
 
+// Configure multer for CV uploads to S3
 const upload = multer({
-  storage: storage,
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'resumes/' + uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
@@ -492,9 +499,10 @@ const getClientDashboard = async (req, res) => {
       .populate('job_id', 'job_title')
       .sort({ createdAt: -1 });
 
-    // Get applications for client's jobs (if using Application model)
+    // Get applications for client's jobs (excluding those pending admin review)
     const applications = await Application.find({
-      job: { $in: jobIds }
+      job: { $in: jobIds },
+      status: { $ne: 'applied' } // Hide 'applied' status (Candidate -> Admin phase)
     })
       .populate('candidate', 'fullName email phoneNumber skills experience')
       .populate('recruiter', 'fullName company')
@@ -591,14 +599,14 @@ const getCandidateDashboard = async (req, res) => {
       .select('fullName email phoneNumber location skills experience');
 
     // Get available jobs
+    // Get available jobs (Client Jobs Only)
     const availableJobs = await Job.find({
-      status: 'active',
-      isApproved: true
+      role_status: 'Active',
+      postedByRole: 'client' // Only client jobs
     })
-      .populate('postedBy', 'fullName company')
-      .select('title description location salary category experienceLevel createdAt skills')
+      .select('job_title company_name salary_min salary_max skills locations experience_min experience_max commission_percent createdAt')
       .sort({ createdAt: -1 })
-      .limit(20);
+      .limit(50);
 
     // Get candidate's applications
     const applications = await Application.find({
@@ -817,48 +825,115 @@ const updateApplicationStatus = async (req, res) => {
   }
 };
 
+
+
 const applyToJob = async (req, res) => {
   try {
     const { jobId } = req.params;
+    const candidateId = req.user.id;
     const { coverLetter } = req.body;
 
-    // Check if already applied
-    const existingApplication = await Application.findOne({
-      job: jobId,
-      candidate: req.user.id
-    });
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
 
-    if (existingApplication) {
-      return res.status(400).json({
-        success: false,
-        message: 'You have already applied to this job'
-      });
+    // Check existing application
+    const existing = await Application.findOne({ job: jobId, candidate: candidateId });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'Already applied' });
+    }
+
+    // Prepare Resume Data
+    let resumeData;
+    if (req.file) {
+      resumeData = {
+        filename: req.file.originalname,
+        url: req.file.location || req.file.path, // S3 URL or Local Path
+        uploadedAt: new Date()
+      };
+    } else {
+      // Fallback to User Profile Resume
+      const user = await User.findById(candidateId);
+      if (user && user.resume) {
+        resumeData = {
+          filename: user.resume.originalName || user.resume.filename,
+          url: user.resume.path || user.resume.url, // Handle both structures
+          uploadedAt: user.resume.uploadDate || new Date()
+        };
+      }
+    }
+
+    if (!resumeData) {
+      return res.status(400).json({ success: false, message: 'Resume is required to apply' });
     }
 
     const application = new Application({
       job: jobId,
-      candidate: req.user.id,
+      candidate: candidateId,
+      status: 'applied', // Initial status for Admin Review
+      appliedVia: 'direct',
       coverLetter,
-      appliedVia: 'direct'
+      resume: resumeData
     });
 
     await application.save();
 
-    // Update job applications count
-    await Job.findByIdAndUpdate(jobId, {
-      $inc: { applicationsCount: 1 }
-    });
+    // Increment application count
+    await Job.findByIdAndUpdate(jobId, { $inc: { applicationsCount: 1, in_process_applications: 1 } });
 
-    res.status(201).json({
-      success: true,
-      message: 'Application submitted successfully',
-      data: application
-    });
+    res.json({ success: true, message: 'Application submitted successfully' });
   } catch (error) {
     console.error('Apply to job error:', error);
+    res.status(500).json({ success: false, message: 'Failed to apply to job: ' + error.message });
+  }
+};
+
+// @desc    Upload candidate resume
+// @route   POST /api/dashboard/candidate/resume
+// @access  Private (Candidate)
+const uploadResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload a file'
+      });
+    }
+
+    const { originalname, size, location, key } = req.file;
+    const fileUrl = location || req.file.path; // S3 location or local path
+
+    // Update user profile
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.resume = {
+      filename: key || originalname,
+      originalName: originalname,
+      path: fileUrl,
+      size: size,
+      uploadDate: Date.now()
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Resume uploaded successfully',
+      data: {
+        resume: user.resume
+      }
+    });
+
+  } catch (error) {
+    console.error('Error uploading resume:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to submit application'
+      message: 'Failed to upload resume'
     });
   }
 };
@@ -871,6 +946,7 @@ module.exports = {
   createJob,
   updateApplicationStatus,
   applyToJob,
+  uploadResume,
   getJobDetails,
   submitCandidate,
   getCVStatus,

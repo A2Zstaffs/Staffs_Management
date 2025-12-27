@@ -8,72 +8,61 @@ const prepareUserData = (userData) => {
     fullName: userData.fullName,
     email: userData.email,
     password: userData.password,
-    phoneNumber: userData.phoneNumber,
-    role: userData.role
+    role: userData.role,
+    profileCompleted: false // New users start with incomplete profiles
   };
 
-  // Parse location - handle both string and object formats
+  // Only include phoneNumber if provided
+  if (userData.phoneNumber) {
+    baseData.phoneNumber = userData.phoneNumber;
+  }
+
+  // Only include location if provided
   if (userData.location) {
     if (typeof userData.location === 'string') {
-      // If location is a string, parse it (e.g., "City, Country" or just "City")
       const locationParts = userData.location.split(',').map(part => part.trim());
       baseData.location = {
         city: locationParts[0] || userData.location
       };
-      // Only add country if provided or if required for the role
       if (locationParts[1]) {
         baseData.location.country = locationParts[1];
-      } else if (role !== 'candidate') {
-        // Non-candidates require country, candidates don't
-        baseData.location.country = 'USA'; // Default
       }
     } else if (typeof userData.location === 'object') {
-      // If location is already an object, use it directly
       baseData.location = userData.location;
     }
-  } else if (role !== 'candidate') {
-    // Non-candidates require location with country
-    baseData.location = { country: 'USA' };
   }
 
+  // Include role-specific fields only if provided
   switch (role) {
     case 'candidate':
-      return {
-        ...baseData,
-        skills: Array.isArray(userData.skills) 
-          ? userData.skills 
-          : (userData.skills ? userData.skills.split(',').map(skill => skill.trim()) : []),
-        experience: userData.experience
-      };
+      if (userData.skills) {
+        baseData.skills = Array.isArray(userData.skills)
+          ? userData.skills
+          : userData.skills.split(',').map(skill => skill.trim());
+      }
+      if (userData.experience) {
+        baseData.experience = userData.experience;
+      }
+      break;
 
     case 'recruiter':
-      return {
-        ...baseData,
-        company: userData.company,
-        companyDetails: userData.companyDetails || {},
-        location: baseData.location || userData.location || { country: 'USA' }
-      };
+      if (userData.company) baseData.company = userData.company;
+      if (userData.companyDetails) baseData.companyDetails = userData.companyDetails;
+      break;
 
     case 'client':
-      return {
-        ...baseData,
-        company: userData.company,
-        businessDetails: userData.businessDetails || {},
-        financials: userData.financials || {},
-        location: baseData.location || userData.location || { country: 'USA' }
-      };
+      if (userData.company) baseData.company = userData.company;
+      if (userData.businessDetails) baseData.businessDetails = userData.businessDetails;
+      if (userData.financials) baseData.financials = userData.financials;
+      break;
 
     case 'consultancy':
-      return {
-        ...baseData,
-        company: userData.company,
-        location: baseData.location || userData.location || { country: 'USA' }
-      };
-
-    default:
-      return baseData;
+      if (userData.company) baseData.company = userData.company;
+      break;
   }
-};     
+
+  return baseData;
+};
 
 
 // @desc    Register user
@@ -94,7 +83,7 @@ const signup = async (req, res) => {
 
     // Create user
     const user = await User.create(userData);
-    
+
     // Verify user was actually saved
     const savedUser = await User.findById(user._id);
     if (!savedUser) {
@@ -166,6 +155,14 @@ const login = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
+      });
+    }
+
+    // Check if user is suspended
+    if (user.isActive === false) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been suspended. Please contact A2Z Staffs support at support@a2zstaffs.com'
       });
     }
 
@@ -249,7 +246,7 @@ const logout = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const fieldsToUpdate = { ...req.body };
-    
+
     // Remove sensitive fields
     delete fieldsToUpdate.password;
     delete fieldsToUpdate.role;
@@ -270,7 +267,7 @@ const updateProfile = async (req, res) => {
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    
+
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(val => val.message);
       return res.status(400).json({
@@ -282,7 +279,8 @@ const updateProfile = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: 'Server error during profile update'
+      message: 'Server error during profile update: ' + error.message,
+      error: error.message
     });
   }
 };

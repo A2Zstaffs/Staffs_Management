@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { MoreVertical, MapPin, Briefcase, Calendar, DollarSign, Pause, ChevronDown, ArrowRight, Plus } from 'lucide-react';
+import { Plus, Briefcase, ChevronDown, MoreVertical, MapPin, Calendar, DollarSign, Pause } from 'lucide-react';
 import CreateJobModal from '@/components/client/CreateJobModal';
+import ProfileBanner from '@/components/common/ProfileBanner';
+import DashboardStats from '@/components/client/DashboardStats';
+import ApplicationsChart from '@/components/client/ApplicationsChart';
 
 export default function ClientDashboard() {
   const { user } = useAuth();
@@ -15,15 +18,20 @@ export default function ClientDashboard() {
   useEffect(() => {
     if (user?.fullName) {
       setClientName(user.fullName);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('userName', user.fullName);
+      }
+    } else if (user?.email) {
+      setClientName(user.email);
     } else if (typeof window !== 'undefined') {
       const storedName = localStorage.getItem('userName');
       if (storedName) {
         setClientName(storedName);
-      } else if (user?.email) {
-        setClientName(user.email);
       } else {
         setClientName('Client');
       }
+    } else {
+      setClientName('Client');
     }
   }, [user]);
 
@@ -60,11 +68,9 @@ export default function ClientDashboard() {
 
   const handleJobCreated = (newJob) => {
     console.log('Job created successfully:', newJob);
-    // Refresh dashboard data
     fetchDashboardData();
   };
 
-  // Get stats from dashboard data
   const stats = {
     activeJobs: dashboardData?.summary?.activeJobs || 0,
     applicationsReceived: dashboardData?.summary?.totalApplications || 0,
@@ -72,229 +78,126 @@ export default function ClientDashboard() {
     totalHires: dashboardData?.summary?.totalHires || 0,
   };
 
-  // Get recent jobs (top 3)
-  const recentJobs = dashboardData?.postedJobs?.slice(0, 3) || [];
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Section with Create Job Button */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="-mx-8 -my-6 p-6 min-h-screen bg-secondary-50 space-y-6 text-secondary-900 font-sans flex flex-col">
+      {/* Profile Completion Banner */}
+      <ProfileBanner />
+
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome, {clientName || 'Client'} 👋
+          <h1 className="text-2xl font-bold text-secondary-900">
+            Welcome back, {clientName || 'Client'}
           </h1>
-          <p className="text-gray-400">Manage your jobs and track applications</p>
+          <p className="text-secondary-500 text-sm">Here's what's happening with your recruitment today.</p>
         </div>
         <button
           onClick={() => setShowCreateJobModal(true)}
-          className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg hover:shadow-xl"
+          className="flex items-center justify-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-primary-700 transition-colors shadow-sm shadow-primary-500/20"
         >
           <Plus className="w-5 h-5" />
-          <span className="font-semibold">Create Job</span>
+          Post New Job
         </button>
       </div>
 
-      {/* Stats Grid - 4 Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Active Jobs Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-lg flex items-center justify-center">
-              <Briefcase className="w-6 h-6 text-white" />
+      {/* Stats Overview */}
+      <DashboardStats stats={stats} />
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 flex-1">
+
+        {/* Left Column: Applications Chart */}
+        <div className="bg-white rounded-xl border border-secondary-200 p-6 shadow-sm min-h-[400px] flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="font-semibold text-secondary-900 text-lg">Application Trends</h3>
+              <p className="text-sm text-secondary-500">Applications received over time</p>
             </div>
+            <select className="bg-secondary-50 border border-secondary-200 text-sm rounded-lg px-3 py-1.5 focus:ring-primary-500 focus:border-primary-500 text-secondary-700">
+              <option>Last 6 Months</option>
+              <option>Last 30 Days</option>
+              <option>This Year</option>
+            </select>
           </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.activeJobs}</div>
-          <div className="text-sm text-gray-300">Active Jobs</div>
+          <div className="flex-1 w-full h-full min-h-[300px]">
+            {/* Pass application trends data from backend */}
+            <ApplicationsChart data={dashboardData?.applicationTrends || []} />
+          </div>
         </div>
 
-        {/* Applications Received Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#0099CC] rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+        {/* Right Column: Recent Jobs */}
+        <div className="bg-white rounded-xl border border-secondary-200 shadow-sm flex flex-col min-h-[400px]">
+          <div className="p-6 border-b border-secondary-100 flex justify-between items-center">
+            <div>
+              <h3 className="font-semibold text-secondary-900 text-lg flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-primary-500" />
+                Recent Job Postings
+              </h3>
+              <p className="text-sm text-secondary-500">Manage your latest roles</p>
             </div>
-          </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.applicationsReceived}</div>
-          <div className="text-sm text-gray-300">Applications Received</div>
-        </div>
-
-        {/* In-Process Applications Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.inProcessApplications}</div>
-          <div className="text-sm text-gray-300">In-Process Applications</div>
-        </div>
-
-        {/* Total Hires Card */}
-        <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#D97706] rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-white mb-1">{stats.totalHires}</div>
-          <div className="text-sm text-gray-300">Total Hires</div>
-        </div>
-      </div>
-
-      {/* Recent Jobs - Full Width */}
-      <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Recent Jobs</h2>
-          <button className="text-gray-400 hover:text-white transition-colors">
-            <MoreVertical className="w-5 h-5" />
-          </button>
-        </div>
-
-        {recentJobs.length === 0 ? (
-          <div className="text-center py-12">
-            <Briefcase className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">No jobs posted yet</h3>
-            <p className="text-gray-500 mb-4">Create your first job to start receiving applications</p>
-            <button
-              onClick={() => setShowCreateJobModal(true)}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all shadow-lg"
-            >
-              Create Your First Job
+            <button className="text-sm text-primary-600 font-medium hover:text-primary-700 transition-colors">
+              View All Jobs
             </button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {recentJobs.map((job) => (
-              <div key={job._id} className="bg-gray-900/50 rounded-lg p-5 border border-gray-700/30">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Briefcase className="w-6 h-6 text-white" />
+
+          <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+            {dashboardData?.postedJobs?.slice(0, 3).map((job) => (
+              <div key={job._id} className="bg-secondary-50 rounded-lg p-5 border border-secondary-200 transition-all hover:shadow-md hover:border-primary-200 group">
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 bg-white rounded-lg border border-secondary-200 flex items-center justify-center flex-shrink-0 text-primary-600 font-bold shadow-sm">
+                      {job.job_title?.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-secondary-900 group-hover:text-primary-600 transition-colors">{job.job_title}</h4>
+                      <p className="text-sm text-secondary-500">{job.company_name || 'Company'}</p>
+
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-xs text-secondary-600">
+                        <span className="flex items-center"><MapPin className="w-3.5 h-3.5 mr-1" />{job.location}</span>
+                        <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1" />{new Date(job.createdAt).toLocaleDateString()}</span>
+                        <span className="flex items-center"><DollarSign className="w-3.5 h-3.5 mr-1" />{job.salary_range}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-white">
-                        {job.job_title}
-                      </h3>
-                      <span className="text-sm text-gray-400">{job.job_id}</span>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-3">{job.company_name}</p>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                      <div className="flex items-center text-sm text-gray-300">
-                        <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                        {job.locations?.join(', ') || 'Not specified'}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-300">
-                        <Briefcase className="w-4 h-4 mr-2 text-gray-400" />
-                        {job.experience_min} - {job.experience_max} Years
-                      </div>
-                      <div className="flex items-center text-sm text-gray-300">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                        {new Date(job.createdAt).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-300">
-                        <DollarSign className="w-4 h-4 mr-2 text-gray-400" />
-                        ₹{job.salary_min}L - {job.salary_max}L
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full border ${job.role_status === 'Active'
-                          ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                          : job.role_status === 'Paused'
-                            ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
-                            : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
-                          }`}>
-                          {job.role_status}
-                        </span>
-                        <span className="px-3 py-1 bg-teal-500/20 text-teal-300 text-xs font-medium rounded-full border border-teal-500/30">
-                          {job.sourcing_status}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-sm mb-4">
-                      <div className="text-gray-300">
-                        <span className="text-gray-400">Commission: </span>
-                        {job.commission_percent}% (₹{(job.commission_amount_min / 1000).toFixed(0)}k - ₹{(job.commission_amount_max / 1000).toFixed(0)}k)
-                      </div>
-                    </div>
+                  <div className="flex flex-col items-end gap-3">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100 capitalize">
+                      {job.status || 'Active'}
+                    </span>
+                    <button className="text-secondary-400 hover:text-primary-600 transition-colors">
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
               </div>
-            ))}
+            )) || (
+                <div className="h-full flex flex-col items-center justify-center text-center text-secondary-500">
+                  <div className="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                    <Briefcase className="w-8 h-8 text-secondary-400" />
+                  </div>
+                  <p className="font-medium">No active jobs found</p>
+                  <button
+                    onClick={() => setShowCreateJobModal(true)}
+                    className="mt-3 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  >
+                    Post your first job &rarr;
+                  </button>
+                </div>
+              )}
           </div>
-        )}
-      </div>
-
-      {/* Workflow Steps Section */}
-      <div className="bg-gray-800/40 backdrop-blur-lg border border-gray-700/50 rounded-xl p-8 shadow-xl">
-        <div className="flex items-center justify-center space-x-6">
-          {/* Post Job */}
-          <button
-            onClick={() => setShowCreateJobModal(true)}
-            className="flex flex-col items-center group"
-          >
-            <div className="w-20 h-20 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 mb-3">
-              <Briefcase className="w-10 h-10 text-white" />
-            </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors">Post Job</span>
-          </button>
-
-          <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
-
-          {/* Receive Applications */}
-          <button className="flex flex-col items-center group">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 mb-3">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors text-center">Receive Applications</span>
-          </button>
-
-          <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
-
-          {/* Review CVs */}
-          <button className="flex flex-col items-center group">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 mb-3">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors">Review CVs</span>
-          </button>
-
-          <ArrowRight className="w-8 h-8 text-[#1A73FF] flex-shrink-0" />
-
-          {/* Interview & Hire */}
-          <button className="flex flex-col items-center group">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#1A73FF] to-[#0047CC] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 mb-3">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-white group-hover:text-[#1A73FF] transition-colors text-center">Interview & Hire</span>
-          </button>
         </div>
+
       </div>
 
       {/* Create Job Modal */}
