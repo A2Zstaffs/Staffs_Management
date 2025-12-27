@@ -21,11 +21,6 @@ export default function AdminLayout({ children }) {
     setIsSidebarOpen(false);
   }, [pathname]);
 
-  // If it's the login page, render without sidebar and header
-  if (isLoginPage) {
-    return <>{children}</>;
-  }
-
   const handleToggleSidebar = useCallback(() => {
     console.log('Toggle sidebar clicked, current state:', isSidebarOpen);
     setIsSidebarOpen(prev => !prev);
@@ -35,6 +30,11 @@ export default function AdminLayout({ children }) {
     console.log('Closing sidebar');
     setIsSidebarOpen(false);
   }, []);
+
+  // If it's the login page, render without sidebar and header
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-sky-50">
