@@ -19,7 +19,7 @@ import {
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const [stats, setStats] = useState(mockStats);
+  const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check authentication and admin role
@@ -57,7 +57,8 @@ export default function AdminDashboard() {
         console.warn('API fetch failed, using mock data:', apiError);
       }
 
-      // Keep using mock data if API fails (which is the default state set in useState)
+      // Fallback to mock data if API fails
+      setStats(mockStats);
     } catch (err) {
       console.error('Failed to load stats:', err);
     } finally {
@@ -85,28 +86,32 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Recruiters"
-            value={stats.totalRecruiters}
+            value={stats?.totalRecruiters}
+            isLoading={isLoading}
             icon="Users"
             color="from-blue-500 to-blue-600"
             delay={0}
           />
           <StatCard
             title="Total Clients"
-            value={stats.totalClients}
+            value={stats?.totalClients}
+            isLoading={isLoading}
             icon="Building2"
             color="from-cyan-500 to-cyan-600"
             delay={0.1}
           />
           <StatCard
             title="Active Jobs"
-            value={stats.activeJobs}
+            value={stats?.activeJobs}
+            isLoading={isLoading}
             icon="Briefcase"
             color="from-indigo-500 to-indigo-600"
             delay={0.2}
           />
           <StatCard
             title="Monthly Revenue"
-            value={typeof stats.monthlyRevenue === 'number' ? `$${stats.monthlyRevenue.toLocaleString('en-US')}` : stats.monthlyRevenue}
+            value={typeof stats?.monthlyRevenue === 'number' ? `$${stats?.monthlyRevenue.toLocaleString('en-US')}` : stats?.monthlyRevenue}
+            isLoading={isLoading}
             icon="DollarSign"
             color="from-green-500 to-green-600"
             delay={0.3}
