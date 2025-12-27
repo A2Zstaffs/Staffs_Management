@@ -10,7 +10,7 @@ const iconMap = {
   DollarSign: DollarSign
 };
 
-export default function StatCard({ title, value, icon, color, delay = 0 }) {
+export default function StatCard({ title, value, icon, color, delay = 0, isLoading = false }) {
   const Icon = iconMap[icon] || Users;
 
   const formatValue = (val) => {
@@ -53,9 +53,13 @@ export default function StatCard({ title, value, icon, color, delay = 0 }) {
 
         {/* Value */}
         <div className="mb-1">
-          <p className="text-2xl font-bold text-secondary-900 tracking-tight">
-            {formatValue(value)}
-          </p>
+          {isLoading ? (
+            <div className="h-8 w-24 bg-gray-200/50 rounded animate-pulse" />
+          ) : (
+            <p className="text-2xl font-bold text-secondary-900 tracking-tight">
+              {formatValue(value)}
+            </p>
+          )}
         </div>
 
         {/* Title */}
