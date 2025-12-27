@@ -34,7 +34,7 @@ export default function HeroSection() {
         }}
       />
       {/* Depth shadow overlay for 3D effect */}
-      <div 
+      <div
         className="pointer-events-none absolute inset-0"
         style={{
           background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(14, 165, 233, 0.08) 50%, rgba(99, 102, 241, 0.12) 100%)',
@@ -43,27 +43,27 @@ export default function HeroSection() {
       />
 
       {/* Enhanced 3D Glow Effects - Scoped to Hero Section Only */}
-      <div 
+      <div
         className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-200/40 blur-3xl"
         style={{
           boxShadow: '0 0 100px rgba(99, 102, 241, 0.3), 0 0 200px rgba(99, 102, 241, 0.2)',
         }}
       />
-      <div 
+      <div
         className="pointer-events-none absolute -bottom-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-sky-200/40 blur-3xl"
         style={{
           boxShadow: '0 0 100px rgba(14, 165, 233, 0.3), 0 0 200px rgba(14, 165, 233, 0.2)',
         }}
       />
-      
+
       {/* Additional depth layers for 3D effect - Scoped to Hero Section Only */}
-      <div 
-        className="pointer-events-none absolute top-1/4 right-1/4 h-64 w-64 rounded-full bg-blue-300/20 blur-2xl opacity-60" 
+      <div
+        className="pointer-events-none absolute top-1/4 right-1/4 h-64 w-64 rounded-full bg-blue-300/20 blur-2xl opacity-60"
         style={{
           filter: 'blur(60px)',
         }}
       />
-      <div 
+      <div
         className="pointer-events-none absolute bottom-1/3 left-1/3 h-80 w-80 rounded-full bg-indigo-300/20 blur-2xl opacity-60"
         style={{
           filter: 'blur(60px)',
@@ -72,14 +72,14 @@ export default function HeroSection() {
 
       {/* Text contrast overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white/10 pointer-events-none z-[1]" />
-      
+
       <div className="relative z-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-28 pb-10">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight drop-shadow-[0_2px_8px_rgba(255,255,255,0.9)]">
               <span className="block relative">
                 Find Your Dream Job.
-                <span 
+                <span
                   className="absolute inset-0 blur-xl opacity-30"
                   style={{
                     textShadow: '0 0 30px rgba(99, 102, 241, 0.5)',
@@ -91,7 +91,7 @@ export default function HeroSection() {
               </span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 relative">
                 Hire the Best Talent.
-                <span 
+                <span
                   className="absolute inset-0 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 blur-sm opacity-50"
                   aria-hidden="true"
                   style={{
@@ -103,12 +103,12 @@ export default function HeroSection() {
               </span>
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-lg lg:text-xl text-gray-600 drop-shadow-[0_1px_4px_rgba(255,255,255,0.8)] font-medium">
-              Join thousands of job seekers and recruiters on <span className="font-semibold text-blue-700 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">VMS Recruit</span> — the platform that connects talent with opportunity.
+              Join thousands of job seekers and recruiters on <span className="font-semibold text-blue-700 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">A2Z Staffs</span> — the platform that connects talent with opportunity.
             </p>
           </div>
 
           <form onSubmit={handleSearch} className="mt-8 sm:mt-10 max-w-3xl mx-auto">
-            <div 
+            <div
               className="flex flex-col sm:flex-row gap-3 bg-white/95 backdrop-blur-sm border border-gray-200/80 shadow-[0_8px_32px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.5)_inset] rounded-2xl p-3 sm:p-3.5 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.6)_inset]"
               style={{
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 0 60px rgba(99, 102, 241, 0.1)',
@@ -143,7 +143,7 @@ export default function HeroSection() {
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center items-stretch">
             {/* Job Seekers - Enhanced 3D style box */}
             <div className="group cursor-pointer h-full">
-              <div 
+              <div
                 className="relative w-full max-w-[400px] md:h-[320px] flex flex-col items-center text-center p-10 rounded-[30px] border border-white/60 bg-gradient-to-b from-blue-50/95 to-blue-100/95 backdrop-blur-sm transition-all duration-300 ease-out will-change-transform group-hover:scale-[1.03] group-hover:-translate-y-1"
                 style={{
                   boxShadow: '0 10px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 0 60px rgba(59, 130, 246, 0.1)',
@@ -180,7 +180,7 @@ export default function HeroSection() {
 
             {/* Recruiters - Lissnify style box */}
             <div className="group cursor-pointer h-full">
-              <div 
+              <div
                 className="relative w-full max-w-[400px] md:h-[320px] flex flex-col items-center text-center p-10 rounded-[30px] border border-white/60 bg-gradient-to-b from-blue-50/95 to-blue-100/95 backdrop-blur-sm transition-all duration-300 ease-out will-change-transform group-hover:scale-[1.03] group-hover:-translate-y-1"
                 style={{
                   boxShadow: '0 10px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 0 60px rgba(99, 102, 241, 0.1)',

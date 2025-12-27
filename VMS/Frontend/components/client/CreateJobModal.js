@@ -20,7 +20,6 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
         commission_payment_terms: '',
         r1_bonus_amount: 0,
         r1_bonus_payment_terms: '',
-        role_status: 'Active',
         sourcing_status: 'Priority',
         description: '',
         requirements: '',
@@ -144,7 +143,6 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                 commission_payment_terms: '',
                 r1_bonus_amount: 0,
                 r1_bonus_payment_terms: '',
-                role_status: 'Active',
                 sourcing_status: 'Priority',
                 description: '',
                 requirements: '',
@@ -480,34 +478,20 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                         </div>
                     </div>
 
-                    {/* Status */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Role Status</label>
-                            <select
-                                name="role_status"
-                                value={formData.role_status}
-                                onChange={handleInputChange}
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="Active">Active</option>
-                                <option value="Paused">Paused</option>
-                                <option value="Closed">Closed</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Sourcing Priority</label>
-                            <select
-                                name="sourcing_status"
-                                value={formData.sourcing_status}
-                                onChange={handleInputChange}
-                                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="Priority">Priority</option>
-                                <option value="Normal">Normal</option>
-                                <option value="Low">Low</option>
-                            </select>
-                        </div>
+                    {/* Sourcing Priority */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Sourcing Priority</label>
+                        <select
+                            name="sourcing_status"
+                            value={formData.sourcing_status}
+                            onChange={handleInputChange}
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="Priority">Priority</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Low">Low</option>
+                        </select>
+                        <p className="mt-2 text-sm text-gray-400">Note: All new jobs require admin approval before becoming active</p>
                     </div>
 
                     {/* Footer Actions */}

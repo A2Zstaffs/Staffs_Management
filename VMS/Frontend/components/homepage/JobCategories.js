@@ -1,60 +1,71 @@
 'use client';
 
+import {
+  Code,
+  TrendingUp,
+  CircleDollarSign,
+  GraduationCap,
+  Stethoscope,
+  Palette,
+  Phone,
+  Wrench
+} from 'lucide-react';
+
 export default function JobCategories() {
   const categories = [
     {
       id: 1,
       name: 'IT & Software',
-      icon: '💻',
+      icon: <Code className="w-8 h-8" />,
       jobs: 2500,
       color: 'bg-primary-100 text-primary-600'
     },
     {
       id: 2,
       name: 'Marketing',
-      icon: '📈',
+      icon: <TrendingUp className="w-8 h-8" />,
       jobs: 1200,
       color: 'bg-accent-100 text-accent-600'
     },
     {
       id: 3,
       name: 'Finance',
-      icon: '💰',
+      icon: <CircleDollarSign className="w-8 h-8" />,
       jobs: 1800,
       color: 'bg-warm-100 text-warm-600'
     },
     {
       id: 4,
       name: 'Education',
-      icon: '🎓',
+      icon: <GraduationCap className="w-8 h-8" />,
       jobs: 900,
       color: 'bg-primary-200 text-primary-700'
     },
     {
       id: 5,
       name: 'Healthcare',
-      icon: '🏥',
+      icon: <Stethoscope className="w-8 h-8" />,
       jobs: 1500,
       color: 'bg-accent-200 text-accent-700'
     },
     {
       id: 6,
       name: 'Design',
-      icon: '🎨',
+      icon: <Palette className="w-8 h-8" />,
       jobs: 800,
       color: 'bg-primary-300 text-primary-800'
     },
     {
       id: 7,
       name: 'Sales',
-      icon: '📞',
+      icon: <Phone className="w-8 h-8" />,
       jobs: 1100,
       color: 'bg-indigo-100 text-indigo-600'
     },
     {
       id: 8,
       name: 'Others',
-      icon: '🔧',
+      icon: <Wrench className="w-8 h-8" />,
       jobs: 2000,
       color: 'bg-secondary-100 text-secondary-600'
     }
@@ -104,13 +115,10 @@ export default function JobCategories() {
               }}
             >
               <div className="text-center">
-                <div 
-                  className="text-4xl sm:text-5xl mb-5 sm:mb-6 transition-all duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-2"
-                  style={{
-                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))',
-                  }}
-                >
-                  {category.icon}
+                <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center transition-colors duration-200 ${category.color.split(' ')[0]}`}>
+                  <span className={`${category.color.split(' ')[1]}`}>
+                    {category.icon}
+                  </span>
                 </div>
                 <h3 className="text-base font-semibold text-secondary-900 mb-3 group-hover:text-primary-600 transition-colors duration-200">
                   {category.name}
@@ -118,7 +126,7 @@ export default function JobCategories() {
                 <p className="text-xs sm:text-sm text-secondary-500 mb-4 sm:mb-5">
                   {category.jobs.toLocaleString()} jobs
                 </p>
-                <div 
+                <div
                   className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${category.color} transition-all duration-300 group-hover:scale-105`}
                   style={{
                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3)',

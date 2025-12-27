@@ -34,7 +34,8 @@ exports.createJob = async (req, res, next) => {
             postedBy: req.user.id,
             postedByRole: req.user.role || 'client',
             company_name: req.body.company_name || client.company || 'Company Name',
-            posted_date: new Date()
+            posted_date: new Date(),
+            role_status: 'Pending' // Force pending status for new jobs
         };
 
         const job = await Job.create(jobData);
@@ -58,7 +59,9 @@ exports.createJob = async (req, res, next) => {
 // @access  Public
 exports.getJobs = async (req, res, next) => {
     try {
-        const jobs = await Job.find().sort({ createdAt: -1 });
+        // Only return Active jobs - recruiters should only see approved jobs
+        const jobs = await Job.find({ role_status: 'Active' })
+            .sort({ createdAt: -1 });
         res.status(200).json({
             success: true,
             count: jobs.length,

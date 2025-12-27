@@ -153,21 +153,16 @@ const updateCVStatus = async (req, res) => {
             });
         }
 
-        // Verify ownership
-        // For Application: doc.job.postedBy
-        // For Profile: doc.job_id.postedBy (job_id is populated)
-        // Note: checking nested population if needed. 
-        // Assuming job/job_id populates the full Job document which has postedBy
-
+        // Get the job
         let job = type === 'application' ? doc.job : doc.job_id;
 
         // Safety check if job population failed
         if (!job) {
-            // Try to fetch job separately if population issue (db inconsistency)
             const jobId = type === 'application' ? doc.job : doc.job_id;
             job = await Job.findById(jobId);
         }
 
+        // Verify ownership
         if (!job || (job.postedBy.toString() !== clientId && req.user.role !== 'admin')) {
             return res.status(403).json({
                 success: false,
@@ -175,6 +170,7 @@ const updateCVStatus = async (req, res) => {
             });
         }
 
+        // Update status directly
         doc.status = status;
 
         // Self-healing: Ensure Profile has unique_id (fix for legacy data)
@@ -195,15 +191,12 @@ const updateCVStatus = async (req, res) => {
             if (!existingCommission) {
                 // Create commission record if hired through recruiter
                 const recruiterId = type === 'application' ? doc.recruiter : doc.uploaded_by;
-                const candidateId = type === 'application' ? doc.candidate : (doc.candidate_id || null); // Profile might not have candidate user object
+                const candidateId = type === 'application' ? doc.candidate : (doc.candidate_id || null);
 
                 if (recruiterId) {
-                    const commissionAmount = (job.commission && job.commission.amount) ? job.commission.amount : 0;
+                    const grossCommission = (job.commission_amount_min + job.commission_amount_max) / 2 || 0;
 
-                    // Calculate commission amounts
-                    const grossCommission = (job.commission && job.commission.amount) ? job.commission.amount : 0;
-
-                    // Default join date 30 days from now (can be updated later)
+                    // Default join date 30 days from now
                     const joinDate = new Date();
                     joinDate.setDate(joinDate.getDate() + 30);
 
@@ -211,7 +204,7 @@ const updateCVStatus = async (req, res) => {
                         job: job._id,
                         recruiter: recruiterId,
                         client: clientId,
-                        candidate: candidateId, // Can be null now
+                        candidate: candidateId,
                         grossCommission: grossCommission,
                         status: 'pending',
                         platformFee: {
@@ -232,17 +225,6 @@ const updateCVStatus = async (req, res) => {
                     }
 
                     const commission = new Commission(commissionData);
-
-                    // Profile specific fields handling if Commission schema requires 'application'
-                    if (type === 'profile') {
-                        // Adapting to Commission schema which might expect 'application'
-                        // Use 'profile' field if schema has it, or reuse 'application' if it's polymorphic-ish
-                        // Assuming Commission schema has 'application' field predominantly.
-                        // Let's check Commission schema later, but for now assuming it might need 'application' ID even if profile.
-                        // Actually, we should probably check Commission Model. 
-                        // To be safe, let's just create it. MongoDB is flexible unless strict.
-                    }
-
                     await commission.save();
                     console.log(`💰 Commission record created for ${type} ${doc._id}`);
                 }

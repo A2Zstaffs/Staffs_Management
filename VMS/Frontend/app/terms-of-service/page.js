@@ -28,14 +28,14 @@ export default function TermsOfService() {
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">1. Acceptance of Terms</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                By accessing and using VMS Recruit ("the Platform"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using A2Z Staffs ("the Platform"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </div>
 
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">2. Description of Service</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                VMS Recruit is a recruitment platform that connects job seekers with employers and recruiters. We provide tools and services to facilitate the recruitment process, including job postings, candidate profiles, application management, and related services.
+                A2Z Staffs is a recruitment platform that connects job seekers with employers and recruiters. We provide tools and services to facilitate the recruitment process, including job postings, candidate profiles, application management, and related services.
               </p>
             </div>
 
@@ -79,7 +79,7 @@ export default function TermsOfService() {
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">6. Intellectual Property</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                The Platform and its original content, features, and functionality are owned by VMS Recruit and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+                The Platform and its original content, features, and functionality are owned by A2Z Staffs and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
               </p>
             </div>
 
@@ -107,14 +107,14 @@ export default function TermsOfService() {
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">10. Limitation of Liability</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                To the fullest extent permitted by law, VMS Recruit shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
+                To the fullest extent permitted by law, A2Z Staffs shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
               </p>
             </div>
 
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-secondary-800 mb-6">11. Indemnification</h2>
               <p className="text-lg text-secondary-500 leading-relaxed mb-4">
-                You agree to defend, indemnify, and hold harmless VMS Recruit and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your use of the Platform.
+                You agree to defend, indemnify, and hold harmless A2Z Staffs and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your use of the Platform.
               </p>
             </div>
 
@@ -138,8 +138,8 @@ export default function TermsOfService() {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <p className="text-lg text-secondary-500 leading-relaxed">
-                <strong>Email:</strong> legal@vmsrecruit.com<br />
-                <strong>Address:</strong> VMS Recruit, Legal Department
+                <strong>Email:</strong> info@a2zstaffs.com<br />
+                <strong>Address:</strong> A2Z Staffs, Legal Department
               </p>
             </div>
           </div>

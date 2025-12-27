@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Linkedin, Mail, Phone } from 'lucide-react';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -25,19 +26,22 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        inquiryType: 'general'
-      });
-    }, 2000);
+
+    const whatsappNumber = '919110492256'; // Added country code 91
+    const text = `Hello, I have an inquiry from the website.%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Subject:* ${formData.subject}%0A*Message:* ${formData.message}`;
+
+    // Redirect to WhatsApp
+    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
+
+    setIsSubmitting(false);
+    setSubmitStatus('success');
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+      inquiryType: 'general'
+    });
   };
 
   return (
@@ -49,8 +53,8 @@ export default function Contact() {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Contact <span className="text-warm-400">Us</span>
             </h1>
-            <p className="text-xl text-primary-100 max-w-3xl mx-auto leading-relaxed">
-              Get in touch with our team. We're here to help and answer any questions you might have.
+            <p className="text-xl text-primary-100 max-w-4xl mx-auto leading-relaxed font-medium">
+              Your Comprehensive, One-Stop Solution for All Your Staffing Needs — Delivering Top Talent, Seamless Recruitment.
             </p>
           </div>
         </div>
@@ -63,10 +67,10 @@ export default function Contact() {
             {/* Contact Form */}
             <div>
               <h2 className="text-3xl font-bold text-secondary-800 mb-8">Send us a Message</h2>
-              
+
               {submitStatus === 'success' && (
                 <div className="mb-8 p-4 bg-accent-100 border border-accent-400 text-accent-700 rounded-lg">
-                  Thank you for your message! We'll get back to you within 24 hours.
+                  Thank you for your message! We'll get back to you shortly via WhatsApp.
                 </div>
               )}
 
@@ -87,7 +91,7 @@ export default function Contact() {
                       placeholder="Enter your full name"
                     />
                   </div>
-                  
+
                   <div>
                     <label htmlFor="email" className="block text-sm font-semibold text-secondary-700 mb-2">
                       Email Address *
@@ -106,7 +110,7 @@ export default function Contact() {
                 </div>
 
                 <div>
-                    <label htmlFor="inquiryType" className="block text-sm font-semibold text-secondary-700 mb-2">
+                  <label htmlFor="inquiryType" className="block text-sm font-semibold text-secondary-700 mb-2">
                     Inquiry Type
                   </label>
                   <select
@@ -117,15 +121,15 @@ export default function Contact() {
                     className="w-full px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="general">General Inquiry</option>
+                    <option value="hiring">Hiring Staff/Talent Acquisition</option>
+                    <option value="job_application">Job Application Inquiry</option>
+                    <option value="corporate">Corporate Partnership</option>
                     <option value="support">Technical Support</option>
-                    <option value="sales">Sales Question</option>
-                    <option value="partnership">Partnership</option>
-                    <option value="feedback">Feedback</option>
                   </select>
                 </div>
 
                 <div>
-                    <label htmlFor="subject" className="block text-sm font-semibold text-secondary-700 mb-2">
+                  <label htmlFor="subject" className="block text-sm font-semibold text-secondary-700 mb-2">
                     Subject *
                   </label>
                   <input
@@ -141,7 +145,7 @@ export default function Contact() {
                 </div>
 
                 <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-secondary-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-semibold text-secondary-700 mb-2">
                     Message *
                   </label>
                   <textarea
@@ -196,8 +200,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-secondary-900 mb-2">Email Us</h3>
-                      <p className="text-secondary-500 mb-1">General inquiries</p>
-                      <p className="text-primary-500 font-semibold">hello@vmsrecruit.com</p>
+                      <p className="text-secondary-500 mb-1">Sales inquiries</p>
+                      <p className="text-primary-500 font-semibold">sales@a2zstaffs.com</p>
                     </div>
                   </div>
                 </div>
@@ -211,8 +215,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-secondary-900 mb-2">Call Us</h3>
-                      <p className="text-secondary-500 mb-1">Monday - Friday, 9AM - 6PM</p>
-                      <p className="text-primary-500 font-semibold">+1 (555) 123-4567</p>
+                      <p className="text-secondary-500 mb-1">Monday - Saturday, 9AM - 6PM</p>
+                      <p className="text-primary-500 font-semibold">9110492256</p>
                     </div>
                   </div>
                 </div>
@@ -228,7 +232,7 @@ export default function Contact() {
                     <div>
                       <h3 className="text-lg font-semibold text-secondary-900 mb-2">Visit Us</h3>
                       <p className="text-secondary-500 mb-1">Our headquarters</p>
-                      <p className="text-primary-500 font-semibold">123 Business Ave, Suite 100<br />San Francisco, CA 94105</p>
+                      <p className="text-primary-500 font-semibold">Nagasandra Bangalore 560073</p>
                     </div>
                   </div>
                 </div>
@@ -238,20 +242,17 @@ export default function Contact() {
               <div className="pt-8">
                 <h3 className="text-lg font-semibold text-secondary-900 mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200">
-                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-                    </svg>
+                  {/* LinkedIn */}
+                  <a href="https://www.linkedin.com/company/a2z-staffs/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200 text-primary-600">
+                    <Linkedin className="w-5 h-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200">
-                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-                    </svg>
+                  {/* Email */}
+                  <a href="mailto:sales@a2zstaffs.com" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200 text-primary-600">
+                    <Mail className="w-5 h-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200">
-                    <svg className="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
+                  {/* Phone */}
+                  <a href="tel:9110492256" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200 text-primary-600">
+                    <Phone className="w-5 h-5" />
                   </a>
                 </div>
               </div>
@@ -269,7 +270,7 @@ export default function Contact() {
               Quick answers to common questions
             </p>
           </div>
-          
+
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h3 className="text-lg font-semibold text-secondary-900 mb-3">How quickly do you respond to inquiries?</h3>
@@ -277,14 +278,14 @@ export default function Contact() {
                 We typically respond to all inquiries within 24 hours during business days. For urgent matters, please call us directly.
               </p>
             </div>
-            
+
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h3 className="text-lg font-semibold text-secondary-900 mb-3">Do you offer custom solutions for enterprise clients?</h3>
               <p className="text-secondary-500">
                 Yes, we provide tailored recruitment solutions for enterprise clients. Contact our sales team to discuss your specific needs.
               </p>
             </div>
-            
+
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <h3 className="text-lg font-semibold text-secondary-900 mb-3">What support options are available?</h3>
               <p className="text-secondary-500">

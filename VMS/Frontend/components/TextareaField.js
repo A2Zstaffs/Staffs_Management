@@ -15,11 +15,10 @@ export default function TextareaField({ label, name, register, errors, placehold
         rows={rows}
         {...register(name, { required: required ? `${label || name} is required` : false })}
         placeholder={placeholder}
-        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none transition-colors ${
-          darkMode 
-            ? `bg-gray-900/50 border-gray-700/50 text-white placeholder-gray-400 ${errors?.[name] ? 'border-red-500' : ''}`
-            : `bg-white/80 backdrop-blur-sm text-secondary-900 placeholder-secondary-500 ${errors?.[name] ? 'border-red-500' : 'border-white/50'}`
-        } ${className}`}
+        className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none transition-colors ${darkMode
+            ? `bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 ${errors?.[name] ? 'border-red-500' : ''}`
+            : `bg-white text-secondary-900 placeholder-gray-400 ${errors?.[name] ? 'border-red-500' : 'border-gray-300'}`
+          } ${className}`}
         {...props}
       />
       {errors?.[name] && (
