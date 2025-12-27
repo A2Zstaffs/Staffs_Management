@@ -18,6 +18,7 @@ import {
   Legend,
   LabelList
 } from 'recharts';
+import ProfileBanner from '@/components/common/ProfileBanner';
 
 export default function RecruiterHome() {
   const { user } = useAuth();
@@ -169,6 +170,8 @@ export default function RecruiterHome() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 min-h-[calc(100vh-64px)] space-y-8">
+      {/* Profile Completion Banner */}
+      <ProfileBanner />
 
       {/* Hero Welcome */}
       <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center">

@@ -1,3 +1,5 @@
+import { Search, Users } from 'lucide-react';
+
 export default function CallToAction() {
   return (
     <section className="py-16 bg-primary-500">
@@ -6,12 +8,14 @@ export default function CallToAction() {
           {/* Job Seekers CTA */}
           <div className="bg-white rounded-xl p-8 text-center lg:text-left">
             <div className="mb-6">
-              <div className="text-4xl mb-4">👨‍💼</div>
+              <div className="text-4xl mb-4 text-primary-500 flex justify-center lg:justify-start">
+                <Search className="w-10 h-10" />
+              </div>
               <h3 className="text-2xl font-bold text-primary-500 mb-4">
                 Looking for a Job?
               </h3>
               <p className="text-base text-secondary-600 mb-6">
-                Join thousands of job seekers who found their dream careers through VMS Recruit. 
+                Join thousands of job seekers who found their dream careers through A2Z Staffs.
                 Create your profile and start applying today!
               </p>
             </div>
@@ -28,12 +32,14 @@ export default function CallToAction() {
           {/* Recruiters CTA */}
           <div className="bg-white rounded-xl p-8 text-center lg:text-left">
             <div className="mb-6">
-              <div className="text-4xl mb-4">🏢</div>
+              <div className="text-4xl mb-4 text-primary-500 flex justify-center lg:justify-start">
+                <Users className="w-10 h-10" />
+              </div>
               <h3 className="text-2xl font-bold text-primary-500 mb-4">
                 Want to Hire Talent?
               </h3>
               <p className="text-base text-secondary-600 mb-6">
-                Find the perfect candidates for your company. Post jobs, manage applications, 
+                Find the perfect candidates for your company. Post jobs, manage applications,
                 and hire the best talent with our powerful recruitment tools.
               </p>
             </div>

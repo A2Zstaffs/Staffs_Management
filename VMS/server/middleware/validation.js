@@ -8,7 +8,7 @@ const handleValidationErrors = (req, res, next) => {
       field: error.path,
       message: error.msg
     }));
-    
+
     return res.status(400).json({
       success: false,
       message: 'Validation failed',
@@ -18,40 +18,41 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Common validation rules
+// Common validation rules for signup (minimal fields)
 const commonValidationRules = [
   body('fullName')
     .trim()
     .isLength({ min: 2 })
     .withMessage('Full name must be at least 2 characters'),
-  
+
   body('email')
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email'),
-  
+
   body('password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
-  
-  body('phoneNumber')
-    .notEmpty()
-    .withMessage('Phone number is required')
-    .custom((value) => {
-      // Allow phone numbers with country codes (e.g., +11234567890)
-      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-      if (!phoneRegex.test(value.replace(/\s/g, ''))) {
-        throw new Error('Please provide a valid phone number');
-      }
-      return true;
-    }),
-  
+
   body('role')
     .isIn(['candidate', 'recruiter', 'client', 'consultancy', 'admin'])
     .withMessage('Role must be one of: candidate, recruiter, client, consultancy, admin')
 ];
+
+// Phone number validation (for profile completion)
+const phoneNumberValidation = body('phoneNumber')
+  .notEmpty()
+  .withMessage('Phone number is required')
+  .custom((value) => {
+    // Allow phone numbers with country codes (e.g., +11234567890)
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(value.replace(/\s/g, ''))) {
+      throw new Error('Please provide a valid phone number');
+    }
+    return true;
+  });
 
 // Candidate-specific validation
 const candidateValidationRules = [
@@ -62,11 +63,11 @@ const candidateValidationRules = [
       }
       return true;
     }),
-  
+
   body('experience')
     .isIn(['0-1', '2-5', '6-10', '10+'])
     .withMessage('Experience must be one of: 0-1, 2-5, 6-10, 10+'),
-  
+
   body('location')
     .optional()
     .isString()
@@ -78,15 +79,15 @@ const recruiterValidationRules = [
   body('company')
     .notEmpty()
     .withMessage('Company name is required for recruiters'),
-  
+
   body('companyDetails.size')
     .isIn(['1-10', '11-50', '51-200', '201-500', '500+'])
     .withMessage('Company size must be one of: 1-10, 11-50, 51-200, 201-500, 500+'),
-  
+
   body('companyDetails.industry')
     .notEmpty()
     .withMessage('Company industry is required for recruiters'),
-  
+
   body('location.country')
     .notEmpty()
     .withMessage('Country is required for recruiters')
@@ -97,23 +98,23 @@ const clientValidationRules = [
   body('company')
     .notEmpty()
     .withMessage('Company name is required for clients'),
-  
+
   body('businessDetails.type')
     .isIn(['startup', 'small-business', 'enterprise', 'non-profit', 'government'])
     .withMessage('Business type must be one of: startup, small-business, enterprise, non-profit, government'),
-  
+
   body('businessDetails.size')
     .isIn(['1-10', '11-50', '51-200', '201-500', '500+'])
     .withMessage('Business size must be one of: 1-10, 11-50, 51-200, 201-500, 500+'),
-  
+
   body('businessDetails.industry')
     .notEmpty()
     .withMessage('Business industry is required for clients'),
-  
+
   body('financials.budget')
     .isIn(['<10k', '10k-50k', '50k-100k', '100k-500k', '500k+'])
     .withMessage('Budget must be one of: <10k, 10k-50k, 50k-100k, 100k-500k, 500k+'),
-  
+
   body('location.country')
     .notEmpty()
     .withMessage('Country is required for clients')
@@ -125,22 +126,34 @@ const loginValidationRules = [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email'),
-  
+
   body('password')
     .notEmpty()
-    .withMessage('Password is required'),
-  
-  body('role')
-    .isIn(['candidate', 'recruiter', 'client', 'consultancy', 'admin'])
-    .withMessage('Role must be one of: candidate, recruiter, client, consultancy, admin')
+    .withMessage('Password is required')
 ];
 
-// Dynamic validation based on role
+// Simplified signup validation - only validate basic fields
 const validateSignup = (req, res, next) => {
-  const { role } = req.body;
-  
-  let validationRules = [...commonValidationRules];
-  
+  // Only validate basic fields at signup
+  // Role-specific fields will be collected and validated during profile completion
+  const validationRules = [...commonValidationRules];
+
+  // Run validation
+  Promise.all(validationRules.map(validation => validation.run(req)))
+    .then(() => {
+      handleValidationErrors(req, res, next);
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+// Profile completion validation based on role
+const validateProfileCompletion = (req, res, next) => {
+  const { role } = req.user; // Get role from authenticated user
+
+  let validationRules = [phoneNumberValidation];
+
   switch (role) {
     case 'candidate':
       validationRules = [...validationRules, ...candidateValidationRules];
@@ -155,7 +168,7 @@ const validateSignup = (req, res, next) => {
       // Add consultancy validation rules if needed
       break;
   }
-  
+
   // Run validation
   Promise.all(validationRules.map(validation => validation.run(req)))
     .then(() => {
@@ -169,6 +182,7 @@ const validateSignup = (req, res, next) => {
 module.exports = {
   handleValidationErrors,
   validateSignup,
+  validateProfileCompletion,
   loginValidationRules,
   commonValidationRules,
   candidateValidationRules,

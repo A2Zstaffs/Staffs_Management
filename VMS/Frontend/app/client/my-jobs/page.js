@@ -194,15 +194,17 @@ export default function MyJobsPage() {
                       <div className="flex flex-col gap-2 items-start">
                         {/* Status Pill */}
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold border ${job.role_status === 'Active' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                          job.role_status === 'Closed' ? 'bg-red-100 text-red-700 border-red-200' :
-                            'bg-gray-100 text-gray-700 border-gray-200'
+                            job.role_status === 'Pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                              job.role_status === 'Closed' ? 'bg-red-100 text-red-700 border-red-200' :
+                                'bg-gray-100 text-gray-700 border-gray-200'
                           }`}>
                           <span className={`relative flex h-2.5 w-2.5`}>
                             {job.role_status === 'Active' && (
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             )}
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${job.role_status === 'Active' ? 'bg-emerald-500' :
-                              job.role_status === 'Closed' ? 'bg-red-500' : 'bg-gray-400'
+                                job.role_status === 'Pending' ? 'bg-yellow-500' :
+                                  job.role_status === 'Closed' ? 'bg-red-500' : 'bg-gray-400'
                               }`}></span>
                           </span>
                           {job.role_status || 'Unknown'}

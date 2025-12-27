@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Testimonials() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -8,39 +9,35 @@ export default function Testimonials() {
   const testimonials = [
     {
       id: 1,
-      name: 'Sarah Johnson',
-      role: 'Software Engineer',
-      company: 'TechCorp Inc.',
-      image: '👩‍💼',
-      content: 'VMS Recruit helped me find my dream job in just 2 weeks! The platform is incredibly user-friendly and the matching algorithm is spot-on.',
-      rating: 5
+      content: 'A2Z Staffs helped me find my dream job in just 2 weeks! The platform is incredibly user-friendly and the matching algorithm is spot-on.',
+      author: 'Sarah Jenkins',
+      role: 'Senior Developer',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
     },
     {
       id: 2,
-      name: 'Michael Chen',
-      role: 'Product Manager',
-      company: 'StartupXYZ',
-      image: '👨‍💼',
-      content: 'As a recruiter, I\'ve found the best talent through VMS Recruit. The quality of candidates and the ease of the hiring process is unmatched.',
-      rating: 5
+      content: 'As a recruiter, I\'ve found the best talent through A2Z Staffs. The quality of candidates and the ease of the hiring process is unmatched.',
+      author: 'Michael Chen',
+      role: 'HR Manager, TechCorp',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
     },
     {
       id: 3,
-      name: 'Emily Rodriguez',
-      role: 'UX Designer',
-      company: 'DesignStudio',
-      image: '👩‍🎨',
-      content: 'The job recommendations were so accurate! I got multiple interview calls within days of signing up. Highly recommended!',
-      rating: 5
+      content: 'The dashboard provides excellent insights into our hiring pipeline. A2Z Staffs has transformed our recruitment process.',
+      author: 'Emily Rodriguez',
+      role: 'Talent Acquisition Lead',
+      rating: 4,
+      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
     },
     {
       id: 4,
-      name: 'David Kim',
-      role: 'Data Scientist',
-      company: 'DataFlow Systems',
-      image: '👨‍🔬',
-      content: 'VMS Recruit made my job search effortless. The interface is clean, and I found exactly what I was looking for.',
-      rating: 5
+      content: 'A2Z Staffs made my job search effortless. The interface is clean, and I found exactly what I was looking for.',
+      author: 'David Park',
+      role: 'UX Designer',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
     }
   ];
 
@@ -53,14 +50,14 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-16 bg-secondary-50">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-primary-500 mb-4">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-secondary-900 mb-4">
             Success Stories
           </h2>
           <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
-            Hear from job seekers and recruiters who found success with VMS Recruit
+            Hear from job seekers and recruiters who found success with A2Z Staffs
           </p>
         </div>
 
@@ -83,13 +80,20 @@ export default function Testimonials() {
 
               {/* Author */}
               <div className="flex items-center justify-center">
-                <div className="text-3xl mr-4">{testimonials[currentTestimonial].image}</div>
-                <div>
+                <div className="relative w-16 h-16 mr-4 rounded-full overflow-hidden border-2 border-primary-100">
+                  <Image
+                    src={testimonials[currentTestimonial].image}
+                    alt={testimonials[currentTestimonial].author}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="text-left">
                   <div className="font-semibold text-secondary-900 text-base">
-                    {testimonials[currentTestimonial].name}
+                    {testimonials[currentTestimonial].author}
                   </div>
                   <div className="text-sm text-secondary-600">
-                    {testimonials[currentTestimonial].role} at {testimonials[currentTestimonial].company}
+                    {testimonials[currentTestimonial].role}
                   </div>
                 </div>
               </div>
@@ -105,17 +109,16 @@ export default function Testimonials() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              
+
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-                    index === currentTestimonial ? 'bg-primary-500' : 'bg-secondary-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${index === currentTestimonial ? 'bg-primary-500' : 'bg-secondary-300'
+                    }`}
                 />
               ))}
-              
+
               <button
                 onClick={nextTestimonial}
                 className="p-2 rounded-full bg-secondary-100 hover:bg-primary-100 text-secondary-600 hover:text-primary-600 transition-colors duration-200"

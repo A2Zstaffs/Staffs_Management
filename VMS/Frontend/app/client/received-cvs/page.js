@@ -46,12 +46,12 @@ export default function ReceivedCVsPage() {
     try {
       const response = await updateCVStatus(selectedCV.id, { status: actionType });
       if (response.success) {
-        // Update local state
-        setCVs(cvs.map(cv =>
-          cv.id === selectedCV.id
-            ? { ...cv, status: actionType }
-            : cv
-        ));
+        // Show success message - status change is pending KAM approval
+        alert(response.message || 'Status change request submitted to your Key Account Manager for review.');
+
+        // Reload CVs to reflect any updates
+        await loadCVs();
+
         setShowActionModal(false);
         setSelectedCV(null);
       } else {

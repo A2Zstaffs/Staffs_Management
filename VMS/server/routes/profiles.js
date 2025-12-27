@@ -19,6 +19,9 @@ router.route('/')
     .get(getProfiles)
     .post(uploadS3.single('resume'), uploadProfile); // Add multer middleware for resume upload
 
+// Explicit upload route alias for frontend compatibility
+router.post('/upload', uploadS3.single('resume'), uploadProfile);
+
 router.route('/:id')
     .get(getProfileById)
     .put(updateProfile)

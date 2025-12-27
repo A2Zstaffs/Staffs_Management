@@ -106,13 +106,27 @@ const sendTokenResponse = (user, statusCode, res) => {
     .json({
       success: true,
       token,
-      user: user.getPublicProfile()
+      data: user.getPublicProfile()
     });
+};
+
+// Middleware to authorize admin only
+const authorizeAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    console.log('❌ Admin authorization failed: User role is', req.user?.role);
+    res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin privileges required.'
+    });
+  }
 };
 
 module.exports = {
   protect,
   authorize,
+  authorizeAdmin,
   getSignedJwtToken,
   sendTokenResponse
 };

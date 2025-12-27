@@ -80,7 +80,7 @@ export default function RecruiterNavbar() {
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">V</span>
             </div>
-            <span className="font-bold text-primary-500">VMS Recruit</span>
+            <span className="font-bold text-primary-500">A2Z Staffs</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
@@ -88,6 +88,7 @@ export default function RecruiterNavbar() {
             <Link href="/recruiter/jobs" className="text-gray-700 hover:text-primary-600">Jobs</Link>
             <Link href="/recruiter/applications" className="text-gray-700 hover:text-primary-600">Applications</Link>
             <Link href="/recruiter/candidates" className="text-gray-700 hover:text-primary-600">Candidates</Link>
+            <Link href="/recruiter/settings" className="text-gray-700 hover:text-primary-600">Settings</Link>
           </nav>
 
           <div className="flex items-center">
@@ -107,6 +108,13 @@ export default function RecruiterNavbar() {
 
               {showProfileDropdown && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <Link
+                    href="/recruiter/settings"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowProfileDropdown(false)}
+                  >
+                    Settings
+                  </Link>
                   <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
                 </div>
               )}
