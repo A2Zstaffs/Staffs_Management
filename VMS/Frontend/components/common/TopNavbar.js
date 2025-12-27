@@ -24,7 +24,7 @@ export default function TopNavbar() {
         }
         return;
       }
-      
+
       // Then try localStorage (useful when auth context is still loading)
       if (typeof window !== 'undefined') {
         const storedName = localStorage.getItem('userName');
@@ -32,7 +32,7 @@ export default function TopNavbar() {
           setUserName(storedName);
           return;
         }
-        
+
         // Also check userData in localStorage (set by api.js)
         const userDataStr = localStorage.getItem('userData');
         if (userDataStr) {
@@ -48,7 +48,7 @@ export default function TopNavbar() {
           }
         }
       }
-      
+
       // Fallback to email or default
       if (user?.email) {
         setUserName(user.email);
@@ -121,12 +121,21 @@ export default function TopNavbar() {
             >
               About
             </Link>
-            <Link
-              href="/candidate/dashboard"
-              className="text-primary-500 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
-            >
-              Dashboard
-            </Link>
+            {/* Dynamic Dashboard Link */}
+            {isAuthenticated && (
+              <Link
+                href={
+                  user?.role === 'admin' ? '/admin' :
+                    user?.role === 'recruiter' ? '/recruiter/dashboard' :
+                      user?.role === 'client' ? '/client/dashboard' :
+                        user?.role === 'consultancy' ? '/dashboard' :
+                          '/candidate/home' // Default for candidate
+                }
+                className="text-primary-500 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              >
+                Dashboard
+              </Link>
+            )}
             <Link
               href="/contact"
               className="text-gray-900 hover:text-primary-500 px-3 py-2 text-sm font-medium transition-colors duration-200"
@@ -170,7 +179,13 @@ export default function TopNavbar() {
                     <p className="text-xs text-gray-500 capitalize">{user?.role || 'candidate'}</p>
                   </div>
                   <Link
-                    href="/candidate/dashboard"
+                    href={
+                      user?.role === 'admin' ? '/admin' :
+                        user?.role === 'recruiter' ? '/recruiter/dashboard' :
+                          user?.role === 'client' ? '/client/dashboard' :
+                            user?.role === 'consultancy' ? '/dashboard' :
+                              '/candidate/home'
+                    }
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     onClick={() => setShowProfileDropdown(false)}
                   >

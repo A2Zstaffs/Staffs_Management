@@ -1,0 +1,996 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import InputField from '@/components/InputField';
+import TextareaField from '@/components/TextareaField';
+import Toast from '@/components/Toast';
+import { kamAPI } from '@/lib/api';
+import { ArrowLeft } from 'lucide-react';
+
+export default function KAMPostJobPage() {
+    const params = useParams();
+    const router = useRouter();
+    const clientId = params.id;
+
+    const [client, setClient] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
+
+    useEffect(() => {
+        fetchClientDetails();
+    }, [clientId]);
+
+    const fetchClientDetails = async () => {
+        try {
+            const response = await kamAPI.getClientById(clientId);
+            if (response.success) {
+                setClient(response.data.client);
+            }
+        } catch (error) {
+            console.error('Failed to fetch client details:', error);
+            showToast('Failed to load client details', 'error');
+        }
+    };
+
+    const showToast = (message, type = 'success') => {
+        setToast({ isVisible: true, message, type });
+    };
+
+    const hideToast = () => {
+        setToast({ ...toast, isVisible: false });
+    };
+
+    const onSubmit = async (data) => {
+        setIsSubmitting(true);
+
+        try {
+            // Convert comma-separated strings to arrays
+            const locations = data.locations
+                ? data.locations.split(',').map((loc) => loc.trim()).filter(Boolean)
+                : [];
+
+            const skills = data.skills
+                ? data.skills.split(',').map((skill) => skill.trim()).filter(Boolean)
+                : [];
+
+            // Prepare job data with proper type conversion
+            // Use 0 as default for required numeric fields instead of null
+            const jobData = {
+                job_title: data.job_title || '',
+                company_name: data.company_name || '',
+                locations,
+                skills,
+                salary_min: data.salary_min ? parseFloat(data.salary_min) : 0,
+                salary_max: data.salary_max ? parseFloat(data.salary_max) : 0,
+                experience_min: data.experience_min ? parseInt(data.experience_min) : 0,
+                experience_max: data.experience_max ? parseInt(data.experience_max) : 0,
+                notice_period: data.notice_period ? parseInt(data.notice_period) : 0,
+                num_positions: data.num_positions ? parseInt(data.num_positions) : 1,
+                applications_required: data.applications_required ? parseInt(data.applications_required) : 1,
+                commission_percent: data.commission_percent ? parseFloat(data.commission_percent) : 0,
+                commission_amount_min: data.commission_amount_min ? parseFloat(data.commission_amount_min) : 0,
+                commission_amount_max: data.commission_amount_max ? parseFloat(data.commission_amount_max) : 0,
+                commission_payment_terms: data.commission_payment_terms || '',
+                r1_bonus_amount: data.r1_bonus_amount ? parseFloat(data.r1_bonus_amount) : 0,
+                r1_bonus_payment_terms: data.r1_bonus_payment_terms || '',
+                sourcing_status: data.sourcing_status || 'Priority',
+                description: data.description || '',
+                requirements: data.requirements || '',
+            };
+
+            // Only add optional fields if they have values
+            if (data.in_process_applications) {
+                jobData.in_process_applications = parseInt(data.in_process_applications);
+            }
+            if (data.relevant_level) {
+                jobData.relevant_level = parseInt(data.relevant_level);
+            }
+
+            // Use KAM API to create job for client
+            const response = await kamAPI.createJobForClient(clientId, jobData);
+
+            if (response.success) {
+                showToast(response.message || 'Job posted successfully on behalf of client!', 'success');
+                reset();
+
+                // Redirect after a short delay
+                setTimeout(() => {
+                    router.push(`/kam/clients/${clientId}`);
+                }, 1500);
+            } else {
+                showToast(response.error || 'Failed to post job. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Error posting job:', error);
+            showToast(error.message || 'An error occurred. Please try again.', 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!client) {
+        return (
+            <div className=\"p-8\">
+                < div className =\"animate-pulse space-y-4\">
+                    < div className =\"h-8 bg-gray-200 rounded w-1/4\"></div>
+                        < div className =\"h-64 bg-gray-200 rounded\"></div>
+                </div >
+            </div >
+        );
+    }
+
+    // Common styling for all form inputs to ensure visibility
+    const inputClassName = \"bg-white border-gray-300 text-gray-900\";
+
+    return (
+        <div className=\"max-w-5xl mx-auto p-8\">
+            < Toast
+    isVisible = { toast.isVisible }
+    message = { toast.message }
+    type = { toast.type }
+    onClose = { hideToast }
+        />
+
+        {/* Page Header */ }
+        < div className =\"mb-6 flex items-center gap-4\">
+            < button
+    onClick = {() => router.push(`/kam/clients/${clientId}`)
+}
+className =\"p-2 hover:bg-gray-100 rounded-lg transition-colors\"
+    >
+    <ArrowLeft className=\"w-5 h-5\" />
+                </button >
+                <div>
+                    <h1 className=\"text-3xl font-bold text-gray-900\">Post Job for {client.fullName}</h1>
+                    <p className=\"text-gray-600 mt-1\">Fill out the form below to create a new job posting on behalf of this client</p>
+                </div >
+            </div >
+
+    {/* Job Posting Form */ }
+    < div className =\"bg-white border border-gray-200 rounded-xl p-8 shadow-sm\">
+        < form onSubmit = { handleSubmit(onSubmit) } className =\"space-y-6\">
+{/* Basic Information Section */ }
+<div className=\"space-y-6\">
+    < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+                            Basic Information
+                        </h2 >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"Company Name\"
+name =\"company_name\"
+register = { register }
+errors = { errors }
+placeholder = {
+    client.company || \"Enter company name\"}
+                                defaultValue = { client.company || '' }
+                                className={ inputClassName }
+                                required
+                            />
+
+    <InputField
+        label=\"Job Title\"
+name =\"job_title\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., Senior Software Engineer\"
+className = { inputClassName }
+required
+    />
+                        </div >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < div >
+        <label htmlFor=\"jobType\" className=\"block text-sm font-medium text-gray-700 mb-2\">
+                                    Job Type < span className =\"text-red-500\">*</span>
+                                </label >
+    <select
+        id=\"jobType\"
+name =\"jobType\"
+{...register('jobType', { required: 'Job type is required' }) }
+className =\"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900\"
+    >
+    <option value=\"\">Select job type</option>
+        < option value =\"Full-time\">Full-time</option>
+            < option value =\"Part-time\">Part-time</option>
+                < option value =\"Contract\">Contract</option>
+                    < option value =\"Remote\">Remote</option>
+                        < option value =\"Hybrid\">Hybrid</option>
+                            < option value =\"Internship\">Internship</option>
+                                </select >
+{
+    errors.jobType && (
+        <p className=\"mt-1 text-sm text-red-600\">{errors.jobType.message}</p>
+                                )
+}
+                            </div >
+
+    <InputField
+        label=\"Number of Openings\"
+name =\"num_positions\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 5\"
+className = { inputClassName }
+required
+    />
+                        </div >
+
+    <InputField
+        label=\"Locations (comma separated)\"
+name =\"locations\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., New York, San Francisco, Remote\"
+className = { inputClassName }
+required
+    />
+                    </div >
+
+    {/* Salary Information Section */ }
+    < div className =\"space-y-6\">
+        < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+Salary & Experience
+                        </h2 >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"Minimum Salary\"
+name =\"salary_min\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 100000\"
+className = { inputClassName }
+required
+    />
+
+    <InputField
+        label=\"Maximum Salary\"
+name =\"salary_max\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 150000\"
+className = { inputClassName }
+required
+    />
+                        </div >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"Minimum Experience (years)\"
+name =\"experience_min\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 3\"
+className = { inputClassName }
+required
+    />
+
+    <InputField
+        label=\"Maximum Experience (years)\"
+name =\"experience_max\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 7\"
+className = { inputClassName }
+required
+    />
+                        </div >
+                    </div >
+
+    {/* Job Details Section */ }
+    < div className =\"space-y-6\">
+        < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+                            Job Details
+                        </h2 >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"Notice Period (days)\"
+name =\"notice_period\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 30\"
+className = { inputClassName }
+required
+    />
+
+    <InputField
+        label=\"Applications Required\"
+name =\"applications_required\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 10\"
+className = { inputClassName }
+required
+    />
+                        </div >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"Relevant Level\"
+name =\"relevant_level\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., Mid-level, Senior\"
+className = { inputClassName }
+    />
+
+    <InputField
+        label=\"In Process Applications\"
+name =\"in_process_applications\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 5\"
+className = { inputClassName }
+    />
+                        </div >
+                    </div >
+
+    {/* Commission & Bonus Section */ }
+    < div className =\"space-y-6\">
+        < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+Commission & Bonus
+                        </h2 >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-3 gap-6\">
+        < InputField
+label =\"Commission Percentage\"
+name =\"commission_percent\"
+type =\"number\"
+step =\"0.01\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 5.5\"
+className = { inputClassName }
+required
+    />
+
+    <InputField
+        label=\"Min Commission Amount\"
+name =\"commission_amount_min\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 1000\"
+className = { inputClassName }
+required
+    />
+
+    <InputField
+        label=\"Max Commission Amount\"
+name =\"commission_amount_max\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 5000\"
+className = { inputClassName }
+required
+    />
+                        </div >
+
+    <InputField
+        label=\"Commission Payment Terms\"
+name =\"commission_payment_terms\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., On joining, After 3 months\"
+className = { inputClassName }
+required
+    />
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < InputField
+label =\"R1 Bonus Amount\"
+name =\"r1_bonus_amount\"
+type =\"number\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., 2000\"
+className = { inputClassName }
+    />
+
+    <InputField
+        label=\"R1 Bonus Payment Terms\"
+name =\"r1_bonus_payment_terms\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., On joining, After 6 months\"
+className = { inputClassName }
+    />
+                        </div >
+                    </div >
+
+    {/* Status Section */ }
+    < div className =\"space-y-6\">
+        < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+Status
+                        </h2 >
+
+    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+        < div >
+        <label htmlFor=\"sourcing_status\" className=\"block text-sm font-medium text-gray-700 mb-2\">
+                                    Sourcing Status
+                                </label >
+    <select
+        id=\"sourcing_status\"
+name =\"sourcing_status\"
+{...register('sourcing_status') }
+className =\"w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900\"
+    >
+    <option value=\"\">Select status</option>
+        < option value =\"Priority\">Priority</option>
+            < option value =\"Normal\">Normal</option>
+                < option value =\"Low\">Low</option>
+                                </select >
+                            </div >
+                        </div >
+                    </div >
+
+    {/* Description & Requirements Section */ }
+    < div className =\"space-y-6\">
+        < h2 className =\"text-xl font-bold text-gray-900 border-b border-gray-200 pb-2\">
+                            Job Description & Requirements
+                        </h2 >
+
+    <TextareaField
+        label=\"Job Description\"
+name =\"description\"
+register = { register }
+errors = { errors }
+placeholder =\"Enter detailed job description...\"
+rows = { 6}
+className = { inputClassName }
+required
+    />
+
+    <TextareaField
+        label=\"Requirements\"
+name =\"requirements\"
+register = { register }
+errors = { errors }
+placeholder =\"Enter job requirements...\"
+rows = { 6}
+className = { inputClassName }
+    />
+
+    <InputField
+        label=\"Skills (comma separated)\"
+name =\"skills\"
+register = { register }
+errors = { errors }
+placeholder =\"e.g., JavaScript, React, Node.js, Python\"
+className = { inputClassName }
+    />
+                    </div >
+
+    {/* Form Actions */ }
+    < div className =\"flex justify-end space-x-4 pt-6 border-t border-gray-200\">
+        < button
+type =\"button\"
+onClick = {() => router.push(`/kam/clients/${clientId}`)}
+className =\"px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200\"
+    >
+    Cancel
+                        </button >
+    <button
+        type=\"submit\"
+disabled = { isSubmitting }
+className =\"px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors duration-200 flex items-center\"
+    >
+{
+    isSubmitting?(
+                                <>
+    <svg className=\"animate-spin -ml-1 mr-3 h-5 w-5 text-white\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\">
+        < circle className =\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\"></circle>
+            < path className =\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"></path>
+                                    </svg >
+    Posting Job...
+                                </>
+                            ) : (
+    '📝 Post Job for Client'
+)}
+                        </button >
+                    </div >
+                </form >
+            </div >
+        </div >
+    );
+}
+
+const params = useParams();
+const router = useRouter();
+const clientId = params.id;
+
+const [client, setClient] = useState(null);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
+
+const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+} = useForm();
+
+useEffect(() => {
+    fetchClientDetails();
+}, [clientId]);
+
+const fetchClientDetails = async () => {
+    try {
+        const response = await kamAPI.getClientById(clientId);
+        if (response.success) {
+            setClient(response.data.client);
+        }
+    } catch (error) {
+        console.error('Failed to fetch client details:', error);
+        showToast('Failed to load client details', 'error');
+    }
+};
+
+const showToast = (message, type = 'success') => {
+    setToast({ isVisible: true, message, type });
+};
+
+const hideToast = () => {
+    setToast({ ...toast, isVisible: false });
+};
+
+const onSubmit = async (data) => {
+    setIsSubmitting(true);
+
+    try {
+        // Convert comma-separated strings to arrays
+        const locations = data.locations
+            ? data.locations.split(',').map((loc) => loc.trim()).filter(Boolean)
+            : [];
+
+        const skills = data.skills
+            ? data.skills.split(',').map((skill) => skill.trim()).filter(Boolean)
+            : [];
+
+        // Prepare job data with proper type conversion
+        // Use 0 as default for required numeric fields instead of null
+        const jobData = {
+            job_title: data.job_title || '',
+            company_name: data.company_name || '',
+            locations,
+            skills,
+            salary_min: data.salary_min ? parseFloat(data.salary_min) : 0,
+            salary_max: data.salary_max ? parseFloat(data.salary_max) : 0,
+            experience_min: data.experience_min ? parseInt(data.experience_min) : 0,
+            experience_max: data.experience_max ? parseInt(data.experience_max) : 0,
+            notice_period: data.notice_period ? parseInt(data.notice_period) : 0,
+            num_positions: data.num_positions ? parseInt(data.num_positions) : 1,
+            applications_required: data.applications_required ? parseInt(data.applications_required) : 1,
+            commission_percent: data.commission_percent ? parseFloat(data.commission_percent) : 0,
+            commission_amount_min: data.commission_amount_min ? parseFloat(data.commission_amount_min) : 0,
+            commission_amount_max: data.commission_amount_max ? parseFloat(data.commission_amount_max) : 0,
+            commission_payment_terms: data.commission_payment_terms || '',
+            r1_bonus_amount: data.r1_bonus_amount ? parseFloat(data.r1_bonus_amount) : 0,
+            r1_bonus_payment_terms: data.r1_bonus_payment_terms || '',
+            sourcing_status: data.sourcing_status || 'Priority',
+            description: data.description || '',
+            requirements: data.requirements || '',
+        };
+
+        // Only add optional fields if they have values
+        if (data.in_process_applications) {
+            jobData.in_process_applications = parseInt(data.in_process_applications);
+        }
+        if (data.relevant_level) {
+            jobData.relevant_level = parseInt(data.relevant_level);
+        }
+
+        // Use KAM API to create job for client
+        const response = await kamAPI.createJobForClient(clientId, jobData);
+
+        if (response.success) {
+            showToast(response.message || 'Job posted successfully on behalf of client!', 'success');
+            reset();
+
+            // Redirect after a short delay
+            setTimeout(() => {
+                router.push(`/kam/clients/${clientId}`);
+            }, 1500);
+        } else {
+            showToast(response.error || 'Failed to post job. Please try again.', 'error');
+        }
+    } catch (error) {
+        console.error('Error posting job:', error);
+        showToast(error.message || 'An error occurred. Please try again.', 'error');
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+
+if (!client) {
+    return (
+        <div className="p-8">
+            <div className="animate-pulse space-y-4">
+                <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                <div className="h-64 bg-gray-200 rounded"></div>
+            </div>
+        </div>
+    );
+}
+
+return (
+    <div className="max-w-5xl mx-auto p-8">
+        <Toast
+            isVisible={toast.isVisible}
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+        />
+
+        {/* Page Header */}
+        <div className="mb-6 flex items-center gap-4">
+            <button
+                onClick={() => router.push(`/kam/clients/${clientId}`)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+                <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900">Post Job for {client.fullName}</h1>
+                <p className="text-gray-600 mt-1">Fill out the form below to create a new job posting on behalf of this client</p>
+            </div>
+        </div>
+
+        {/* Job Posting Form */}
+        <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Basic Information Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Basic Information
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Company Name"
+                            name="company_name"
+                            register={register}
+                            errors={errors}
+                            placeholder={client.company || "Enter company name"}
+                            defaultValue={client.company || ''}
+                            className="bg-white border-gray-300 text-gray-900"
+                            required
+                        />
+
+                        <InputField
+                            label="Job Title"
+                            name="job_title"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., Senior Software Engineer"
+                            className="bg-white border-gray-300 text-gray-900"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-2">
+                                Job Type <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="jobType"
+                                name="jobType"
+                                {...register('jobType', { required: 'Job type is required' })}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="">Select job type</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Remote">Remote</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                            {errors.jobType && (
+                                <p className="mt-1 text-sm text-red-600">{errors.jobType.message}</p>
+                            )}
+                        </div>
+
+                        <InputField
+                            label="Number of Openings"
+                            name="num_positions"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 5"
+                            required
+                        />
+                    </div>
+
+                    <InputField
+                        label="Locations (comma separated)"
+                        name="locations"
+                        register={register}
+                        errors={errors}
+                        placeholder="e.g., New York, San Francisco, Remote"
+                        required
+                    />
+                </div>
+
+                {/* Salary Information Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Salary & Experience
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Minimum Salary"
+                            name="salary_min"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 100000"
+                            required
+                        />
+
+                        <InputField
+                            label="Maximum Salary"
+                            name="salary_max"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 150000"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Minimum Experience (years)"
+                            name="experience_min"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 3"
+                            required
+                        />
+
+                        <InputField
+                            label="Maximum Experience (years)"
+                            name="experience_max"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 7"
+                            required
+                        />
+                    </div>
+                </div>
+
+                {/* Job Details Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Job Details
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Notice Period (days)"
+                            name="notice_period"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 30"
+                            required
+                        />
+
+                        <InputField
+                            label="Applications Required"
+                            name="applications_required"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 10"
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="Relevant Level"
+                            name="relevant_level"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., Mid-level, Senior"
+                        />
+
+                        <InputField
+                            label="In Process Applications"
+                            name="in_process_applications"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 5"
+                        />
+                    </div>
+                </div>
+
+                {/* Commission & Bonus Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Commission & Bonus
+                    </h2>
+
+
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <InputField
+                            label="Commission Percentage"
+                            name="commission_percent"
+                            type="number"
+                            step="0.01"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 5.5"
+                            required
+                        />
+
+                        <InputField
+                            label="Min Commission Amount"
+                            name="commission_amount_min"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 1000"
+                            required
+                        />
+
+                        <InputField
+                            label="Max Commission Amount"
+                            name="commission_amount_max"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 5000"
+                            required
+                        />
+                    </div>
+
+                    <InputField
+                        label="Commission Payment Terms"
+                        name="commission_payment_terms"
+                        register={register}
+                        errors={errors}
+                        placeholder="e.g., On joining, After 3 months"
+                        required
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputField
+                            label="R1 Bonus Amount"
+                            name="r1_bonus_amount"
+                            type="number"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., 2000"
+                        />
+
+                        <InputField
+                            label="R1 Bonus Payment Terms"
+                            name="r1_bonus_payment_terms"
+                            register={register}
+                            errors={errors}
+                            placeholder="e.g., On joining, After 6 months"
+                        />
+                    </div>
+                </div>
+
+                {/* Status Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Status
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label htmlFor="sourcing_status" className="block text-sm font-medium text-gray-700 mb-2">
+                                Sourcing Status
+                            </label>
+                            <select
+                                id="sourcing_status"
+                                name="sourcing_status"
+                                {...register('sourcing_status')}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="">Select status</option>
+                                <option value="Priority">Priority</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Description & Requirements Section */}
+                <div className="space-y-6">
+                    <h2 className="text-xl font-bold text-gray-900 border-b border-gray-200 pb-2">
+                        Job Description & Requirements
+                    </h2>
+
+                    <TextareaField
+                        label="Job Description"
+                        name="description"
+                        register={register}
+                        errors={errors}
+                        placeholder="Enter detailed job description..."
+                        rows={6}
+                        required
+                    />
+
+                    <TextareaField
+                        label="Requirements"
+                        name="requirements"
+                        register={register}
+                        errors={errors}
+                        placeholder="Enter job requirements..."
+                        rows={6}
+                    />
+
+                    <InputField
+                        label="Skills (comma separated)"
+                        name="skills"
+                        register={register}
+                        errors={errors}
+                        placeholder="e.g., JavaScript, React, Node.js, Python"
+                    />
+                </div>
+
+                {/* Form Actions */}
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                    <button
+                        type="button"
+                        onClick={() => router.push(`/kam/clients/${clientId}`)}
+                        className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors duration-200 flex items-center"
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Posting Job...
+                            </>
+                        ) : (
+                            '📝 Post Job for Client'
+                        )}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+);
+}

@@ -8,7 +8,7 @@
   html {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-  
+
   body {
     @apply text-secondary-500 bg-white;
   }
@@ -18,36 +18,137 @@
   .kanban-card {
     @apply bg-white rounded-lg shadow-sm border border-secondary-200 p-4 cursor-grab active:cursor-grabbing transition-all duration-200 hover:shadow-md hover:border-secondary-300;
   }
-  
+
   .kanban-card.dragging {
     @apply rotate-2 shadow-xl scale-105 opacity-90;
   }
-  
+
   .kanban-column {
     @apply rounded-lg p-6 min-h-[500px] min-w-[320px] flex flex-col border-2 border-dashed transition-all duration-200;
   }
-  
+
   .kanban-column.drag-over {
     @apply border-primary-400 bg-primary-100 scale-105;
   }
-  
+
   .priority-high {
     @apply bg-red-100 text-red-800 border-red-200;
   }
-  
+
   .priority-medium {
     @apply bg-warm-100 text-warm-800 border-warm-200;
   }
-  
+
   .priority-low {
     @apply bg-accent-100 text-accent-800 border-accent-200;
   }
-  
+
   .gradient-bg {
     background: linear-gradient(135deg, #1A73FF 0%, #0047CC 100%);
   }
-  
+
   .glass-effect {
-    @apply bg-white bg-opacity-10 backdrop-blur-lg border border-white border-opacity-20;
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl;
+  }
+
+  .glass-input {
+    @apply bg-white/5 border border-white/10 text-white placeholder-white/50 focus:bg-white/10 focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all duration-300;
+  }
+
+  .glass-button {
+    @apply bg-white/20 hover:bg-white/30 text-white border border-white/20 backdrop-blur-sm transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95;
+  }
+
+  .animated-background-light {
+    background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #eff6ff);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+
+  .animated-background {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #172554 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animated Blobs for 3D effect */
+  .blob {
+    position: absolute;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.6;
+    animation: float 10s infinite ease-in-out;
+  }
+
+  .blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: #3b82f6;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    bottom: -10%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: #60a5fa;
+    animation-delay: -2s;
+  }
+
+  .blob-3 {
+    top: 40%;
+    left: 40%;
+    width: 400px;
+    height: 400px;
+    background: #2563eb;
+    animation-delay: -4s;
+    opacity: 0.4;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+
+    33% {
+      transform: translate(30px, -50px) rotate(10deg);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) rotate(-5deg);
+    }
+
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+  }
+
+  /* Ensure consistent input background colors */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.8) inset !important;
+    -webkit-text-fill-color: #1f2937 !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  select {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="date"]:focus,
+  select:focus {
+    background-color: rgba(255, 255, 255, 0.9) !important;
   }
 }

@@ -140,6 +140,14 @@ class ApiClient {
     });
   }
 
+  // PATCH request
+  async patch(endpoint, data) {
+    return this.request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
   // DELETE request
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
@@ -253,6 +261,11 @@ export const authAPI = {
   // Get current user data
   getCurrentUser() {
     return apiClient.getUser();
+  },
+
+  // Get auth token
+  getToken() {
+    return apiClient.getToken();
   }
 };
 
@@ -290,7 +303,206 @@ export const dashboardAPI = {
 
   // Apply to job
   async applyToJob(jobId, applicationData) {
+    // If applicationData is FormData, use uploadFile
+    if (applicationData instanceof FormData) {
+      return apiClient.uploadFile(`/dashboard/jobs/${jobId}/apply`, applicationData);
+    }
     return apiClient.post(`/dashboard/jobs/${jobId}/apply`, applicationData);
+  },
+
+  // Upload Resume (Profile)
+  async uploadResume(formData) {
+    return apiClient.uploadFile('/dashboard/candidate/resume', formData);
+  }
+};
+
+// Admin API methods
+export const adminAPI = {
+  // Get admin stats
+  async getStats() {
+    return apiClient.get('/admin/stats');
+  },
+
+  // Get all recruiters
+  async getRecruiters() {
+    return apiClient.get('/admin/recruiters');
+  },
+
+  // Get all clients
+  async getClients() {
+    return apiClient.get('/admin/clients');
+  },
+
+  // Get all users (for KAM assignment)
+  async getAllUsers() {
+    return apiClient.get('/admin/users');
+  },
+
+  // Get all jobs
+  async getJobs() {
+    return apiClient.get('/admin/jobs');
+  },
+
+  // Get all profiles/candidates
+  async getProfiles() {
+    return apiClient.get('/admin/profiles');
+  },
+
+  // Get CV pipeline
+  async getPipeline() {
+    return apiClient.get('/admin/pipeline');
+  },
+
+  // Get performance data
+  async getPerformance() {
+    return apiClient.get('/admin/performance');
+  },
+
+  // Update user status (suspend/activate)
+  async updateUserStatus(userId, status) {
+    return apiClient.patch(`/admin/users/${userId}/status`, { status });
+  },
+
+  async createAdmin(adminData) {
+    return apiClient.post('/admin/create', adminData);
+  },
+
+  // Verify/Approve user
+  async verifyUser(userId, role, status) {
+    return apiClient.put(`/admin/users/${userId}/verify`, { role, status });
+  },
+
+  // Update job status
+  async updateJobStatus(jobId, status) {
+    return apiClient.patch(`/admin/jobs/${jobId}/status`, { status });
+  },
+
+  // Delete profile
+  async deleteProfile(profileId) {
+    return apiClient.delete(`/profiles/${profileId}`);
+  },
+
+  // KAM Management
+  async createKam(kamData) {
+    return apiClient.post('/admin/kam/create', kamData);
+  },
+
+  async getAllKams() {
+    return apiClient.get('/admin/kam/users');
+  },
+
+  async assignKamRole(userId, permissions) {
+    return apiClient.post('/admin/kam/assign-role', { userId, permissions });
+  },
+
+  async revokeKamRole(userId) {
+    return apiClient.delete(`/admin/kam/${userId}/revoke-role`);
+  },
+
+  async getKamClients(kamId) {
+    return apiClient.get(`/admin/kam/${kamId}/clients`);
+  },
+
+  async assignClientToKam(kamId, clientId, notes) {
+    return apiClient.post(`/admin/kam/${kamId}/assign-client`, { clientId, notes });
+  },
+
+  async removeClientFromKam(kamId, clientId) {
+    return apiClient.delete(`/admin/kam/${kamId}/clients/${clientId}`);
+  },
+
+  async getAllKamAssignments(isActive) {
+    const query = isActive !== undefined ? `?isActive=${isActive}` : '';
+    return apiClient.get(`/admin/kam/assignments${query}`);
+  },
+
+  // Recruiter Manager Management
+  async createRecruiterManager(rmData) {
+    return apiClient.post('/admin/recruiter-manager/create', rmData);
+  },
+
+  async getAllRecruiterManagers() {
+    return apiClient.get('/admin/recruiter-manager/users');
+  },
+
+  async assignRecruiterManagerRole(userId, permissions) {
+    return apiClient.post('/admin/recruiter-manager/assign-role', { userId, permissions });
+  },
+
+  async revokeRecruiterManagerRole(userId) {
+    return apiClient.delete(`/admin/recruiter-manager/${userId}/revoke-role`);
+  },
+
+  async getRecruiterManagerRecruiters(rmId) {
+    return apiClient.get(`/admin/recruiter-manager/${rmId}/recruiters`);
+  },
+
+  async assignRecruiterToRM(rmId, recruiterId, notes) {
+    return apiClient.post(`/admin/recruiter-manager/${rmId}/assign-recruiter`, { recruiterId, notes });
+  },
+
+  async removeRecruiterFromRM(rmId, recruiterId) {
+    return apiClient.delete(`/admin/recruiter-manager/${rmId}/recruiters/${recruiterId}`);
+  },
+
+  async getAllRMAssignments(isActive) {
+    const query = isActive !== undefined ? `?isActive=${isActive}` : '';
+    return apiClient.get(`/admin/recruiter-manager/assignments${query}`);
+  }
+};
+
+// KAM API methods
+export const kamAPI = {
+  // Dashboard
+  async getDashboard() {
+    return apiClient.get('/kam/dashboard');
+  },
+
+  // Clients
+  async getClients() {
+    return apiClient.get('/kam/clients');
+  },
+
+  async getClientById(clientId) {
+    return apiClient.get(`/kam/clients/${clientId}`);
+  },
+
+  // Jobs
+  async getJobs(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    return apiClient.get(`/kam/jobs${query ? `?${query}` : ''}`);
+  },
+
+  async getJobById(jobId) {
+    return apiClient.get(`/kam/jobs/${jobId}`);
+  },
+
+  // CVs/Profiles
+  async getCVs(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    return apiClient.get(`/kam/cvs${query ? `?${query}` : ''}`);
+  },
+
+  async getCVById(cvId) {
+    return apiClient.get(`/kam/cvs/${cvId}`);
+  },
+
+  async shortlistCV(cvId, notes) {
+    return apiClient.patch(`/kam/cvs/${cvId}/shortlist`, { notes });
+  },
+
+  async shareCVWithClient(cvId, message) {
+    return apiClient.post(`/kam/cvs/${cvId}/share`, { message });
+  },
+
+  // Feedback
+  async getFeedback() {
+    return apiClient.get('/kam/feedback');
+  },
+
+  // Create job on behalf of client
+  async createJobForClient(clientId, jobData) {
+    return apiClient.post(`/kam/clients/${clientId}/jobs`, jobData);
   }
 };
 
@@ -301,26 +513,34 @@ export const jobsAPI = {
     return apiClient.get('/jobs');
   },
 
+  // Get job by ID
+  async getJobById(jobId) {
+    return apiClient.get(`/jobs/${jobId}`);
+  },
+
   // Create job
   async createJob(jobData) {
     return apiClient.post('/jobs', jobData);
+  },
+
+  // Update job
+  async updateJob(jobId, jobData) {
+    return apiClient.put(`/jobs/${jobId}`, jobData);
+  },
+
+  // Delete job
+  async deleteJob(jobId) {
+    return apiClient.delete(`/jobs/${jobId}`);
   }
 };
 
 // Profile API methods
 export const profileAPI = {
-  // Upload new profile
-  async uploadProfile(profileData) {
-    if (profileData instanceof FormData) {
-      return apiClient.uploadFile('/profiles', profileData);
-    }
-    return apiClient.post('/profiles', profileData);
-  },
-
-  // Get all profiles
-  async getAllProfiles(filters = {}) {
+  // Get profiles with optional filters
+  async getProfiles(filters = {}) {
     const queryParams = new URLSearchParams(filters).toString();
-    return apiClient.get(`/profiles${queryParams ? `?${queryParams}` : ''}`);
+    const endpoint = queryParams ? `/profiles?${queryParams}` : '/profiles';
+    return apiClient.get(endpoint);
   },
 
   // Get profile by ID
@@ -328,17 +548,14 @@ export const profileAPI = {
     return apiClient.get(`/profiles/${profileId}`);
   },
 
+  // Upload profile
+  async uploadProfile(formData) {
+    return apiClient.uploadFile('/profiles/upload', formData);
+  },
+
   // Update profile
   async updateProfile(profileId, profileData) {
     return apiClient.put(`/profiles/${profileId}`, profileData);
-  },
-
-  // Update profile status
-  async updateProfileStatus(profileId, statusData) {
-    return apiClient.request(`/profiles/${profileId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify(statusData)
-    });
   },
 
   // Delete profile

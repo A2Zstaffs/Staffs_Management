@@ -53,8 +53,8 @@ const jobSchema = new mongoose.Schema({
     required: true
   },
   relevant_level: {
-    type: Number, // RL
-    default: 0
+    type: String, // Changed from Number to String to accept 'Mid-level', 'Senior', etc.
+    default: ''
   },
   applications_required: {
     type: Number,
@@ -94,8 +94,8 @@ const jobSchema = new mongoose.Schema({
   },
   role_status: {
     type: String,
-    enum: ['Active', 'Closed', 'Paused'],
-    default: 'Active'
+    enum: ['Active', 'Closed', 'Paused', 'Pending'],
+    default: 'Pending'
   },
   sourcing_status: {
     type: String,
@@ -113,6 +113,25 @@ const jobSchema = new mongoose.Schema({
   skills: [{
     type: String
   }],
+  // KAM Approval Fields
+  approval_status: {
+    type: String,
+    enum: ['Pending', 'Approved', 'Rejected'],
+    default: 'Pending'
+  },
+  approved_by_kam: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  kam_approval_date: {
+    type: Date,
+    default: null
+  },
+  kam_notes: {
+    type: String,
+    default: ''
+  },
   // Posted By Information
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,

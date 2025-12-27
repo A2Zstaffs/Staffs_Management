@@ -79,17 +79,17 @@ export default function ClientSidebar({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile Overlay - Now visible on all screens when open */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#0F172A] to-[#1e293b] text-white z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0`}>
+        }`}>
         <div className="flex flex-col h-full">
           {/* Logo Section */}
           <div className="px-6 py-5 border-b border-gray-700/50">
