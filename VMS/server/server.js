@@ -18,6 +18,9 @@ const authRoutes = require('./routes/auth');
 // Initialize express app
 const app = express();
 
+// Trust proxy (required for Render)
+app.set('trust proxy', 1);
+
 // Connect to database
 connectDB();
 

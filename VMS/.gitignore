@@ -78,4 +78,4 @@ manoj-kushwaha
 *.tmp
 *.temp
 .cache
-
+.gitignore
