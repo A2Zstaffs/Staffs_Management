@@ -9,6 +9,8 @@ const protect = async (req, res, next) => {
     // Check for token in headers
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies.token) {
+      token = req.cookies.token;
     }
 
     console.log('🔐 Auth Middleware - Token present:', !!token);
@@ -99,6 +101,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   if (process.env.NODE_ENV === 'production') {
     options.secure = true;
+    options.sameSite = 'none'; // Required for cross-site (Vercel -> Render)
   }
 
   res.status(statusCode)
