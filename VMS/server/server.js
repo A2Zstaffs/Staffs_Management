@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Load env vars
 dotenv.config();
@@ -26,6 +27,7 @@ connectDB();
 
 // Security middleware
 app.use(helmet());
+app.use(cookieParser());
 
 // Rate limiting - more permissive in development
 const limiter = rateLimit({

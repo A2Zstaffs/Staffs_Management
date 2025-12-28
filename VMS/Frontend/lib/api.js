@@ -69,6 +69,7 @@ class ApiClient {
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
+      credentials: 'include', // Send cookies with cross-origin requests
       ...options,
     };
 
