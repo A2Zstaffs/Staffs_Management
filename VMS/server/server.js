@@ -32,7 +32,7 @@ app.use(cookieParser());
 // Rate limiting - more permissive in development
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests in dev, 100 in production
+  max: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : (process.env.NODE_ENV === 'production' ? 5000 : 1000), // Default 5000 in production if not set
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
