@@ -66,7 +66,7 @@ class ApiClient {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && !options.skipAuth && { Authorization: `Bearer ${token}` }),
         ...options.headers,
       },
       credentials: 'include', // Send cookies with cross-origin requests
@@ -126,10 +126,11 @@ class ApiClient {
   }
 
   // POST request
-  async post(endpoint, data) {
+  async post(endpoint, data, options = {}) {
     return this.request(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
+      ...options,
     });
   }
 
@@ -190,7 +191,7 @@ const apiClient = new ApiClient();
 export const authAPI = {
   // Login user
   async login(credentials) {
-    const response = await apiClient.post('/auth/login', credentials);
+    const response = await apiClient.post('/auth/login', credentials, { skipAuth: true });
 
     if (response.success) {
       apiClient.setToken(response.token);
@@ -214,7 +215,7 @@ export const authAPI = {
 
   // Register user
   async signup(userData) {
-    const response = await apiClient.post('/auth/signup', userData);
+    const response = await apiClient.post('/auth/signup', userData, { skipAuth: true });
 
     if (response.success) {
       apiClient.setToken(response.token);
