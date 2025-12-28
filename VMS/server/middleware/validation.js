@@ -2,6 +2,7 @@ const { body, validationResult } = require('express-validator');
 
 // Handle validation errors
 const handleValidationErrors = (req, res, next) => {
+  console.log(`🔍 [Validation] Checking ${req.path}`);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const errorMessages = errors.array().map(error => ({
@@ -9,12 +10,15 @@ const handleValidationErrors = (req, res, next) => {
       message: error.msg
     }));
 
+    console.log('❌ [Validation] Failed:', errorMessages);
+
     return res.status(400).json({
       success: false,
       message: 'Validation failed',
       errors: errorMessages
     });
   }
+  console.log('✅ [Validation] Passed');
   next();
 };
 
@@ -137,6 +141,8 @@ const validateSignup = (req, res, next) => {
   // Only validate basic fields at signup
   // Role-specific fields will be collected and validated during profile completion
   const validationRules = [...commonValidationRules];
+
+  console.log('🛡️ [ValidateSignup] Starting validation for:', req.body.email);
 
   // Run validation
   Promise.all(validationRules.map(validation => validation.run(req)))

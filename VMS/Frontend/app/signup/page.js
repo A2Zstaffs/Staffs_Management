@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { authAPI } from '../../lib/api';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -98,37 +99,32 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      // Simulate API call - replace with actual backend call later
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // Simulate data storage (replace with actual database storage later)
-      const userData = {
-        id: Date.now().toString(),
-        fullName: formData.fullName.trim(),
-        email: formData.email.trim(),
-        dateOfBirth: formData.dateOfBirth,
+      // Call actual backend API
+      const response = await authAPI.signup({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
         role: formData.role,
-        createdAt: new Date().toISOString()
-      };
+        // Backend mostly needs these fields. dateOfBirth might be extra but we can send it or skip it.
+        // Assuming backend handles or ignores extra fields.
+        dateOfBirth: formData.dateOfBirth
+      });
 
-      // Store user data in localStorage for demo (replace with proper auth later)
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('users', JSON.stringify([
-        ...(JSON.parse(localStorage.getItem('users') || '[]')),
-        userData
-      ]));
+      if (response.success) {
+        console.log('Signup successful, redirecting based on role');
+        setSuccess(true);
 
-      console.log('Signup successful, redirecting based on role');
-      setSuccess(true);
-
-      // Show success message for 2 seconds then redirect based on role
-      setTimeout(() => {
-        if (formData.role === 'consultancy') {
-          router.push('/signup/consultancy');
-        } else {
-          router.push('/dashboard');
-        }
-      }, 2000);
+        // Show success message for 2 seconds then redirect based on role
+        setTimeout(() => {
+          if (formData.role === 'consultancy') {
+            router.push('/signup/consultancy');
+          } else {
+            router.push('/dashboard');
+          }
+        }, 2000);
+      } else {
+        setErrors({ general: response.message || 'Signup failed. Please try again.' });
+      }
     } catch (error) {
       setErrors({ general: 'Signup failed. Please try again.' });
     } finally {

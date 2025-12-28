@@ -69,12 +69,20 @@ const prepareUserData = (userData) => {
 // @route   POST /api/auth/signup
 // @access  Public
 const signup = async (req, res) => {
+  console.log('🚀 [Signup] Request received:', {
+    email: req.body.email,
+    role: req.body.role,
+    hasToken: !!req.headers.authorization
+  });
+
   try {
     const userData = prepareUserData(req.body);
+    console.log('🛠 [Signup] Prepared user data:', { ...userData, password: '***' });
 
     // Check if user already exists
     const existingUser = await User.findByEmail(userData.email);
     if (existingUser) {
+      console.log('⚠️ [Signup] Email already exists:', userData.email);
       return res.status(400).json({
         success: false,
         message: 'User already exists with this email'
@@ -82,11 +90,14 @@ const signup = async (req, res) => {
     }
 
     // Create user
+    console.log('💾 [Signup] Attempting to create user in DB...');
     const user = await User.create(userData);
+    console.log('✅ [Signup] User created successfully:', user._id);
 
     // Verify user was actually saved
     const savedUser = await User.findById(user._id);
     if (!savedUser) {
+      console.error('❌ [Signup] CRITICAL: User created but not found in DB immediately after!');
       return res.status(500).json({
         success: false,
         message: 'Failed to save user to database'
@@ -94,9 +105,11 @@ const signup = async (req, res) => {
     }
 
     // Send token response
+    console.log('🔑 [Signup] Sending token response...');
     sendTokenResponse(user, 201, res);
 
   } catch (error) {
+    console.error('❌ [Signup] Error:', error);
     // Handle duplicate key error
     if (error.code === 11000) {
       return res.status(400).json({
@@ -127,11 +140,14 @@ const signup = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
+  console.log('🚀 [Login] Request received:', { email: req.body.email });
+
   try {
     const { email, password, role } = req.body;
 
     // Validate email & password
     if (!email || !password) {
+      console.log('⚠️ [Login] Missing credentials');
       return res.status(400).json({
         success: false,
         message: 'Please provide an email and password'
@@ -142,11 +158,14 @@ const login = async (req, res) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
+      console.log('⚠️ [Login] User not found:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
+
+    console.log('✅ [Login] User found, checking password...');
 
     // Check if password matches
     const isMatch = await user.comparePassword(password);
