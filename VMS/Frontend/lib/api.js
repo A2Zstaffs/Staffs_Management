@@ -268,6 +268,29 @@ export const authAPI = {
   // Get auth token
   getToken() {
     return apiClient.getToken();
+  },
+
+  // Google OAuth login/signup
+  async googleAuth(idToken, role = 'candidate') {
+    const response = await apiClient.post('/auth/google', { idToken, role }, { skipAuth: true });
+
+    if (response.success) {
+      apiClient.setToken(response.token);
+      const userData = response.user || response.data;
+      apiClient.setUser(userData);
+
+      // Save user name and role in localStorage
+      if (userData && typeof window !== 'undefined') {
+        if (userData.fullName) {
+          localStorage.setItem('userName', userData.fullName);
+        }
+        if (userData.role) {
+          localStorage.setItem('userRole', userData.role);
+        }
+      }
+    }
+
+    return response;
   }
 };
 

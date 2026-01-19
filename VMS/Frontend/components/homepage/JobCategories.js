@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   Code,
   TrendingUp,
@@ -17,56 +18,48 @@ export default function JobCategories() {
       id: 1,
       name: 'IT & Software',
       icon: <Code className="w-8 h-8" />,
-      jobs: 2500,
       color: 'bg-primary-100 text-primary-600'
     },
     {
       id: 2,
       name: 'Marketing',
       icon: <TrendingUp className="w-8 h-8" />,
-      jobs: 1200,
       color: 'bg-accent-100 text-accent-600'
     },
     {
       id: 3,
       name: 'Finance',
       icon: <CircleDollarSign className="w-8 h-8" />,
-      jobs: 1800,
       color: 'bg-warm-100 text-warm-600'
     },
     {
       id: 4,
       name: 'Education',
       icon: <GraduationCap className="w-8 h-8" />,
-      jobs: 900,
       color: 'bg-primary-200 text-primary-700'
     },
     {
       id: 5,
       name: 'Healthcare',
       icon: <Stethoscope className="w-8 h-8" />,
-      jobs: 1500,
       color: 'bg-accent-200 text-accent-700'
     },
     {
       id: 6,
       name: 'Design',
       icon: <Palette className="w-8 h-8" />,
-      jobs: 800,
       color: 'bg-primary-300 text-primary-800'
     },
     {
       id: 7,
       name: 'Sales',
       icon: <Phone className="w-8 h-8" />,
-      jobs: 1100,
       color: 'bg-indigo-100 text-indigo-600'
     },
     {
       id: 8,
       name: 'Others',
       icon: <Wrench className="w-8 h-8" />,
-      jobs: 2000,
       color: 'bg-secondary-100 text-secondary-600'
     }
   ];
@@ -85,8 +78,9 @@ export default function JobCategories() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((category) => (
-            <div
+            <Link
               key={category.id}
+              href="/candidate/explore-jobs"
               className="group cursor-pointer relative bg-white/80 backdrop-blur-sm rounded-2xl border border-secondary-100/60 p-6 sm:p-8 transition-all duration-300 ease-out will-change-transform hover:scale-[1.06] hover:-translate-y-1"
               style={{
                 boxShadow: `
@@ -120,12 +114,9 @@ export default function JobCategories() {
                     {category.icon}
                   </span>
                 </div>
-                <h3 className="text-base font-semibold text-secondary-900 mb-3 group-hover:text-primary-600 transition-colors duration-200">
+                <h3 className="text-base font-semibold text-secondary-900 mb-5 group-hover:text-primary-600 transition-colors duration-200">
                   {category.name}
                 </h3>
-                <p className="text-xs sm:text-sm text-secondary-500 mb-4 sm:mb-5">
-                  {category.jobs.toLocaleString()} jobs
-                </p>
                 <div
                   className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${category.color} transition-all duration-300 group-hover:scale-105`}
                   style={{
@@ -135,12 +126,10 @@ export default function JobCategories() {
                   View Jobs
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
     </section>
   );
 }
-
-

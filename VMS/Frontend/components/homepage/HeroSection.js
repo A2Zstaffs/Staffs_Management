@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Search, MapPin } from 'lucide-react';
 
 export default function HeroSection() {
+  const router = useRouter();
   const [searchData, setSearchData] = useState({
     jobTitle: '',
     location: ''
@@ -12,8 +14,12 @@ export default function HeroSection() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('Searching for:', searchData);
-    // Implement search functionality
+    // Build search query parameters
+    const params = new URLSearchParams();
+    if (searchData.jobTitle) params.append('search', searchData.jobTitle);
+
+    // Redirect to explore jobs page with search parameters
+    router.push(`/candidate/explore-jobs?${params.toString()}`);
   };
 
   return (
@@ -116,16 +122,9 @@ export default function HeroSection() {
             >
               <input
                 type="text"
-                placeholder="Job title or keyword"
+                placeholder="Search for jobs by title, keyword, or skill..."
                 value={searchData.jobTitle}
                 onChange={(e) => setSearchData({ ...searchData, jobTitle: e.target.value })}
-                className="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/90 backdrop-blur-sm transition-all duration-200 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)]"
-              />
-              <input
-                type="text"
-                placeholder="Location"
-                value={searchData.location}
-                onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
                 className="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/90 backdrop-blur-sm transition-all duration-200 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)]"
               />
               <button
@@ -140,7 +139,7 @@ export default function HeroSection() {
             </div>
           </form>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 justify-items-center items-stretch">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-2 justify-items-center items-stretch">
             {/* Job Seekers - Enhanced 3D style box */}
             <div className="group cursor-pointer h-full">
               <div
