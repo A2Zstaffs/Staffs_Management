@@ -89,24 +89,32 @@ const signup = async (req, res) => {
       });
     }
 
-    // Create user
+    // Create user (with isEmailVerified = false by default)
     console.log('💾 [Signup] Attempting to create user in DB...');
     const user = await User.create(userData);
     console.log('✅ [Signup] User created successfully:', user._id);
 
-    // Verify user was actually saved
-    const savedUser = await User.findById(user._id);
-    if (!savedUser) {
-      console.error('❌ [Signup] CRITICAL: User created but not found in DB immediately after!');
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to save user to database'
-      });
-    }
+    // Generate and send verification OTP
+    const { generateOTP, storeOTP } = require('../utils/otpStore');
+    const { sendSignupOTPEmail } = require('../utils/emailService');
 
-    // Send token response
-    console.log('🔑 [Signup] Sending token response...');
-    sendTokenResponse(user, 201, res);
+    const otp = generateOTP();
+    storeOTP(user.email, otp);
+
+    // Send verification email
+    await sendSignupOTPEmail(user.email, otp, user.fullName);
+
+    console.log('✅ [Signup] Verification OTP sent to:', user.email);
+
+    // Return success without auto-login
+    res.status(201).json({
+      success: true,
+      message: 'Account created! Please check your email to verify your account.',
+      data: {
+        email: user.email,
+        requiresVerification: true
+      }
+    });
 
   } catch (error) {
     console.error('❌ [Signup] Error:', error);
@@ -171,10 +179,32 @@ const login = async (req, res) => {
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
+      console.log('⚠️ [Login] Invalid password');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
+    }
+
+    console.log('✅ [Login] Password correct, checking email verification...');
+
+    // Check if email is verified (only for users created after email verification feature was implemented)
+    // Legacy users (created before Jan 4, 2026) are exempt from email verification
+    const emailVerificationCutoffDate = new Date('2026-01-04T00:00:00.000Z');
+    const isLegacyUser = user.createdAt < emailVerificationCutoffDate;
+
+    if (!user.isEmailVerified && !isLegacyUser) {
+      console.log('⚠️ [Login] Email not verified for:', email);
+      return res.status(403).json({
+        success: false,
+        message: 'Please verify your email before logging in. Check your inbox for the verification code.',
+        requiresVerification: true,
+        email: user.email
+      });
+    }
+
+    if (isLegacyUser && !user.isEmailVerified) {
+      console.log('ℹ️ [Login] Legacy user detected, skipping email verification:', email);
     }
 
     // Check if user is suspended
@@ -205,6 +235,7 @@ const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
 
+    console.log('✅ [Login] Login successful for:', email);
     sendTokenResponse(user, 200, res);
 
   } catch (error) {
@@ -304,10 +335,392 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// @desc    Google OAuth login/signup
+// @route   POST /api/auth/google
+// @access  Public
+const googleAuth = async (req, res) => {
+  console.log('🔐 [Google Auth] Request received');
+
+  try {
+    const { OAuth2Client } = require('google-auth-library');
+    const { idToken, role = 'candidate' } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google ID token is required'
+      });
+    }
+
+    // Verify Google ID token
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    let ticket;
+    try {
+      ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+    } catch (verifyError) {
+      console.error('❌ [Google Auth] Token verification failed:', verifyError.message);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid Google token'
+      });
+    }
+
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+
+    console.log('✅ [Google Auth] Token verified for:', email);
+
+    // Check if user already exists
+    let user = await User.findOne({ email });
+
+    if (user) {
+      console.log('✅ [Google Auth] Existing user found:', user._id);
+
+      // Update profile picture if from Google and not already set
+      if (picture && !user.profilePicture) {
+        user.profilePicture = picture;
+        await user.save({ validateBeforeSave: false });
+      }
+
+      // Update last login
+      user.lastLogin = new Date();
+      await user.save({ validateBeforeSave: false });
+
+      return sendTokenResponse(user, 200, res);
+    }
+
+    // Create new user
+    console.log('💾 [Google Auth] Creating new user from Google account');
+
+    const userData = {
+      fullName: name,
+      email,
+      password: Math.random().toString(36).slice(-8) + 'Aa1!', // Random password for Google users
+      role,
+      profilePicture: picture,
+      isActive: true,
+      profileCompleted: false
+    };
+
+    user = await User.create(userData);
+    console.log('✅ [Google Auth] New user created:', user._id);
+
+    sendTokenResponse(user, 201, res);
+
+  } catch (error) {
+    console.error('❌ [Google Auth] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during Google authentication',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Request forgot password OTP
+// @route   POST /api/auth/forgot-password
+// @access  Public
+const forgotPassword = async (req, res) => {
+  console.log('🔐 [Forgot Password] Request received');
+
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      // For security, don't reveal if email exists
+      return res.status(200).json({
+        success: true,
+        message: 'If the email exists, an OTP has been sent'
+      });
+    }
+
+    // Generate and store OTP
+    const { generateOTP, storeOTP } = require('../utils/otpStore');
+    const { sendOTPEmail } = require('../utils/emailService');
+
+    const otp = generateOTP();
+    storeOTP(email, otp);
+
+    // Send OTP email
+    await sendOTPEmail(email, otp, user.fullName);
+
+    console.log(`✅ [Forgot Password] OTP sent to ${email}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'OTP has been sent to your email'
+    });
+
+  } catch (error) {
+    console.error('❌ [Forgot Password] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send OTP. Please try again later.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Verify OTP
+// @route   POST /api/auth/verify-otp
+// @access  Public
+const verifyOTP = async (req, res) => {
+  console.log('🔐 [Verify OTP] Request received');
+
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and OTP are required'
+      });
+    }
+
+    // Verify OTP
+    const { verifyOTP: verifyOTPFunc } = require('../utils/otpStore');
+    const result = verifyOTPFunc(email, otp);
+
+    if (!result.success) {
+      console.log(`❌ [Verify OTP] Failed for ${email}: ${result.message}`);
+      return res.status(400).json({
+        success: false,
+        message: result.message
+      });
+    }
+
+    console.log(`✅ [Verify OTP] Success for ${email}`);
+
+    res.status(200).json({
+      success: true,
+      message: result.message
+    });
+
+  } catch (error) {
+    console.error('❌ [Verify OTP] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to verify OTP',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password
+// @access  Public
+const resetPassword = async (req, res) => {
+  console.log('🔐 [Reset Password] Request received');
+
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and new password are required'
+      });
+    }
+
+    // Check if OTP was verified
+    const { isOTPVerified, deleteOTP } = require('../utils/otpStore');
+
+    if (!isOTPVerified(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please verify OTP first'
+      });
+    }
+
+    // Validate password
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+
+    // Find user and update password
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      deleteOTP(email);
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+
+    // Delete OTP after successful reset
+    deleteOTP(email);
+
+    console.log(`✅ [Reset Password] Password reset successful for ${email}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successfully. You can now login with your new password.'
+    });
+
+  } catch (error) {
+    console.error('❌ [Reset Password] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Verify signup OTP and activate account
+// @route   POST /api/auth/verify-signup-otp
+// @access  Public
+const verifySignupOTP = async (req, res) => {
+  console.log('🔐 [Verify Signup OTP] Request received');
+
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and OTP are required'
+      });
+    }
+
+    // Verify OTP
+    const { verifyOTP: verifyOTPFunc } = require('../utils/otpStore');
+    const result = verifyOTPFunc(email, otp);
+
+    if (!result.success) {
+      console.log(`❌ [Verify Signup OTP] Failed for ${email}: ${result.message}`);
+      return res.status(400).json({
+        success: false,
+        message: result.message
+      });
+    }
+
+    // Find user and mark as verified
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Mark email as verified
+    user.isEmailVerified = true;
+    await user.save();
+
+    // Delete OTP after successful verification
+    const { deleteOTP } = require('../utils/otpStore');
+    deleteOTP(email);
+
+    console.log(`✅ [Verify Signup OTP] Email verified successfully for ${email}`);
+
+    // Auto-login user by sending token response
+    sendTokenResponse(user, 200, res);
+
+  } catch (error) {
+    console.error('❌ [Verify Signup OTP] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to verify email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// @desc    Resend signup verification OTP
+// @route   POST /api/auth/resend-signup-otp
+// @access  Public
+const resendSignupOTP = async (req, res) => {
+  console.log('🔐 [Resend Signup OTP] Request received');
+
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if already verified
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is already verified. You can login now.'
+      });
+    }
+
+    // Generate and send new OTP
+    const { generateOTP, storeOTP } = require('../utils/otpStore');
+    const { sendSignupOTPEmail } = require('../utils/emailService');
+
+    const otp = generateOTP();
+    storeOTP(user.email, otp);
+
+    // Send verification email
+    await sendSignupOTPEmail(user.email, otp, user.fullName);
+
+    console.log(`✅ [Resend Signup OTP] New OTP sent to: ${user.email}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Verification code has been resent to your email'
+    });
+
+  } catch (error) {
+    console.error('❌ [Resend Signup OTP] Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to resend verification code',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
   getMe,
   logout,
-  updateProfile
+  updateProfile,
+  googleAuth,
+  forgotPassword,
+  verifyOTP,
+  resetPassword,
+  verifySignupOTP,
+  resendSignupOTP
 };

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { GoogleLogin } from '@react-oauth/google';
 import { authAPI } from '../../lib/api';
 import { ArrowLeft } from 'lucide-react';
 
@@ -80,6 +81,41 @@ export default function LoginPage() {
             console.error('Login error:', error);
             setErrors({
                 general: error.message || 'An error occurred during login. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async (credentialResponse) => {
+        setIsLoading(true);
+        setErrors({});
+
+        try {
+            const response = await authAPI.googleAuth(credentialResponse.credential, formData.role);
+
+            if (response.success) {
+                const userRole = response.data?.role || response.user?.role || formData.role;
+
+                const dashboardRoutes = {
+                    admin: '/admin/dashboard',
+                    recruiter: '/recruiter/dashboard',
+                    candidate: '/candidate/dashboard',
+                    client: '/client/dashboard',
+                    consultancy: '/consultancy/dashboard',
+                    kam: '/kam',
+                    recruiter_manager: '/recruiter-manager/dashboard'
+                };
+
+                const targetRoute = dashboardRoutes[userRole] || '/';
+                router.push(targetRoute);
+            } else {
+                setErrors({ general: response.message || 'Google login failed' });
+            }
+        } catch (error) {
+            console.error('Google login error:', error);
+            setErrors({
+                general: error.message || 'An error occurred during Google login. Please try again.'
             });
         } finally {
             setIsLoading(false);
@@ -210,15 +246,13 @@ export default function LoginPage() {
                                     'Sign In'
                                 )}
                             </button>
-                        </div>
 
-                        <div className="flex justify-between items-center text-xs mt-4">
-                            <Link href="#" className="text-blue-600/80 hover:text-blue-700 transition-colors">
-                                Forgot Password?
-                            </Link>
-                            <Link href="/signup" className="text-blue-600/80 hover:text-blue-700 transition-colors">
-                                Create Account
-                            </Link>
+                            {/* Forgot Password Link */}
+                            <div className="text-center mt-4">
+                                <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-800 transition-colors">
+                                    Forgot Password?
+                                </Link>
+                            </div>
                         </div>
                     </form>
 
@@ -247,8 +281,33 @@ export default function LoginPage() {
                         </div>
                     </div>
 
+                    {/* Google Sign In */}
+                    <div className="mt-6">
+                        <div className="relative mb-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-slate-200/50"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                                <span className="px-2 bg-white/60 text-slate-500">or</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-center">
+                            <GoogleLogin
+                                onSuccess={handleGoogleLogin}
+                                onError={() => {
+                                    setErrors({ general: 'Google Sign In failed' });
+                                }}
+                                useOneTap
+                                theme="outline"
+                                size="large"
+                                text="continue_with"
+                                shape="rectangular"
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+
+            </div >
+        </div >
     );
 }
