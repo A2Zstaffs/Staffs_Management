@@ -204,6 +204,10 @@ const userSchema = new mongoose.Schema({
     filename: String,
     path: String,
     uploadDate: Date
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true,

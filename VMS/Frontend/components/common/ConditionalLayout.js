@@ -7,20 +7,31 @@ import Footer from './Footer';
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
 
+  // Pages that should not have header/footer (authentication pages)
+  const authPages = [
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/verify-otp',
+    '/reset-password'
+  ];
+
   // Define routes where Navbar and Footer should not appear
-  const excludedRoutes = [
+  // These are typically dashboard-like routes that have their own navigation
+  const dashboardRoutes = [
     '/admin',
     '/recruiter',
     '/client',
     '/candidate',
     '/consultancy',
-    '/kam',  // Exclude KAM routes
-    '/login',
-    '/signup'
+    '/kam',
+    '/recruiter-manager' // Added based on the new logic in the instruction
   ];
 
-  // Check if current path matches any excluded route
-  const shouldHideLayout = excludedRoutes.some(route => pathname?.startsWith(route));
+  // Determine if the layout (Header/Footer) should be shown
+  // It should NOT be shown if the path starts with any auth page or any dashboard route.
+  const shouldHideLayout = authPages.some(page => pathname?.startsWith(page)) ||
+    dashboardRoutes.some(route => pathname?.startsWith(route));
 
   if (shouldHideLayout) {
     // These routes use their own layout without Navbar/Footer
