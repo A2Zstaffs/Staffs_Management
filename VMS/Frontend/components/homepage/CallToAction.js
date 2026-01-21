@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Search, Users } from 'lucide-react';
 
 export default function CallToAction() {
@@ -20,12 +21,12 @@ export default function CallToAction() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md">
+              <Link href="/signup/user" className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md text-center">
                 Sign Up Now
-              </button>
-              <button className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200">
-                Learn More
-              </button>
+              </Link>
+              <Link href="/candidate/explore-jobs" className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 text-center">
+                Browse Jobs
+              </Link>
             </div>
           </div>
 
@@ -44,12 +45,12 @@ export default function CallToAction() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md">
+              <Link href="/signup/client" className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md text-center">
                 Post a Job Today
-              </button>
-              <button className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200">
-                View Pricing
-              </button>
+              </Link>
+              <Link href="/signup/recruiter" className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 text-center">
+                Join as Recruiter
+              </Link>
             </div>
           </div>
         </div>
@@ -57,5 +58,3 @@ export default function CallToAction() {
     </section>
   );
 }
-
-

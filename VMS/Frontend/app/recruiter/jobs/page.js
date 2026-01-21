@@ -62,8 +62,10 @@ export default function RecruiterJobsPage() {
                 setSubmissionsByJob(submissionsMap);
             }
         } catch (err) {
-            setError('An error occurred while fetching data');
-            console.error(err);
+            console.error('Error fetching data:', err);
+            console.error('Error message:', err.message);
+            console.error('Error stack:', err.stack);
+            setError(`An error occurred while fetching data: ${err.message || 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
