@@ -78,4 +78,5 @@ manoj-kushwaha
 *.tmp
 *.temp
 .cache
-.gitignore
+VMS/Frontend/.next/
+VMS/server/.env
