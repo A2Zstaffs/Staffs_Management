@@ -29,25 +29,6 @@ connectDB();
 app.use(helmet());
 app.use(cookieParser());
 
-// Rate limiting - more permissive in development
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests in dev, 100 in production
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later.'
-  },
-  skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === '/api/health';
-  }
-});
-
-// Only apply rate limiting in production
-if (process.env.NODE_ENV === 'production') {
-  app.use('/api/', limiter);
-}
-
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
@@ -71,6 +52,27 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 app.use(cors(corsOptions));
+
+// Rate limiting - more permissive in development
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'production' ? 3000 : 1000, // 1000 requests in dev, 3000 in production
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/api/health';
+  }
+});
+
+// Only apply rate limiting in production
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api/', limiter);
+}
+
+
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
