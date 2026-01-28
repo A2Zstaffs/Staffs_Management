@@ -35,13 +35,13 @@ export default function MyJobsPage() {
 
   const formatSalary = (min, max) => {
     if (min && max) {
-      return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
+      return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
     }
     if (min) {
-      return `$${min.toLocaleString()}+`;
+      return `₹${min.toLocaleString()}+`;
     }
     if (max) {
-      return `Up to $${max.toLocaleString()}`;
+      return `Up to ₹${max.toLocaleString()}`;
     }
     return 'Not specified';
   };
@@ -164,7 +164,7 @@ export default function MyJobsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
                 {jobs.map((job) => (
-                  <tr key={job.id} className="hover:bg-blue-50/30 transition-all duration-200 group border-l-4 border-transparent hover:border-blue-500">
+                  <tr key={job._id} className="hover:bg-blue-50/30 transition-all duration-200 group border-l-4 border-transparent hover:border-blue-500">
                     <td className="px-6 py-5">
                       <div>
                         <div className="text-lg font-bold text-gray-900 mb-1">{job.job_title}</div>
@@ -194,17 +194,17 @@ export default function MyJobsPage() {
                       <div className="flex flex-col gap-2 items-start">
                         {/* Status Pill */}
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold border ${job.role_status === 'Active' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                            job.role_status === 'Pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
-                              job.role_status === 'Closed' ? 'bg-red-100 text-red-700 border-red-200' :
-                                'bg-gray-100 text-gray-700 border-gray-200'
+                          job.role_status === 'Pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                            job.role_status === 'Closed' ? 'bg-red-100 text-red-700 border-red-200' :
+                              'bg-gray-100 text-gray-700 border-gray-200'
                           }`}>
                           <span className={`relative flex h-2.5 w-2.5`}>
                             {job.role_status === 'Active' && (
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             )}
                             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${job.role_status === 'Active' ? 'bg-emerald-500' :
-                                job.role_status === 'Pending' ? 'bg-yellow-500' :
-                                  job.role_status === 'Closed' ? 'bg-red-500' : 'bg-gray-400'
+                              job.role_status === 'Pending' ? 'bg-yellow-500' :
+                                job.role_status === 'Closed' ? 'bg-red-500' : 'bg-gray-400'
                               }`}></span>
                           </span>
                           {job.role_status || 'Unknown'}
@@ -221,7 +221,7 @@ export default function MyJobsPage() {
                     <td className="px-6 py-5 text-right">
                       <div className="flex justify-end items-center gap-2">
                         <button
-                          onClick={() => router.push(`/client/edit-job/${job.id}`)}
+                          onClick={() => router.push(`/client/edit-job/${job._id}`)}
                           className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 hover:scale-110 transition-all shadow-sm"
                           title="Edit Job"
                         >
@@ -234,7 +234,7 @@ export default function MyJobsPage() {
                             if (confirm(`Are you sure you want to delete "${job.job_title}"?`)) {
                               try {
                                 const token = localStorage.getItem('authToken');
-                                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/client/jobs/${job.id}`, {
+                                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/client/jobs/${job._id}`, {
                                   method: 'DELETE',
                                   headers: { 'Authorization': `Bearer ${token}` }
                                 });

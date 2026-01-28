@@ -166,7 +166,7 @@ export default function ClientDashboard() {
                       <div className="flex flex-wrap gap-x-4 gap-y-2 mt-3 text-xs text-secondary-600">
                         <span className="flex items-center"><MapPin className="w-3.5 h-3.5 mr-1" />{job.location}</span>
                         <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1" />{new Date(job.createdAt).toLocaleDateString()}</span>
-                        <span className="flex items-center"><DollarSign className="w-3.5 h-3.5 mr-1" />{job.salary_range}</span>
+                        <span className="flex items-center"><span className="mr-1 text-sm font-semibold">₹</span>{job.salary_range}</span>
                       </div>
                     </div>
                   </div>

@@ -528,6 +528,11 @@ export const kamAPI = {
   // Create job on behalf of client
   async createJobForClient(clientId, jobData) {
     return apiClient.post(`/kam/clients/${clientId}/jobs`, jobData);
+  },
+
+  // Update job on behalf of client
+  async updateJobForClient(clientId, jobId, jobData) {
+    return apiClient.put(`/kam/clients/${clientId}/jobs/${jobId}`, jobData);
   }
 };
 
