@@ -462,6 +462,69 @@ exports.createJobForClient = async (req, res, next) => {
     }
 };
 
+// @desc    Update job on behalf of assigned client
+// @route   PUT /api/kam/clients/:clientId/jobs/:jobId
+// @access  KAM only (with client access check)
+exports.updateJobForClient = async (req, res, next) => {
+    try {
+        const { clientId, jobId } = req.params;
+        const kamId = req.user._id;
+        const updates = req.body;
+
+        // Verify client exists (though checkClientAccess middleware usually handles this, we double check ownership)
+        const job = await Job.findOne({ _id: jobId, postedBy: clientId });
+
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job not found or does not belong to this client'
+            });
+        }
+
+        // Apply updates (Similar logic to client's updateJob)
+        if (updates.locations) job.locations = Array.isArray(updates.locations) ? updates.locations : [updates.locations];
+        if (updates.job_title) job.job_title = updates.job_title;
+        if (updates.description) job.description = updates.description;
+        if (updates.requirements) job.requirements = updates.requirements;
+        if (updates.skills) job.skills = Array.isArray(updates.skills) ? updates.skills : [];
+        if (updates.employmentType) job.employmentType = updates.employmentType;
+        if (updates.applicationDeadline) job.applicationDeadline = updates.applicationDeadline;
+
+        // Salary update (Flat)
+        if (updates.salary_min !== undefined) job.salary_min = updates.salary_min;
+        if (updates.salary_max !== undefined) job.salary_max = updates.salary_max;
+
+        // Experience update (Flat)
+        if (updates.experience_min !== undefined) job.experience_min = updates.experience_min;
+        if (updates.experience_max !== undefined) job.experience_max = updates.experience_max;
+
+        // Commission update (Flat)
+        if (updates.commission_percent !== undefined) job.commission_percent = updates.commission_percent;
+
+        // Status updates directly if passed
+        if (updates.role_status) job.role_status = updates.role_status;
+        if (updates.sourcing_status) job.sourcing_status = updates.sourcing_status;
+
+        // Add audit trail update
+        job.lastUpdatedByKam = kamId;
+        job.kamUpdatedAt = new Date();
+
+        await job.save();
+
+        res.json({
+            success: true,
+            message: 'Job updated successfully on behalf of client',
+            data: job
+        });
+    } catch (error) {
+        console.error('Error updating job for client:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message || 'Failed to update job'
+        });
+    }
+};
+
 // @desc    Get all pending status change requests
 // @route   GET /api/kam/pending-status-changes
 // @access  KAM only
