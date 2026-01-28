@@ -49,7 +49,7 @@ export const getHiringDetails = async (candidateId, jobId) => {
           title: 'Senior Software Engineer',
           company: 'Tech Corp',
           location: 'New York',
-          salaryRange: '$120k - $180k'
+          salaryRange: '₹120k - ₹180k'
         },
         clientCommission: 5000
       },

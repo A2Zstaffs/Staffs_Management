@@ -75,22 +75,22 @@ export default function Footer() {
             <h4 className="text-xl font-semibold text-gray-900 mb-6">Services</h4>
             <ul className="space-y-4">
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                <a href="/services" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
                   Talent Sourcing
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                <a href="/services" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
                   Candidate Management
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                <a href="/services" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
                   Interview Scheduling
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                <a href="/services" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
                   Analytics & Reports
                 </a>
               </li>
