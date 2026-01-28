@@ -21,7 +21,8 @@ const {
     getClientApplications,
     getPendingJobs,
     approveJob,
-    rejectJob
+    rejectJob,
+    updateJobForClient
 } = require('../controllers/kamController');
 
 // All routes require authentication and KAM role
@@ -42,6 +43,10 @@ router.route('/clients/:clientId')
 // Create job for specific client
 router.route('/clients/:clientId/jobs')
     .post(checkPermission('client:manage_assigned'), checkClientAccess, createJobForClient);
+
+// Update job for specific client
+router.route('/clients/:clientId/jobs/:jobId')
+    .put(checkPermission('client:manage_assigned'), checkClientAccess, updateJobForClient);
 
 // Jobs
 router.route('/jobs')
