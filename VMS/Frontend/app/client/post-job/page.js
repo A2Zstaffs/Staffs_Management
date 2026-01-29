@@ -48,6 +48,7 @@ export default function PostJobPage() {
         skills,
         salary_min: data.salary_min ? parseFloat(data.salary_min) : null,
         salary_max: data.salary_max ? parseFloat(data.salary_max) : null,
+        salary_type: data.salary_type || 'per_annum',
         experience_min: data.experience_min ? parseInt(data.experience_min) : null,
         experience_max: data.experience_max ? parseInt(data.experience_max) : null,
         num_positions: data.num_positions ? parseInt(data.num_positions) : null,
@@ -185,7 +186,7 @@ export default function PostJobPage() {
               Salary & Experience
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <InputField
                 label="Minimum Salary"
                 name="salary_min"
@@ -207,6 +208,24 @@ export default function PostJobPage() {
                 required
                 darkMode={true}
               />
+
+              <div>
+                <label htmlFor="salary_type" className="block text-sm font-medium text-[#1A73FF] mb-2">
+                  Salary Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="salary_type"
+                  name="salary_type"
+                  {...register('salary_type', { required: 'Salary type is required' })}
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-lg focus:ring-2 focus:ring-[#1A73FF] focus:border-[#1A73FF] text-white"
+                >
+                  <option value="per_annum">Per Annum (Yearly)</option>
+                  <option value="per_month">Per Month</option>
+                </select>
+                {errors.salary_type && (
+                  <p className="mt-1 text-sm text-red-600">{errors.salary_type.message}</p>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
