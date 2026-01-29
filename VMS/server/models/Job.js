@@ -36,6 +36,11 @@ const jobSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  salary_type: {
+    type: String,
+    enum: ['per_month', 'per_annum'],
+    default: 'per_annum'
+  },
   experience_min: {
     type: Number,
     required: true

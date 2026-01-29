@@ -162,7 +162,7 @@ export default function ExploreJobsPage() {
                         <p className="text-xs text-slate-500 uppercase tracking-wider mb-1 font-semibold">Package</p>
                         <p className="text-blue-600 font-bold text-lg">
                           {job.salary_min && job.salary_max
-                            ? `₹${job.salary_min.toLocaleString()} - ₹${job.salary_max.toLocaleString()}`
+                            ? `₹${job.salary_min.toLocaleString()} - ₹${job.salary_max.toLocaleString()} ${job.salary_type === 'per_month' ? '/month' : '/year'}`
                             : 'Competitive Salary'}
                         </p>
                       </div>

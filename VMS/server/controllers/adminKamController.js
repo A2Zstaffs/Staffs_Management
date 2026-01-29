@@ -45,7 +45,7 @@ exports.createKam = async (req, res, next) => {
             role: 'kam',
             permissions: kamPermissions,
             isActive: true,
-            isVerified: true, // Auto-verify since created by admin
+            isEmailVerified: true, // Auto-verify since created by admin
             profileCompleted: true
         });
 
@@ -133,7 +133,8 @@ exports.assignKamRole = async (req, res, next) => {
             userId,
             {
                 role: 'kam',
-                permissions: kamPermissions
+                permissions: kamPermissions,
+                isEmailVerified: true // Auto-verify since assigned by admin
             },
             { new: true, runValidators: true }
         ).select('-password');

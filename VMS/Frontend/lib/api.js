@@ -398,8 +398,12 @@ export const adminAPI = {
   },
 
   // Update job status
-  async updateJobStatus(jobId, status) {
-    return apiClient.patch(`/admin/jobs/${jobId}/status`, { status });
+  // Update job status
+  async updateJobStatus(jobId, statusOrOptions) {
+    const payload = typeof statusOrOptions === 'string'
+      ? { status: statusOrOptions }
+      : statusOrOptions;
+    return apiClient.patch(`/admin/jobs/${jobId}/status`, payload);
   },
 
   // Delete profile
