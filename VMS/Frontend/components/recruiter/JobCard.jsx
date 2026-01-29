@@ -92,7 +92,7 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span className="text-gray-600 font-medium">₹{job.salary_min / 100000} - {job.salary_max / 100000}L</span>
+                                <span className="text-gray-600 font-medium">₹{job.salary_min / 100000} - {job.salary_max / 100000}L {job.salary_type === 'per_month' ? '/month' : '/year'}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,8 +156,8 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-semibold text-gray-600">Role:</span>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${job.role_status === 'Open' ? 'bg-blue-100 text-blue-700' :
-                                        job.role_status === 'Closed' ? 'bg-red-100 text-red-700' :
-                                            'bg-gray-100 text-gray-700'
+                                    job.role_status === 'Closed' ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-700'
                                     }`}>
                                     {job.role_status}
                                 </span>
@@ -165,8 +165,8 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-semibold text-gray-600">Sourcing:</span>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold ${job.sourcing_status === 'Active' ? 'bg-green-100 text-green-700' :
-                                        job.sourcing_status === 'On Hold' ? 'bg-yellow-100 text-yellow-700' :
-                                            'bg-gray-100 text-gray-700'
+                                    job.sourcing_status === 'On Hold' ? 'bg-yellow-100 text-yellow-700' :
+                                        'bg-gray-100 text-gray-700'
                                     }`}>
                                     {job.sourcing_status}
                                 </span>
@@ -187,8 +187,8 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                             <button
                                 onClick={handleViewSubmitted}
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all ${showSubmitted
-                                        ? 'bg-blue-50 border-2 border-blue-300 text-blue-700'
-                                        : 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50'
+                                    ? 'bg-blue-50 border-2 border-blue-300 text-blue-700'
+                                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50'
                                     }`}
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,9 +238,9 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                                                 <td className="px-4 py-3 text-gray-600">{new Date(profile.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-4 py-3">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${profile.status === 'Available' ? 'bg-green-100 text-green-700' :
-                                                            profile.status === 'In Process' ? 'bg-blue-100 text-blue-700' :
-                                                                profile.status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                                                                    'bg-gray-100 text-gray-700'
+                                                        profile.status === 'In Process' ? 'bg-blue-100 text-blue-700' :
+                                                            profile.status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                                                                'bg-gray-100 text-gray-700'
                                                         }`}>
                                                         {profile.status}
                                                     </span>

@@ -44,7 +44,7 @@ exports.createRecruiterManager = async (req, res, next) => {
             role: 'recruiter_manager',
             permissions: rmPermissions,
             isActive: true,
-            isVerified: true, // Auto-verify since created by admin
+            isEmailVerified: true, // Auto-verify since created by admin
             profileCompleted: true
         });
 
@@ -131,7 +131,8 @@ exports.assignRecruiterManagerRole = async (req, res, next) => {
             userId,
             {
                 role: 'recruiter_manager',
-                permissions: rmPermissions
+                permissions: rmPermissions,
+                isEmailVerified: true // Auto-verify since assigned by admin
             },
             { new: true, runValidators: true }
         ).select('-password');

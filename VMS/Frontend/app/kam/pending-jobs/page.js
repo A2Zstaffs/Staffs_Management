@@ -75,9 +75,10 @@ export default function PendingJobsPage() {
         }
     };
 
-    const formatSalary = (min, max) => {
+    const formatSalary = (min, max, salaryType) => {
         if (!min && !max) return 'Not specified';
-        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'}`;
+        const suffix = salaryType === 'per_month' ? '/month' : '/year';
+        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'} ${suffix}`;
     };
 
     const formatDate = (dateString) => {
@@ -203,7 +204,7 @@ export default function PendingJobsPage() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
-                                                {formatSalary(job.salary_min, job.salary_max)}
+                                                {formatSalary(job.salary_min, job.salary_max, job.salary_type)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -272,7 +273,7 @@ export default function PendingJobsPage() {
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div>
                                         <span className="text-gray-600">Salary:</span>{' '}
-                                        <span className="font-medium">{formatSalary(selectedJob.salary_min, selectedJob.salary_max)}</span>
+                                        <span className="font-medium">{formatSalary(selectedJob.salary_min, selectedJob.salary_max, selectedJob.salary_type)}</span>
                                     </div>
                                     <div>
                                         <span className="text-gray-600">Experience:</span>{' '}
@@ -325,8 +326,8 @@ export default function PendingJobsPage() {
                                 onClick={handleSubmit}
                                 disabled={isSubmitting || (modalAction === 'reject' && !notes.trim())}
                                 className={`px-6 py-3 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${modalAction === 'approve'
-                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                        : 'bg-red-600 hover:bg-red-700 text-white'
+                                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                                    : 'bg-red-600 hover:bg-red-700 text-white'
                                     }`}
                             >
                                 {isSubmitting ? (

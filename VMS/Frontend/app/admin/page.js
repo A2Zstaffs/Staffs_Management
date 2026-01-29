@@ -81,9 +81,20 @@ export default function AdminDashboard() {
   return (
     <>
       {/* Main Content */}
-      <main className="space-y-6">
+      <main className="space-y-8 p-6 bg-gray-50 min-h-screen">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-500 mt-1">Overview of system performance and key metrics</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-500">Last updated: {new Date().toLocaleTimeString()}</span>
+          </div>
+        </div>
+
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             title="Total Recruiters"
             value={stats?.totalRecruiters}
@@ -105,21 +116,35 @@ export default function AdminDashboard() {
             value={stats?.activeJobs}
             isLoading={isLoading}
             icon="Briefcase"
-            color="from-indigo-500 to-indigo-600"
+            color="from-emerald-500 to-emerald-600"
             delay={0.2}
           />
           <StatCard
-            title="Monthly Revenue"
-            value={typeof stats?.monthlyRevenue === 'number' ? `$${stats?.monthlyRevenue.toLocaleString('en-US')}` : stats?.monthlyRevenue}
+            title="Total Jobs Value"
+            // Display Pipeline Value in INR
+            value={
+              isLoading
+                ? "Loading..."
+                : new Intl.NumberFormat('en-IN', {
+                  style: 'currency',
+                  currency: 'INR',
+                  maximumFractionDigits: 1,
+                  notation: "compact"
+                }).format(stats?.pipelineValue || 0)
+            }
             isLoading={isLoading}
-            icon="DollarSign"
-            color="from-green-500 to-green-600"
+            icon="IndianRupee"
+            color="from-violet-500 to-violet-600"
             delay={0.3}
           />
         </div>
 
         {/* Charts Section */}
-        <div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
+            Performance Analytics
+          </h2>
           <AdminCharts
             barData={recruiterClientPerformance}
             pieData={commissionDistribution}
@@ -127,18 +152,33 @@ export default function AdminDashboard() {
         </div>
 
         {/* Admin Flow Section */}
-        <div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+            System Workflows
+          </h2>
           <AdminFlow steps={adminFlowSteps} />
         </div>
 
-        {/* KAM Management Section */}
-        <div>
-          <KAMSection />
-        </div>
+        {/* Management Sections Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* KAM Management Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-orange-500 rounded-full"></span>
+              KAM Management
+            </h2>
+            <KAMSection />
+          </div>
 
-        {/* Recruiter Manager Management Section */}
-        <div>
-          <RecruiterManagerSection />
+          {/* Recruiter Manager Management Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-pink-500 rounded-full"></span>
+              Recruiter Management
+            </h2>
+            <RecruiterManagerSection />
+          </div>
         </div>
       </main>
     </>
