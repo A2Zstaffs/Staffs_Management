@@ -4,6 +4,8 @@ const { protect, authorizeAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const Job = require('../models/Job');
 const Profile = require('../models/Profile');
+const ClientAssignment = require('../models/ClientAssignment');
+const RecruiterAssignment = require('../models/RecruiterAssignment');
 
 // @desc    Get admin dashboard stats
 // @route   GET /api/admin/stats
@@ -15,8 +17,15 @@ router.get('/stats', protect, authorizeAdmin, async (req, res) => {
         const activeJobs = await Job.countDocuments({ role_status: 'Active' });
         const totalProfiles = await Profile.countDocuments();
 
-        // Calculate monthly revenue (placeholder - implement based on your commission model)
-        const monthlyRevenue = 0; // TODO: Calculate from commissions
+        // Calculate Pipeline Value (Total Jobs Value) - Potential Revenue
+        // Logic: Sum of (Max Commission * Number of Positions) for all Active jobs
+        const activeJobsData = await Job.find({ role_status: 'Active' }).select('commission_amount_max num_positions');
+
+        const pipelineValue = activeJobsData.reduce((sum, job) => {
+            const commission = job.commission_amount_max || 0;
+            const positions = job.num_positions || 1;
+            return sum + (commission * positions);
+        }, 0);
 
         res.json({
             success: true,
@@ -25,7 +34,7 @@ router.get('/stats', protect, authorizeAdmin, async (req, res) => {
                 totalClients,
                 activeJobs,
                 totalProfiles,
-                monthlyRevenue
+                pipelineValue // Replaces monthlyRevenue
             }
         });
     } catch (error) {
@@ -46,13 +55,26 @@ router.get('/recruiters', protect, authorizeAdmin, async (req, res) => {
             .select('-password')
             .sort({ createdAt: -1 });
 
-        // Get profile counts for each recruiter
+        // Get profile counts and Recruiter Manager assignments for each recruiter
         const recruitersWithStats = await Promise.all(
             recruiters.map(async (recruiter) => {
                 const profileCount = await Profile.countDocuments({ uploaded_by: recruiter._id });
+
+                // Get assigned Recruiter Manager for this recruiter
+                const rmAssignment = await RecruiterAssignment.findOne({
+                    recruiter: recruiter._id,
+                    isActive: true
+                }).populate('recruiterManager', 'fullName email');
+
                 return {
                     ...recruiter.toObject(),
-                    profileCount
+                    profileCount,
+                    assignedRM: rmAssignment ? {
+                        _id: rmAssignment.recruiterManager._id,
+                        fullName: rmAssignment.recruiterManager.fullName,
+                        email: rmAssignment.recruiterManager.email,
+                        assignedAt: rmAssignment.assignedAt
+                    } : null
                 };
             })
         );
@@ -106,13 +128,26 @@ router.get('/clients', protect, authorizeAdmin, async (req, res) => {
             .select('-password')
             .sort({ createdAt: -1 });
 
-        // Get job counts for each client
+        // Get job counts and KAM assignments for each client
         const clientsWithStats = await Promise.all(
             clients.map(async (client) => {
                 const jobCount = await Job.countDocuments({ postedBy: client._id });
+
+                // Get assigned KAM for this client
+                const kamAssignment = await ClientAssignment.findOne({
+                    client: client._id,
+                    isActive: true
+                }).populate('kam', 'fullName email');
+
                 return {
                     ...client.toObject(),
-                    jobCount
+                    jobCount,
+                    assignedKam: kamAssignment ? {
+                        _id: kamAssignment.kam._id,
+                        fullName: kamAssignment.kam.fullName,
+                        email: kamAssignment.kam.email,
+                        assignedAt: kamAssignment.assignedAt
+                    } : null
                 };
             })
         );
@@ -138,6 +173,7 @@ router.get('/jobs', protect, authorizeAdmin, async (req, res) => {
     try {
         const jobs = await Job.find()
             .populate('postedBy', 'fullName email company')
+            .populate('approved_by_kam', 'fullName email')
             .sort({ createdAt: -1 });
 
         res.json({
@@ -150,6 +186,63 @@ router.get('/jobs', protect, authorizeAdmin, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error fetching jobs'
+        });
+    }
+});
+
+// @desc    Update job status and approval
+// @route   PATCH /api/admin/jobs/:id/status
+// @access  Private/Admin
+router.patch('/jobs/:id/status', protect, authorizeAdmin, async (req, res) => {
+    try {
+        const { status, approval_status } = req.body;
+        const updateData = {};
+
+        // Handle Status Update
+        if (status) {
+            updateData.role_status = status;
+        }
+
+        // Handle Approval Logic
+        if (approval_status) {
+            updateData.approval_status = approval_status;
+
+            // If approving, set the approver and timestamp
+            if (approval_status === 'Approved') {
+                updateData.approved_by_kam = req.user._id;
+                updateData.kam_approval_date = Date.now();
+                // Auto-activate if it was pending
+                if (!status) {
+                    updateData.role_status = 'Active';
+                }
+            }
+        }
+
+        const job = await Job.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        )
+            .populate('postedBy', 'fullName email company')
+            .populate('approved_by_kam', 'fullName email');
+
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Job updated successfully',
+            data: job
+        });
+    } catch (error) {
+        console.error('Update job status error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating job status'
         });
     }
 });

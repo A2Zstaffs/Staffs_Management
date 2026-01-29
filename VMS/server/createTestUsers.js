@@ -116,21 +116,21 @@ const testUsers = [
 const createTestUsers = async () => {
   try {
     await connectDB();
-    
+
     console.log('Creating test users...');
-    
+
     // Clear existing test users (optional - remove this if you want to keep existing data)
     await User.deleteMany({
       email: { $in: testUsers.map(user => user.email) }
     });
-    
+
     // Create new test users
     for (const userData of testUsers) {
       const user = new User(userData);
       await user.save();
       console.log(`✅ Created user: ${user.fullName} (${user.email}) - ${user.role}`);
     }
-    
+
     console.log('\n🎉 Test users created successfully!');
     console.log('\nYou can now login with any of these credentials:');
     console.log('=====================================');
@@ -140,7 +140,7 @@ const createTestUsers = async () => {
       console.log(`Role: ${user.role}`);
       console.log('---');
     });
-    
+
     process.exit(0);
   } catch (error) {
     console.error('Error creating test users:', error);
@@ -149,7 +149,3 @@ const createTestUsers = async () => {
 };
 
 createTestUsers();
-
-
-
-

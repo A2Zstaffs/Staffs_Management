@@ -64,9 +64,10 @@ export default function KAMJobsPage() {
         );
     };
 
-    const formatSalary = (min, max) => {
+    const formatSalary = (min, max, salaryType) => {
         if (!min && !max) return 'Not specified';
-        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'}`;
+        const suffix = salaryType === 'per_month' ? '/month' : '/year';
+        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'} ${suffix}`;
     };
 
     const formatDate = (dateString) => {
@@ -240,7 +241,7 @@ export default function KAMJobsPage() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
-                                                {formatSalary(job.salary_min, job.salary_max)}
+                                                {formatSalary(job.salary_min, job.salary_max, job.salary_type)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">

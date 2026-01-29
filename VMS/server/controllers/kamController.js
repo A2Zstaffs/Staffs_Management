@@ -481,29 +481,32 @@ exports.updateJobForClient = async (req, res, next) => {
             });
         }
 
-        // Apply updates (Similar logic to client's updateJob)
-        if (updates.locations) job.locations = Array.isArray(updates.locations) ? updates.locations : [updates.locations];
-        if (updates.job_title) job.job_title = updates.job_title;
-        if (updates.description) job.description = updates.description;
-        if (updates.requirements) job.requirements = updates.requirements;
-        if (updates.skills) job.skills = Array.isArray(updates.skills) ? updates.skills : [];
-        if (updates.employmentType) job.employmentType = updates.employmentType;
-        if (updates.applicationDeadline) job.applicationDeadline = updates.applicationDeadline;
+        // Apply updates
+        const allowedUpdates = [
+            'job_title', 'description', 'requirements', 'employmentType',
+            'applicationDeadline', 'salary_min', 'salary_max', 'salary_type',
+            'experience_min', 'experience_max', 'commission_percent',
+            'role_status', 'sourcing_status', 'num_positions', 'company_name',
+            'skills', 'locations'
+        ];
 
-        // Salary update (Flat)
-        if (updates.salary_min !== undefined) job.salary_min = updates.salary_min;
-        if (updates.salary_max !== undefined) job.salary_max = updates.salary_max;
+        allowedUpdates.forEach(field => {
+            if (updates[field] !== undefined) {
+                if (field === 'locations' || field === 'skills') {
+                    job[field] = Array.isArray(updates[field]) ? updates[field] : [updates[field]];
+                } else {
+                    job[field] = updates[field];
+                }
+            }
+        });
 
-        // Experience update (Flat)
-        if (updates.experience_min !== undefined) job.experience_min = updates.experience_min;
-        if (updates.experience_max !== undefined) job.experience_max = updates.experience_max;
-
-        // Commission update (Flat)
-        if (updates.commission_percent !== undefined) job.commission_percent = updates.commission_percent;
-
-        // Status updates directly if passed
-        if (updates.role_status) job.role_status = updates.role_status;
-        if (updates.sourcing_status) job.sourcing_status = updates.sourcing_status;
+        // Auto-Recalculate Commission Amounts if relevant fields exist
+        if (job.salary_max && job.commission_percent) {
+            job.commission_amount_max = (job.salary_max * job.commission_percent) / 100;
+        }
+        if (job.salary_min && job.commission_percent) {
+            job.commission_amount_min = (job.salary_min * job.commission_percent) / 100;
+        }
 
         // Add audit trail update
         job.lastUpdatedByKam = kamId;

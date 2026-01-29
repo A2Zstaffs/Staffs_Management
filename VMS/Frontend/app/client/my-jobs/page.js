@@ -33,15 +33,16 @@ export default function MyJobsPage() {
     }
   };
 
-  const formatSalary = (min, max) => {
+  const formatSalary = (min, max, salaryType) => {
+    const suffix = salaryType === 'per_month' ? '/month' : '/year';
     if (min && max) {
-      return `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`;
+      return `₹${min.toLocaleString()} - ₹${max.toLocaleString()} ${suffix}`;
     }
     if (min) {
-      return `₹${min.toLocaleString()}+`;
+      return `₹${min.toLocaleString()}+ ${suffix}`;
     }
     if (max) {
-      return `Up to ₹${max.toLocaleString()}`;
+      return `Up to ₹${max.toLocaleString()} ${suffix}`;
     }
     return 'Not specified';
   };
@@ -181,9 +182,9 @@ export default function MyJobsPage() {
                     </td>
                     <td className="px-6 py-5">
                       <div className="font-semibold text-gray-900">
-                        {formatSalary(job.salary_min, job.salary_max)}
+                        {formatSalary(job.salary_min, job.salary_max, job.salary_type)}
                       </div>
-                      <div className="text-xs text-gray-500 font-medium">Annual CTC</div>
+                      <div className="text-xs text-gray-500 font-medium">{job.salary_type === 'per_month' ? 'Monthly' : 'Annual CTC'}</div>
                     </td>
                     <td className="px-6 py-5">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-50 text-gray-700 text-sm font-medium border border-gray-100">

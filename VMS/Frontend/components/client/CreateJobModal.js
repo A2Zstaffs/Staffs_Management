@@ -9,6 +9,7 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
         locations: [''],
         salary_min: '',
         salary_max: '',
+        salary_type: 'per_annum',
         experience_min: '',
         experience_max: '',
         notice_period: '',
@@ -132,6 +133,7 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                 locations: [''],
                 salary_min: '',
                 salary_max: '',
+                salary_type: 'per_annum',
                 experience_min: '',
                 experience_max: '',
                 notice_period: '',
@@ -280,7 +282,7 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                             <DollarSign className="w-5 h-5 mr-2 text-blue-400" />
                             Salary Range (Lakhs) *
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-2">Minimum</label>
                                 <input
@@ -308,6 +310,19 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="e.g., 15"
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Salary Type *</label>
+                                <select
+                                    name="salary_type"
+                                    value={formData.salary_type}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="per_annum">Per Annum (Yearly)</option>
+                                    <option value="per_month">Per Month</option>
+                                </select>
                             </div>
                         </div>
                     </div>
