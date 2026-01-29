@@ -1,5 +1,5 @@
 import HeroSection from '@/components/homepage/HeroSection';
-// import TrustedCompanies from '@/components/homepage/TrustedCompanies';
+import TrustedCompanies from '@/components/homepage/TrustedCompanies';
 import StatsSection from '@/components/homepage/StatsSection';
 import JobCategories from '@/components/homepage/JobCategories';
 import FeaturedJobs from '@/components/homepage/FeaturedJobs';
@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <HeroSection />
-      {/* <TrustedCompanies /> */}
+      <TrustedCompanies />
       <StatsSection />
       <JobCategories />
       <HowItWorks />

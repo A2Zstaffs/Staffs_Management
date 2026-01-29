@@ -136,7 +136,7 @@ export default function Footer() {
         <div className="mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-600 text-lg">
-              © 2024 A2Z Staffs. All rights reserved.
+              © {new Date().getFullYear()} A2Z Staffs. All rights reserved.
             </div>
             <div className="flex space-x-8 mt-6 md:mt-0">
               <a href="/privacy-policy" className="text-gray-600 hover:text-primary-600 text-lg transition-colors duration-200">
