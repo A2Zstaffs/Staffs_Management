@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import { authAPI } from '../../lib/api';
 import { ArrowLeft } from 'lucide-react';
 
@@ -11,7 +11,8 @@ export default function LoginPage() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        role: 'recruiter' // Default role
+        role: 'recruiter', // Default role
+        rememberMe: false
     });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
@@ -121,6 +122,13 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+
+    useGoogleOneTapLogin({
+        onSuccess: handleGoogleLogin,
+        onError: () => {
+            console.log('Google One Tap failed');
+        },
+    });
     console.log("hey this is ajay")
     return (
         <div className="min-h-screen w-full animated-background-light flex items-center justify-center p-4 relative overflow-hidden font-sans">
@@ -228,6 +236,22 @@ export default function LoginPage() {
                             )}
                         </div>
 
+                        {/* Remember Me Checkbox */}
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    name="rememberMe"
+                                    checked={formData.rememberMe}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
+                                    className="w-4 h-4 text-blue-600 bg-white/50 border-slate-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                                />
+                                <span className="ml-2 text-xs text-slate-600 group-hover:text-slate-800 transition-colors">
+                                    Remember me
+                                </span>
+                            </label>
+                        </div>
+
                         <div className="pt-2">
                             <button
                                 type="submit"
@@ -297,7 +321,6 @@ export default function LoginPage() {
                                 onError={() => {
                                     setErrors({ general: 'Google Sign In failed' });
                                 }}
-                                useOneTap
                                 theme="outline"
                                 size="large"
                                 text="continue_with"

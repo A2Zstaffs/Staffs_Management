@@ -2,7 +2,6 @@ const User = require('../models/User');
 const RecruiterAssignment = require('../models/RecruiterAssignment');
 const Profile = require('../models/Profile');
 const Job = require('../models/Job');
-const Application = require('../models/Application');
 
 // @desc    Get Recruiter Manager dashboard stats
 // @route   GET /api/recruiter-manager/dashboard
@@ -44,7 +43,7 @@ exports.getDashboard = async (req, res, next) => {
                     _id: '$uploaded_by',
                     profileCount: { $sum: 1 }
                 }
-            }  
+            }
         ]);
 
         // Create a map for quick lookup
@@ -60,11 +59,20 @@ exports.getDashboard = async (req, res, next) => {
                 totalProfiles,
                 activeJobs,
                 totalApplications,
-                recruiters: assignments.map(a => ({
-                    ...a.recruiter.toObject(),
-                    assignedAt: a.assignedAt,
-                    profileCount: profileCountMap[a.recruiter._id.toString()] || 0
-                }))
+                recruiters: assignments
+                    .filter(a => a.recruiter && a.recruiter._id)
+                    .map(a => {
+                        // Use Object() to coerce populated document type
+                        const recruiter = Object(a.recruiter);
+                        const recruiterData = typeof recruiter.toObject === 'function'
+                            ? recruiter.toObject()
+                            : recruiter;
+                        return {
+                            ...recruiterData,
+                            assignedAt: a.assignedAt,
+                            profileCount: profileCountMap[a.recruiter._id.toString()] || 0
+                        };
+                    })
             }
         });
     } catch (error) {
@@ -99,10 +107,15 @@ exports.getAssignedRecruiters = async (req, res, next) => {
                     status: { $ne: 'Available' }
                 });
 
+                // Use Object() to coerce populated document type
+                const recruiterDoc = Object(assignment.recruiter);
+                const recruiterData = typeof recruiterDoc.toObject === 'function'
+                    ? recruiterDoc.toObject()
+                    : recruiterDoc;
                 return {
                     ...assignment.toObject(),
                     recruiter: {
-                        ...assignment.recruiter.toObject(),
+                        ...recruiterData,
                         profileCount,
                         applicationCount
                     }
@@ -130,6 +143,7 @@ exports.getRecruiterById = async (req, res, next) => {
         const recruiterId = req.params.id;
 
         // Verify RM has access to this recruiter
+        // @ts-ignore - hasRecruiterAccess is a custom static method defined on the schema
         const hasAccess = await RecruiterAssignment.hasRecruiterAccess(rmId, recruiterId);
         if (!hasAccess) {
             return res.status(403).json({
@@ -153,10 +167,16 @@ exports.getRecruiterById = async (req, res, next) => {
             status: { $ne: 'Available' }
         });
 
+        // Use Object() to coerce populated document type
+        const recruiterDoc = Object(recruiter);
+        const recruiterData = typeof recruiterDoc.toObject === 'function'
+            ? recruiterDoc.toObject()
+            : recruiterDoc;
+
         res.status(200).json({
             success: true,
             data: {
-                ...recruiter.toObject(),
+                ...recruiterData,
                 profileCount,
                 applicationCount
             }
@@ -195,6 +215,7 @@ exports.getProfiles = async (req, res, next) => {
         const rmId = req.user._id;
 
         // Get assigned recruiter IDs
+        // @ts-ignore - getActiveRecruitersForRM is a custom static method defined on the schema
         const recruiterIds = await RecruiterAssignment.getActiveRecruitersForRM(rmId);
         const recruiterIdArray = recruiterIds.map(r => r._id);
 
@@ -224,6 +245,7 @@ exports.getApplications = async (req, res, next) => {
         const rmId = req.user._id;
 
         // Get assigned recruiter IDs
+        // @ts-ignore - getActiveRecruitersForRM is a custom static method defined on the schema
         const recruiterIds = await RecruiterAssignment.getActiveRecruitersForRM(rmId);
         const recruiterIdArray = recruiterIds.map(r => r._id);
 

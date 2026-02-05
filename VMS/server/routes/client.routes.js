@@ -9,7 +9,7 @@ const Profile = require('../models/Profile');
 // @access  Private/Client
 router.get('/jobs', protect, authorize('client'), async (req, res) => {
     try {
-        const jobs = await Job.find({ postedBy: req.user.id })
+        const jobs = await Job.find({ postedBy: /** @type {any} */ (req).user.id })
             .sort({ createdAt: -1 });
 
         // Add applicant count to each job
@@ -46,7 +46,7 @@ router.post('/jobs/create', protect, authorize('client'), async (req, res) => {
         const jobData = {
             ...req.body,
             job_id,
-            postedBy: req.user.id,
+            postedBy: /** @type {any} */ (req).user.id,
             postedByRole: 'client',
             role_status: 'Pending', // Default to Pending for admin approval
             posted_date: new Date()
@@ -74,7 +74,7 @@ router.post('/jobs/create', protect, authorize('client'), async (req, res) => {
 router.get('/cvs', protect, authorize('client'), async (req, res) => {
     try {
         // Find all jobs posted by this client
-        const clientJobs = await Job.find({ postedBy: req.user.id }).select('_id');
+        const clientJobs = await Job.find({ postedBy: /** @type {any} */ (req).user.id }).select('_id');
         const jobIds = clientJobs.map(job => job._id);
 
         // Find profiles applied to these jobs
@@ -88,7 +88,7 @@ router.get('/cvs', protect, authorize('client'), async (req, res) => {
             id: cv._id,
             candidateName: cv.candidate_name,
             email: cv.email,
-            jobTitle: cv.job_id?.job_title || 'Unknown Job',
+            jobTitle: /** @type {any} */ (cv.job_id)?.job_title || 'Unknown Job',
             experience: `${cv.total_experience} years`,
             currentCompany: cv.current_company,
             expectedSalary: cv.expected_ctc,
@@ -96,7 +96,7 @@ router.get('/cvs', protect, authorize('client'), async (req, res) => {
             cvUrl: cv.resume_url,
             status: cv.status,
             appliedDate: cv.createdAt,
-            recruiterName: cv.uploaded_by?.fullName || cv.uploaded_by_name || 'Unknown'
+            recruiterName: /** @type {any} */ (cv.uploaded_by)?.fullName || cv.uploaded_by_name || 'Unknown'
         }));
 
         res.json({
@@ -130,7 +130,7 @@ router.put('/cv/update-status/:id', protect, authorize('client'), async (req, re
             });
         }
 
-        if (profile.job_id.postedBy.toString() !== req.user.id) {
+        if (/** @type {any} */ (profile.job_id).postedBy.toString() !== /** @type {any} */ (req).user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to update this profile'
@@ -178,7 +178,7 @@ router.delete('/jobs/:id', protect, authorize('client'), async (req, res) => {
         }
 
         // Ensure user owns the job
-        if (job.postedBy.toString() !== req.user.id) {
+        if (job.postedBy.toString() !== /** @type {any} */ (req).user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to delete this job'
@@ -215,7 +215,7 @@ router.put('/jobs/:id', protect, authorize('client'), async (req, res) => {
         }
 
         // Ensure user owns the job
-        if (job.postedBy.toString() !== req.user.id) {
+        if (job.postedBy.toString() !== /** @type {any} */ (req).user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to update this job'
