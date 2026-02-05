@@ -2,17 +2,27 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from './Logo';
+import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Building2, Briefcase } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignupDropdownOpen, setIsSignupDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const { user, isAuthenticated, logout } = useAuth();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -26,9 +36,7 @@ export default function Header() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
@@ -36,81 +44,80 @@ export default function Header() {
     setIsUserDropdownOpen(false);
   };
 
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/about', label: 'About' },
+    { href: '/services', label: 'Services' },
+    { href: '/contact', label: 'Contact' }
+  ];
+
   return (
-    <header className="bg-white shadow-lg border-b border-secondary-200 fixed top-0 left-0 right-0 z-50">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white shadow-lg border-b border-secondary-200'
+        : 'bg-white/95 backdrop-blur-md shadow-sm border-b border-secondary-100'
+        }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 lg:h-20">
           {/* Logo */}
           <div className="flex items-center">
             <Logo href="/" />
           </div>
 
-          {/* Desktop Navigation - changed to space-x-6*/}
-          <nav className="hidden md:flex space-x-6">
-            <Link
-              href="/"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
-            >
-              About
-            </Link>
-            <Link
-              href="/candidate/explore-jobs"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
-            >
-              Jobs
-            </Link>
-            <Link
-              href="/contact"
-              className="text-secondary-900 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
-            >
-              Contact
-            </Link>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 text-secondary-700 hover:text-primary-500 hover:bg-primary-50"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Auth Buttons - changed to space - x -6 */}
-          <div className="hidden md:flex items-center space-x-6">
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               /* User Dropdown */
               <div className="relative" ref={userDropdownRef}>
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center space-x-2 text-secondary-700 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-200 ${isScrolled ? 'text-secondary-700' : 'text-white'
+                    }`}
                 >
                   <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
                       {user?.fullName?.charAt(0) || user?.email?.charAt(0) || 'U'}
                     </span>
                   </div>
-                  <span>{user?.fullName || user?.email}</span>
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <span className="font-medium">{user?.fullName || user?.email}</span>
+                  <ChevronDown className="w-4 h-4" />
                 </button>
 
                 {/* User Dropdown Menu */}
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-secondary-200 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-secondary-200 py-2 z-50">
                     <div className="px-4 py-2 border-b border-secondary-100">
                       <p className="text-sm font-medium text-secondary-900">{user?.fullName}</p>
                       <p className="text-xs text-secondary-500 capitalize">{user?.role}</p>
                     </div>
                     <Link
                       href="/dashboard"
-                      className="block px-4 py-2 text-sm text-secondary-500 hover:bg-primary-50 hover:text-primary-500 transition-colors duration-200"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-500 transition-colors"
                       onClick={() => setIsUserDropdownOpen(false)}
                     >
+                      <LayoutDashboard className="w-4 h-4" />
                       Dashboard
                     </Link>
+                    <div className="border-t border-secondary-200 my-1" />
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
+                      <LogOut className="w-4 h-4" />
                       Logout
                     </button>
                   </div>
@@ -120,44 +127,51 @@ export default function Header() {
               <>
                 <Link
                   href="/login"
-                  className="text-secondary-500 hover:text-primary-500 px-3 py-2 text-base font-medium transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-medium transition-colors duration-200 text-secondary-700 hover:text-primary-500"
                 >
                   Login
                 </Link>
 
-                {/* Signup Dropdown */}
+                {/* Partner Dropdown */}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setIsSignupDropdownOpen(!isSignupDropdownOpen)}
-                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-base font-medium transition-colors duration-200 flex items-center"
+                    className="flex items-center gap-1 px-5 py-2.5 text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 bg-primary-500 hover:bg-primary-600 text-white"
                   >
-                    Sign Up
-                    <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    Get Started
+                    <ChevronDown className="w-4 h-4" />
                   </button>
 
                   {/* Dropdown Menu */}
                   {isSignupDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-secondary-200 py-2 z-50">
+                      <div className="px-4 py-2 border-b border-secondary-100">
+                        <p className="text-xs text-secondary-500 font-medium">Join our network</p>
+                      </div>
                       <Link
-                        href="/signup/recruiter"
-                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
+                        href="/signup/client"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-500 transition-colors"
                         onClick={() => setIsSignupDropdownOpen(false)}
                       >
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-primary-600 rounded-full mr-3"></div>
-                          Recruiter
+                        <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-primary-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">I'm a Client</p>
+                          <p className="text-xs text-secondary-400">Hire through A2Z</p>
                         </div>
                       </Link>
                       <Link
-                        href="/signup/user"
-                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200"
+                        href="/signup/recruiter"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-500 transition-colors"
                         onClick={() => setIsSignupDropdownOpen(false)}
                       >
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-primary-600 rounded-full mr-3"></div>
-                          Candidate
+                        <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                          <Briefcase className="w-4 h-4 text-primary-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">I'm a Recruiter</p>
+                          <p className="text-xs text-secondary-400">Join as partner</p>
                         </div>
                       </Link>
                     </div>
@@ -171,76 +185,74 @@ export default function Header() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-secondary-500 hover:text-secondary-600 focus:outline-none focus:text-secondary-600"
+              className={`p-2 rounded-lg transition-colors ${isScrolled ? 'text-secondary-600 hover:bg-secondary-100' : 'text-white hover:bg-white/10'
+                }`}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-secondary-50 rounded-lg mt-2">
-              <Link
-                href="/"
-                className="text-secondary-900 block px-3 py-2 text-base font-medium hover:text-primary-500 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/about"
-                className="text-secondary-500 block px-3 py-2 text-base font-medium hover:text-primary-500 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/candidate/explore-jobs"
-                className="text-secondary-500 block px-3 py-2 text-base font-medium hover:text-primary-500 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Jobs
-              </Link>
-              <Link
-                href="/contact"
-                className="text-secondary-500 block px-3 py-2 text-base font-medium hover:text-primary-500 transition-colors duration-200"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <div className="border-t border-secondary-200 pt-3">
+          <div className="md:hidden bg-white border-t border-secondary-200 py-4 shadow-lg">
+            <div className="space-y-1">
+              {navLinks.map((link) => (
                 <Link
-                  href="/login"
-                  className="text-secondary-500 block px-3 py-2 text-base font-medium hover:text-primary-500 transition-colors duration-200"
+                  key={link.href}
+                  href={link.href}
+                  className="block px-4 py-3 text-secondary-700 hover:bg-primary-50 hover:text-primary-500 rounded-lg font-medium transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Login
+                  {link.label}
                 </Link>
-                <div className="mt-2">
-                  <div className="text-secondary-500 text-sm font-medium px-3 py-1">Sign Up As:</div>
-                  <Link
-                    href="/signup/recruiter"
-                    className="text-secondary-500 block px-6 py-2 text-sm hover:text-primary-500 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    • Recruiter
-                  </Link>
-                  <Link
-                    href="/signup/user"
-                    className="text-secondary-500 block px-6 py-2 text-sm hover:text-accent-500 transition-colors duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    • Candidate
-                  </Link>
-                </div>
+              ))}
+
+              <div className="border-t border-secondary-200 pt-4 mt-4">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-3 text-secondary-700 hover:bg-primary-50 hover:text-primary-500 rounded-lg font-medium transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="block px-4 py-3 text-secondary-700 hover:bg-primary-50 hover:text-primary-500 rounded-lg font-medium transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <div className="mt-3 space-y-2 px-4">
+                      <p className="text-xs text-secondary-500 font-medium">Get Started</p>
+                      <Link
+                        href="/signup/client"
+                        className="block py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium text-center transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        I'm a Client
+                      </Link>
+                      <Link
+                        href="/signup/recruiter"
+                        className="block py-3 bg-secondary-100 hover:bg-secondary-200 text-secondary-700 rounded-lg font-medium text-center transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        I'm a Recruiter
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -249,4 +261,3 @@ export default function Header() {
     </header>
   );
 }
-

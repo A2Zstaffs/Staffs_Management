@@ -16,11 +16,17 @@ export default function AdminLayout({ children }) {
   // Check if current page is login page
   const isLoginPage = pathname === '/admin/login';
 
-  // Auto-close sidebar on route change
+  // Auto-close sidebar on route change & Check Auth
   useEffect(() => {
     setIsSidebarOpen(false);
-  }, [pathname]);
 
+    // Protected route check
+    if (!isLoading && !isAuthenticated && !isLoginPage) {
+      router.push('/admin/login');
+    }
+  }, [pathname, isLoading, isAuthenticated, isLoginPage, router]);
+
+  // Callbacks must be defined before any conditional returns
   const handleToggleSidebar = useCallback(() => {
     console.log('Toggle sidebar clicked, current state:', isSidebarOpen);
     setIsSidebarOpen(prev => !prev);
@@ -30,6 +36,15 @@ export default function AdminLayout({ children }) {
     console.log('Closing sidebar');
     setIsSidebarOpen(false);
   }, []);
+
+  // Show loading spinner while checking auth (except on login page)
+  if (isLoading && !isLoginPage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   // If it's the login page, render without sidebar and header
   if (isLoginPage) {

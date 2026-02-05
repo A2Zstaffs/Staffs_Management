@@ -1,55 +1,91 @@
 import Link from 'next/link';
-import { Search, Users } from 'lucide-react';
+import { Building2, Briefcase, ArrowRight, Phone } from 'lucide-react';
 
 export default function CallToAction() {
   return (
-    <section className="py-16 bg-primary-500">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-br from-secondary-900 via-secondary-800 to-primary-900 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to Transform Your Hiring?
+          </h2>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+            Partner with A2Z Staffs and experience recruitment excellence
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Job Seekers CTA */}
-          <div className="bg-white rounded-xl p-8 text-center lg:text-left">
+          {/* Clients CTA */}
+          <div className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="mb-6">
-              <div className="text-4xl mb-4 text-primary-500 flex justify-center lg:justify-start">
-                <Search className="w-10 h-10" />
+              <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center mb-4">
+                <Building2 className="w-7 h-7 text-primary-600" />
               </div>
-              <h3 className="text-2xl font-bold text-primary-500 mb-4">
-                Looking for a Job?
+              <h3 className="text-2xl font-bold text-secondary-900 mb-3">
+                For Clients
               </h3>
-              <p className="text-base text-secondary-600 mb-6">
-                Join thousands of job seekers who found their dream careers through A2Z Staffs.
-                Create your profile and start applying today!
+              <p className="text-secondary-600 leading-relaxed">
+                Streamline your hiring with our dedicated recruitment support.
+                We handle the sourcing and screening so you can focus on building your team.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link href="/signup/user" className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md text-center">
-                Sign Up Now
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/signup/client"
+                className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-md"
+              >
+                Partner With Us
+                <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/candidate/explore-jobs" className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 text-center">
-                Browse Jobs
+              <Link
+                href="/contact"
+                className="flex items-center justify-center gap-2 bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                Schedule a Call
               </Link>
             </div>
           </div>
 
           {/* Recruiters CTA */}
-          <div className="bg-white rounded-xl p-8 text-center lg:text-left">
+          <div className="bg-white rounded-2xl p-8 shadow-xl">
             <div className="mb-6">
-              <div className="text-4xl mb-4 text-primary-500 flex justify-center lg:justify-start">
-                <Users className="w-10 h-10" />
+              <div className="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center mb-4">
+                <Briefcase className="w-7 h-7 text-primary-600" />
               </div>
-              <h3 className="text-2xl font-bold text-primary-500 mb-4">
-                Want to Hire Talent?
+              <h3 className="text-2xl font-bold text-secondary-900 mb-3">
+                For Recruiters
               </h3>
-              <p className="text-base text-secondary-600 mb-6">
-                Find the perfect candidates for your company. Post jobs, manage applications,
-                and hire the best talent with our powerful recruitment tools.
+              <p className="text-secondary-600 leading-relaxed">
+                Join our network of recruitment professionals. Access exclusive mandates,
+                earn competitively, and grow your career with industry-leading support.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link href="/signup/client" className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 shadow-md text-center">
-                Post a Job Today
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/signup/recruiter"
+                className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-md"
+              >
+                Join Our Network
+                <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link href="/signup/recruiter" className="bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-lg font-semibold text-base transition-colors duration-200 text-center">
-                Join as Recruiter
+              <Link
+                href="/about"
+                className="flex items-center justify-center gap-2 bg-secondary-100 hover:bg-secondary-200 text-secondary-700 px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Learn More
               </Link>
             </div>
           </div>

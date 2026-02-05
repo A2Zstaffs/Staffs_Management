@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const helmet = require('helmet').default;
+const { rateLimit } = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -131,6 +131,8 @@ const kamRoutes = require('./routes/kamRoutes');
 app.use('/api/kam', kamRoutes);
 const recruiterManagerRoutes = require('./routes/recruiterManagerRoutes');
 app.use('/api/recruiter-manager', recruiterManagerRoutes);
+const notificationRoutes = require('./routes/notifications');
+app.use('/api/notifications', notificationRoutes);
 
 // Handle 404 routes
 app.all('*', (req, res) => {
@@ -145,7 +147,8 @@ app.use(errorHandler);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`⚠️ Unhandled Rejection: ${err.message}`);
+  const message = err instanceof Error ? err.message : String(err);
+  console.log(`⚠️ Unhandled Rejection: ${message}`);
   // Only close server & exit process in production
   if (process.env.NODE_ENV === 'production') {
     server.close(() => {
@@ -156,7 +159,8 @@ process.on('unhandledRejection', (err, promise) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log(`⚠️ Uncaught Exception: ${err.message}`);
+  const message = err instanceof Error ? err.message : String(err);
+  console.log(`⚠️ Uncaught Exception: ${message}`);
   if (process.env.NODE_ENV === 'production') {
     console.log('Shutting down the server due to uncaught exception');
     process.exit(1);
