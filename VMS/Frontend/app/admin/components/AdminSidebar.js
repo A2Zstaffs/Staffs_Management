@@ -14,7 +14,8 @@ import {
   Settings,
   Menu,
   X,
-  UserCheck
+  UserCheck,
+  Bell
 } from 'lucide-react';
 
 const menuItems = [
@@ -26,6 +27,7 @@ const menuItems = [
   { icon: Users, label: 'Recruiter Manager', href: '/admin/recruiter-manager' },
   { icon: Briefcase, label: 'Jobs', href: '/admin/jobs' },
   { icon: GitPullRequest, label: 'CV Pipeline', href: '/admin/pipeline' },
+  { icon: Bell, label: 'Notifications', href: '/admin/notifications' },
   { icon: Wallet, label: 'Payouts', href: '/admin/payouts' },
   { icon: BarChart3, label: 'Reports', href: '/admin/reports' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' }

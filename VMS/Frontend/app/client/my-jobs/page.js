@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getMyJobs } from '@/lib/clientApi';
+import { authAPI } from '@/lib/api';
 
 export default function MyJobsPage() {
   const router = useRouter();
@@ -234,7 +235,7 @@ export default function MyJobsPage() {
                           onClick={async () => {
                             if (confirm(`Are you sure you want to delete "${job.job_title}"?`)) {
                               try {
-                                const token = localStorage.getItem('authToken');
+                                const token = authAPI.getToken();
                                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/client/jobs/${job._id}`, {
                                   method: 'DELETE',
                                   headers: { 'Authorization': `Bearer ${token}` }

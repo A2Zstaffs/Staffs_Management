@@ -71,8 +71,8 @@ router.get('/recruiters', protect, authorizeAdmin, async (req, res) => {
                     profileCount,
                     assignedRM: rmAssignment ? {
                         _id: rmAssignment.recruiterManager._id,
-                        fullName: rmAssignment.recruiterManager.fullName,
-                        email: rmAssignment.recruiterManager.email,
+                        fullName: /** @type {any} */ (rmAssignment.recruiterManager).fullName,
+                        email: /** @type {any} */ (rmAssignment.recruiterManager).email,
                         assignedAt: rmAssignment.assignedAt
                     } : null
                 };
@@ -144,8 +144,8 @@ router.get('/clients', protect, authorizeAdmin, async (req, res) => {
                     jobCount,
                     assignedKam: kamAssignment ? {
                         _id: kamAssignment.kam._id,
-                        fullName: kamAssignment.kam.fullName,
-                        email: kamAssignment.kam.email,
+                        fullName: /** @type {any} */ (kamAssignment.kam).fullName,
+                        email: /** @type {any} */ (kamAssignment.kam).email,
                         assignedAt: kamAssignment.assignedAt
                     } : null
                 };
@@ -209,7 +209,7 @@ router.patch('/jobs/:id/status', protect, authorizeAdmin, async (req, res) => {
 
             // If approving, set the approver and timestamp
             if (approval_status === 'Approved') {
-                updateData.approved_by_kam = req.user._id;
+                updateData.approved_by_kam = /** @type {any} */ (req).user._id;
                 updateData.kam_approval_date = Date.now();
                 // Auto-activate if it was pending
                 if (!status) {
@@ -490,5 +490,133 @@ router.use('/kam', protect, authorizeAdmin, kamRoutes);
 // Mount Recruiter Manager management routes
 const recruiterManagerRoutes = require('./admin/recruiterManagerRoutes');
 router.use('/recruiter-manager', protect, authorizeAdmin, recruiterManagerRoutes);
+
+// ============= NOTIFICATION ROUTES =============
+const Notification = require('../models/Notification');
+
+// @desc    Create a new notification
+// @route   POST /api/admin/notifications
+// @access  Private/Admin
+router.post('/notifications', protect, authorizeAdmin, async (req, res) => {
+    try {
+        const { title, message, targetAudience, priority, link, expiresAt } = req.body;
+
+        if (!title || !message) {
+            return res.status(400).json({
+                success: false,
+                message: 'Title and message are required'
+            });
+        }
+
+        const notification = await Notification.create({
+            title,
+            message,
+            targetAudience: targetAudience || 'all',
+            priority: priority || 'normal',
+            link: link || null,
+            expiresAt: expiresAt || null,
+            createdBy: req.user._id
+        });
+
+        res.status(201).json({
+            success: true,
+            data: notification,
+            message: 'Notification created successfully'
+        });
+    } catch (error) {
+        console.error('Create notification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creating notification'
+        });
+    }
+});
+
+// @desc    Get all notifications (admin view)
+// @route   GET /api/admin/notifications
+// @access  Private/Admin
+router.get('/notifications', protect, authorizeAdmin, async (req, res) => {
+    try {
+        const notifications = await Notification.find()
+            .populate('createdBy', 'fullName email')
+            .sort({ createdAt: -1 });
+
+        // Add read count for each notification
+        const notificationsWithStats = notifications.map(n => ({
+            ...n.toObject(),
+            readCount: n.readBy.length
+        }));
+
+        res.json({
+            success: true,
+            count: notifications.length,
+            data: notificationsWithStats
+        });
+    } catch (error) {
+        console.error('Get notifications error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching notifications'
+        });
+    }
+});
+
+// @desc    Delete a notification
+// @route   DELETE /api/admin/notifications/:id
+// @access  Private/Admin
+router.delete('/notifications/:id', protect, authorizeAdmin, async (req, res) => {
+    try {
+        const notification = await Notification.findByIdAndDelete(req.params.id);
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: 'Notification not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Notification deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete notification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting notification'
+        });
+    }
+});
+
+// @desc    Toggle notification active status
+// @route   PATCH /api/admin/notifications/:id/toggle
+// @access  Private/Admin
+router.patch('/notifications/:id/toggle', protect, authorizeAdmin, async (req, res) => {
+    try {
+        const notification = await Notification.findById(req.params.id);
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: 'Notification not found'
+            });
+        }
+
+        notification.isActive = !notification.isActive;
+        await notification.save();
+
+        res.json({
+            success: true,
+            data: notification,
+            message: `Notification ${notification.isActive ? 'activated' : 'deactivated'}`
+        });
+    } catch (error) {
+        console.error('Toggle notification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error toggling notification'
+        });
+    }
+});
 
 module.exports = router;

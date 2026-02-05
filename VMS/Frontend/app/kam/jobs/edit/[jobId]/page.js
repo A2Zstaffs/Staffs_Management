@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import InputField from '@/components/InputField';
@@ -10,7 +10,7 @@ import { kamAPI } from '@/lib/api';
 
 export default function EditJobPage({ params }) {
     const router = useRouter();
-    const { jobId } = params;
+    const { jobId } = use(params);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });

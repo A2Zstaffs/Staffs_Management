@@ -18,8 +18,6 @@ const connectDB = async () => {
     }
 
     const conn = await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       dbName: dbName, // This will override if database is in URI
       // Connection pool settings
       maxPoolSize: 10, // Maximum number of connections in the pool
