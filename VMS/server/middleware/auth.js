@@ -27,7 +27,7 @@ const protect = async (req, res, next) => {
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = /** @type {{ id: string }} */ (jwt.verify(token, process.env.JWT_SECRET));
       console.log('✅ Token decoded successfully, userId:', decoded.id);
 
       // Get user from token
@@ -83,19 +83,37 @@ const authorize = (...roles) => {
 };
 
 // Generate JWT token
-const getSignedJwtToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+// @param {string} id - User ID
+// @param {boolean} rememberMe - If true, use longer expiry (7 days), otherwise shorter (1 hour)
+const getSignedJwtToken = (id, rememberMe = false) => {
+  // Use longer expiry for "Remember Me", shorter for regular sessions
+  const expiresIn = /** @type {import('jsonwebtoken').SignOptions['expiresIn']} */ (
+    rememberMe ? (process.env.JWT_EXPIRE_REMEMBER || '7d') : (process.env.JWT_EXPIRE || '1h')
+  );
+
+  console.log(`🔑 [JWT] Generating token with expiry: ${expiresIn} (rememberMe: ${rememberMe})`);
+
+  return jwt.sign({ id }, /** @type {string} */(process.env.JWT_SECRET), {
+    expiresIn
   });
 };
 
 // Send token response
-const sendTokenResponse = (user, statusCode, res) => {
-  // Create token
-  const token = getSignedJwtToken(user._id);
+// @param {object} user - User object
+// @param {number} statusCode - HTTP status code
+// @param {object} res - Express response object
+// @param {boolean} rememberMe - If true, use longer expiry for token and cookie
+const sendTokenResponse = (user, statusCode, res, rememberMe = false) => {
+  // Create token with appropriate expiry based on rememberMe
+  const token = getSignedJwtToken(user._id, rememberMe);
+
+  // Cookie expiry: 7 days for rememberMe, 1 hour for regular sessions
+  const cookieExpiry = rememberMe
+    ? 7 * 24 * 60 * 60 * 1000  // 7 days
+    : 1 * 60 * 60 * 1000;      // 1 hour
 
   const options = {
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    expires: new Date(Date.now() + cookieExpiry),
     httpOnly: true
   };
 

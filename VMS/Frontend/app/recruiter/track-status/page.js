@@ -29,9 +29,8 @@ export default function TrackStatusPage() {
                 setIsLoading(false);
                 return;
             }
-            // Re-using dashboard endpoint for now as it contains all data
-            // Ideally should be a dedicated endpoint /api/recruiter/submissions
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/recruiter`, {
+            // Use optimized endpoint that only fetches submissions (faster)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/recruiter/submissions`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -39,51 +38,21 @@ export default function TrackStatusPage() {
             const result = await response.json();
 
             if (result.success) {
-                const { submittedCandidates = [], uploadedProfiles = [] } = result.data || {};
+                const { submissions = [], stats: serverStats = {} } = result.data || {};
 
                 console.log('Track Status - Data received:', {
-                    submittedCandidatesCount: submittedCandidates?.length || 0,
-                    uploadedProfilesCount: uploadedProfiles?.length || 0
+                    submissionsCount: submissions.length
                 });
 
-                // Combine and format data with safety checks
-                const combined = [
-                    ...(submittedCandidates || [])
-                        .filter(c => c && c.candidate && c.job) // Only include valid entries
-                        .map(c => ({
-                            id: c._id,
-                            name: c.candidate?.fullName || 'Unknown',
-                            email: c.candidate?.email || 'N/A',
-                            jobTitle: c.job?.title || 'N/A',
-                            company: c.job?.postedBy?.company || 'N/A',
-                            status: c.status,
-                            date: c.createdAt,
-                            type: 'Application'
-                        })),
-                    ...(uploadedProfiles || []).map(p => ({
-                        id: p._id,
-                        name: p.candidate_name || 'Unknown',
-                        email: p.email || 'N/A',
-                        jobTitle: p.job_id?.job_title || 'N/A',
-                        company: p.job_id?.company_name || 'N/A',
-                        status: p.status,
-                        date: p.createdAt,
-                        type: 'Uploaded Profile'
-                    }))
-                ].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                console.log('Track Status - Combined entries:', combined.length);
-                setSubmissions(combined);
-
-                // Calculate stats
-                const newStats = {
-                    total: combined.length,
-                    shortlisted: combined.filter(s => ['shortlisted', 'interview_scheduled'].includes(s.status?.toLowerCase())).length,
-                    interview: combined.filter(s => ['interview_scheduled', 'interviewed'].includes(s.status?.toLowerCase())).length,
-                    hired: combined.filter(s => ['hired', 'placed', 'joined', 'selected'].includes(s.status?.toLowerCase())).length,
-                    rejected: combined.filter(s => ['rejected'].includes(s.status?.toLowerCase())).length
-                };
-                setStats(newStats);
+                // Data is already formatted by server
+                setSubmissions(submissions);
+                setStats({
+                    total: serverStats.total || 0,
+                    shortlisted: serverStats.shortlisted || 0,
+                    interview: serverStats.interview || 0,
+                    hired: serverStats.hired || 0,
+                    rejected: serverStats.rejected || 0
+                });
             } else {
                 console.error('Track Status - API returned error:', result.message);
             }

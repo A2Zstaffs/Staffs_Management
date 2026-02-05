@@ -28,7 +28,8 @@ export default function ClientSettings() {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      // Check sessionStorage first (default), then localStorage (rememberMe)
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -80,7 +81,8 @@ export default function ClientSettings() {
     setMessage({ type: '', text: '' });
 
     try {
-      const token = localStorage.getItem('authToken');
+      // Check sessionStorage first (default), then localStorage (rememberMe)
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
       const profileData = {
         phoneNumber: formData.phoneNumber,
         company: formData.company,

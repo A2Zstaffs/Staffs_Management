@@ -16,8 +16,8 @@ export default function CandidateHomePage() {
       setIsLoading(true);
 
       // Check for JWT token in localStorage
-      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-      const userRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') : null;
+      const token = typeof window !== 'undefined' ? (sessionStorage.getItem('authToken') || localStorage.getItem('authToken')) : null;
+      const userRole = typeof window !== 'undefined' ? (sessionStorage.getItem('userRole') || localStorage.getItem('userRole')) : null;
 
       // If no token, redirect to login
       if (!token) {
@@ -87,7 +87,7 @@ export default function CandidateHomePage() {
                 <button
                   onClick={() => {
                     // Check if user is authenticated before redirecting
-                    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+                    const token = typeof window !== 'undefined' ? (sessionStorage.getItem('authToken') || localStorage.getItem('authToken')) : null;
                     if (token) {
                       router.push('/candidate/dashboard');
                     } else {

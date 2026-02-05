@@ -206,7 +206,7 @@ export const authAPI = {
   // Login user
   async login(credentials) {
     const { rememberMe, ...loginCredentials } = credentials;
-    const response = await apiClient.post('/auth/login', loginCredentials, { skipAuth: true });
+    const response = await apiClient.post('/auth/login', { ...loginCredentials, rememberMe }, { skipAuth: true });
 
     if (response.success) {
       apiClient.setToken(response.token, rememberMe);
