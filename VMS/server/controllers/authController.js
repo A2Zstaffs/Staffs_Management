@@ -148,10 +148,10 @@ const signup = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res) => {
-  console.log('🚀 [Login] Request received:', { email: req.body.email });
+  console.log('🚀 [Login] Request received:', { email: req.body.email, rememberMe: req.body.rememberMe });
 
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, rememberMe } = req.body;
 
     // Validate email & password
     if (!email || !password) {
@@ -236,7 +236,7 @@ const login = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     console.log('✅ [Login] Login successful for:', email);
-    sendTokenResponse(user, 200, res);
+    sendTokenResponse(user, 200, res, !!rememberMe);
 
   } catch (error) {
     console.error('Login error:', error);

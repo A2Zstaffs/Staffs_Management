@@ -23,7 +23,7 @@ export default function ExploreJobsPage() {
   // Authentication check and data fetch
   useEffect(() => {
     const checkAuthAndFetch = async () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+      const token = typeof window !== 'undefined' ? (sessionStorage.getItem('authToken') || localStorage.getItem('authToken')) : null;
       const isAuth = !!token;
       setIsAuthenticated(isAuth);
 
