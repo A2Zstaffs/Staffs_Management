@@ -12,7 +12,8 @@ export default function ProfileBanner() {
     useEffect(() => {
         const checkProfileStatus = async () => {
             try {
-                const token = localStorage.getItem('authToken');
+                // Check sessionStorage first (default), then localStorage (rememberMe)
+                const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
                 if (!token) {
                     console.log('ProfileBanner: No auth token found');
                     return;

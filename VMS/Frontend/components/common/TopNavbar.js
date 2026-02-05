@@ -95,7 +95,7 @@ export default function TopNavbar() {
 
   // Show navbar if authenticated OR if there's a token in localStorage
   // This ensures navbar shows even during auth context loading
-  const hasToken = typeof window !== 'undefined' && localStorage.getItem('authToken');
+  const hasToken = typeof window !== 'undefined' && (sessionStorage.getItem('authToken') || localStorage.getItem('authToken'));
   if (!isAuthenticated && !hasToken) {
     return null; // Don't show navbar if not authenticated
   }

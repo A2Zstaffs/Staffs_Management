@@ -24,7 +24,7 @@ export default function CandidateNavbar() {
         }
         return;
       }
-      
+
       // Then try localStorage
       if (typeof window !== 'undefined') {
         const storedName = localStorage.getItem('userName');
@@ -32,7 +32,7 @@ export default function CandidateNavbar() {
           setUserName(storedName);
           return;
         }
-        
+
         // Also check userData in localStorage
         const userDataStr = localStorage.getItem('userData');
         if (userDataStr) {
@@ -48,7 +48,7 @@ export default function CandidateNavbar() {
           }
         }
       }
-      
+
       // Fallback
       if (user?.email) {
         setUserName(user.email);
@@ -95,7 +95,7 @@ export default function CandidateNavbar() {
   };
 
   // Check if user is authenticated or has token
-  const hasToken = typeof window !== 'undefined' && localStorage.getItem('authToken');
+  const hasToken = typeof window !== 'undefined' && (sessionStorage.getItem('authToken') || localStorage.getItem('authToken'));
   if (!isAuthenticated && !hasToken) {
     return null;
   }

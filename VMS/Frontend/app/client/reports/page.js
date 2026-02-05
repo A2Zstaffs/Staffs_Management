@@ -50,7 +50,7 @@ export default function ReportsPage() {
   const fetchStats = async () => {
     try {
       // Fetch real data from dashboard API to populate reports
-      const token = localStorage.getItem('authToken');
+      // Check sessionStorage first (default), then localStorage (rememberMe)\n      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/dashboard/client`, {
         headers: {
           'Authorization': `Bearer ${token}`
