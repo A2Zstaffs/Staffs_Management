@@ -11,10 +11,10 @@ export default function KAMLayout({ children }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Authentication check
+    // Authentication check - check sessionStorage first (for non-Remember Me), then localStorage
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        const userData = localStorage.getItem('userData');
+        const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+        const userData = sessionStorage.getItem('userData') || localStorage.getItem('userData');
 
         if (!token) {
             router.push('/login');
@@ -55,8 +55,15 @@ export default function KAMLayout({ children }) {
     ];
 
     const handleLogout = () => {
+        // Clear both sessionStorage and localStorage
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('userData');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userRole');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
         router.push('/login');
     };
 

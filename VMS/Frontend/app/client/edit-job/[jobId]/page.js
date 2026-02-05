@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import InputField from '@/components/InputField';
 import TextareaField from '@/components/TextareaField';
 import Toast from '@/components/Toast';
+import { authAPI } from '@/lib/api';
 import { getMyJobs } from '@/lib/clientApi'; // We might need a single job fetch, but for now filtering getMyJobs or adding getJob
 
 export default function EditJobPage({ params }) {
     const router = useRouter();
-    const { jobId } = params; // Get jobId from URL params
+    const { jobId } = use(params); // Get jobId from URL params
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [toast, setToast] = useState({ isVisible: false, message: '', type: 'success' });
@@ -99,7 +100,7 @@ export default function EditJobPage({ params }) {
                 commission_percent: (data.commission_percent !== undefined && data.commission_percent !== '') ? parseFloat(data.commission_percent) : null,
             };
 
-            const token = localStorage.getItem('authToken');
+            const token = authAPI.getToken();
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/client/jobs/${jobId}`, {
                 method: 'PUT',
                 headers: {

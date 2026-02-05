@@ -21,21 +21,23 @@ export default function RecruiterNavbar() {
         return;
       }
       if (typeof window !== 'undefined') {
-        const lsName = localStorage.getItem('userName');
+        const lsName = sessionStorage.getItem('userName') || localStorage.getItem('userName');
         if (lsName) {
           setUserName(lsName);
           return;
         }
-        const userDataStr = localStorage.getItem('userData');
+        const userDataStr = sessionStorage.getItem('userData') || localStorage.getItem('userData');
         if (userDataStr) {
           try {
             const ud = JSON.parse(userDataStr);
             if (ud.fullName) {
               setUserName(ud.fullName);
-              localStorage.setItem('userName', ud.fullName);
+              // Store in appropriate storage
+              const storage = sessionStorage.getItem('authToken') ? sessionStorage : localStorage;
+              storage.setItem('userName', ud.fullName);
               return;
             }
-          } catch {}
+          } catch { }
         }
       }
       if (user?.email) {
@@ -70,7 +72,7 @@ export default function RecruiterNavbar() {
     router.push('/login');
   };
 
-  const hasToken = typeof window !== 'undefined' && localStorage.getItem('authToken');
+  const hasToken = typeof window !== 'undefined' && (sessionStorage.getItem('authToken') || localStorage.getItem('authToken'));
   if (!isAuthenticated && !hasToken) return null;
 
   return (

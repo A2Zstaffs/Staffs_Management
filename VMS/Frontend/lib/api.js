@@ -6,48 +6,62 @@ class ApiClient {
     this.baseURL = API_BASE_URL;
   }
 
-  // Get auth token from localStorage
+  // Get auth token - check sessionStorage first, then localStorage
   getToken() {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('authToken');
+      return sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
     }
     return null;
   }
 
-  // Set auth token in localStorage
-  setToken(token) {
+  // Set auth token - use sessionStorage by default, localStorage if rememberMe
+  setToken(token, rememberMe = false) {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('authToken', token);
+      if (rememberMe) {
+        localStorage.setItem('authToken', token);
+        sessionStorage.removeItem('authToken'); // Clear session storage if using persistent
+      } else {
+        sessionStorage.setItem('authToken', token);
+        localStorage.removeItem('authToken'); // Clear localStorage if using session
+      }
     }
   }
 
-  // Remove auth token from localStorage
+  // Remove auth token from both storages
   removeToken() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('authToken');
+      sessionStorage.removeItem('authToken');
     }
   }
 
-  // Get user data from localStorage
+  // Get user data - check sessionStorage first, then localStorage
   getUser() {
     if (typeof window !== 'undefined') {
-      const userData = localStorage.getItem('userData');
+      const userData = sessionStorage.getItem('userData') || localStorage.getItem('userData');
       return userData ? JSON.parse(userData) : null;
     }
     return null;
   }
 
-  // Set user data in localStorage
-  setUser(userData) {
+  // Set user data - use sessionStorage by default, localStorage if rememberMe
+  setUser(userData, rememberMe = false) {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('userData', JSON.stringify(userData));
+      if (rememberMe) {
+        localStorage.setItem('userData', JSON.stringify(userData));
+        sessionStorage.removeItem('userData');
+      } else {
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.removeItem('userData');
+      }
     }
   }
 
-  // Remove user data from localStorage
+  // Remove user data from both storages
   removeUser() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('userData');
+      sessionStorage.removeItem('userData');
     }
   }
 
@@ -191,21 +205,26 @@ const apiClient = new ApiClient();
 export const authAPI = {
   // Login user
   async login(credentials) {
-    const response = await apiClient.post('/auth/login', credentials, { skipAuth: true });
+    const { rememberMe, ...loginCredentials } = credentials;
+    const response = await apiClient.post('/auth/login', loginCredentials, { skipAuth: true });
 
     if (response.success) {
-      apiClient.setToken(response.token);
-      // Backend returns 'user' field, not 'data'
+      apiClient.setToken(response.token, rememberMe);
+      // Backend returns 'user' field, normalize to 'data' for consistency
       const userData = response.user || response.data;
-      apiClient.setUser(userData);
+      apiClient.setUser(userData, rememberMe);
 
-      // Save user name and role in localStorage for easy access
+      // Ensure response.data is set for consumers (AuthContext, admin login, etc.)
+      response.data = userData;
+
+      // Save user name and role in appropriate storage
       if (userData && typeof window !== 'undefined') {
+        const storage = rememberMe ? localStorage : sessionStorage;
         if (userData.fullName) {
-          localStorage.setItem('userName', userData.fullName);
+          storage.setItem('userName', userData.fullName);
         }
         if (userData.role) {
-          localStorage.setItem('userRole', userData.role);
+          storage.setItem('userRole', userData.role);
         }
       }
     }
@@ -252,6 +271,13 @@ export const authAPI = {
     } finally {
       apiClient.removeToken();
       apiClient.removeUser();
+      // Clear additional session data from both storages
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
+        sessionStorage.removeItem('userName');
+        sessionStorage.removeItem('userRole');
+      }
     }
   },
 
@@ -621,6 +647,44 @@ export const apiUtils = {
   // Check if response is successful
   isSuccess(response) {
     return response && response.success === true;
+  }
+};
+
+// Notification API methods
+export const notificationAPI = {
+  // Get notifications for current user
+  getNotifications() {
+    return apiClient.get('/notifications');
+  },
+
+  // Mark notification as read
+  markAsRead(notificationId) {
+    return apiClient.patch(`/notifications/${notificationId}/read`);
+  },
+
+  // Mark all notifications as read
+  markAllAsRead() {
+    return apiClient.patch('/notifications/read-all');
+  },
+
+  // Admin: Create notification
+  createNotification(data) {
+    return apiClient.post('/admin/notifications', data);
+  },
+
+  // Admin: Get all notifications
+  getAllNotifications() {
+    return apiClient.get('/admin/notifications');
+  },
+
+  // Admin: Delete notification
+  deleteNotification(notificationId) {
+    return apiClient.delete(`/admin/notifications/${notificationId}`);
+  },
+
+  // Admin: Toggle notification active status
+  toggleNotification(notificationId) {
+    return apiClient.patch(`/admin/notifications/${notificationId}/toggle`);
   }
 };
 

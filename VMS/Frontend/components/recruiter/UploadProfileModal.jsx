@@ -26,7 +26,8 @@ export default function UploadProfileModal({ isOpen, onClose, job, submittedCand
 
     // Get recruiter name on component mount
     useEffect(() => {
-        const userData = localStorage.getItem('userData');
+        // Check sessionStorage first (default), then localStorage (rememberMe)
+        const userData = sessionStorage.getItem('userData') || localStorage.getItem('userData');
         if (userData) {
             const user = JSON.parse(userData);
             setRecruiterName(user.fullName || user.name || 'Unknown Recruiter');
@@ -94,12 +95,12 @@ export default function UploadProfileModal({ isOpen, onClose, job, submittedCand
         setError(null);
 
         try {
-            // Get user data from localStorage
-            const userData = localStorage.getItem('userData');
+            // Get user data from sessionStorage first (default), then localStorage (rememberMe)
+            const userData = sessionStorage.getItem('userData') || localStorage.getItem('userData');
             const user = userData ? JSON.parse(userData) : null;
 
             if (!user || !user._id) {
-                throw new Error('User not authenticated');
+                throw new Error('User not authenticated. Please log in again.');
             }
 
             // Create FormData object
@@ -221,8 +222,8 @@ export default function UploadProfileModal({ isOpen, onClose, job, submittedCand
                                     onChange={handleChange}
                                     required
                                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${isDuplicate
-                                            ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                                            : 'border-gray-300 focus:ring-blue-500'
+                                        ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                        : 'border-gray-300 focus:ring-blue-500'
                                         }`}
                                 />
                                 {duplicateWarning && (
