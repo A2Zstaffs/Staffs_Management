@@ -31,7 +31,8 @@ export default function ProfileCompletionModal({ isOpen, onClose, onComplete }) 
         setIsLoading(true);
 
         try {
-            const token = localStorage.getItem('authToken');
+            // Check sessionStorage first (default), then localStorage (rememberMe)
+            const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
             const profileData = {

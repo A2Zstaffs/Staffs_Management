@@ -73,7 +73,7 @@ const checkClientAccess = async (req, res, next) => {
         }
 
         // Check if KAM has access to this client
-        const hasAccess = await ClientAssignment.hasClientAccess(user._id, clientId);
+        const hasAccess = await /** @type {any} */ (ClientAssignment).hasClientAccess(user._id, clientId);
 
         if (!hasAccess) {
             return res.status(403).json({
@@ -134,7 +134,7 @@ const checkJobAccess = async (req, res, next) => {
             });
         }
 
-        const hasAccess = await ClientAssignment.hasClientAccess(user._id, job.postedBy);
+        const hasAccess = await /** @type {any} */ (ClientAssignment).hasClientAccess(user._id, job.postedBy);
 
         if (!hasAccess) {
             return res.status(403).json({

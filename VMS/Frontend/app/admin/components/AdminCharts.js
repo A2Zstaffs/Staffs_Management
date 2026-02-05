@@ -1,137 +1,159 @@
 'use client';
 
 import {
-  BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
+  AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { motion } from 'framer-motion';
 
-export default function AdminCharts({ barData, pieData }) {
+export default function AdminCharts({ trendData, statusData }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Bar Chart */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Area Chart - Monthly Trends (2/3 width) */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 
-                 p-6 shadow-xl shadow-blue-900/5"
+        className="lg:col-span-2 rounded-xl bg-white border border-gray-100 p-6 shadow-sm"
       >
-        <h3 className="text-secondary-900 font-bold text-lg mb-2 flex items-center gap-2">
+        <h3 className="text-gray-800 font-bold text-lg mb-1 flex items-center gap-2">
           <span className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full" />
-          Performance Overview
+          Growth Trends
         </h3>
-        <p className="text-secondary-600 text-sm mb-6">Recruiters vs Clients Growth</p>
+        <p className="text-gray-500 text-sm mb-6">Monthly overview of platform growth</p>
 
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={barData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={trendData}>
+            <defs>
+              <linearGradient id="colorRecruiters" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="colorJobs" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="colorClients" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
             <XAxis
-              dataKey="name"
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
+              dataKey="month"
+              stroke="#94a3b8"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
             />
             <YAxis
-              stroke="#64748b"
-              style={{ fontSize: '12px' }}
+              stroke="#94a3b8"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: '1px solid rgba(59, 130, 246, 0.2)',
+                backgroundColor: 'white',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
-                color: '#1e293b',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
-              cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
             />
             <Legend
-              wrapperStyle={{ color: '#64748b', fontSize: '12px' }}
+              wrapperStyle={{ paddingTop: '20px' }}
               iconType="circle"
             />
-            <Bar
+            <Area
+              type="monotone"
               dataKey="recruiters"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              fillOpacity={1}
               fill="url(#colorRecruiters)"
-              radius={[8, 8, 0, 0]}
-              animationDuration={1000}
+              name="Recruiters"
             />
-            <Bar
+            <Area
+              type="monotone"
+              dataKey="jobs"
+              stroke="#10b981"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#colorJobs)"
+              name="Jobs"
+            />
+            <Area
+              type="monotone"
               dataKey="clients"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              fillOpacity={1}
               fill="url(#colorClients)"
-              radius={[8, 8, 0, 0]}
-              animationDuration={1000}
+              name="Clients"
             />
-            <defs>
-              <linearGradient id="colorRecruiters" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="#60a5fa" />
-              </linearGradient>
-              <linearGradient id="colorClients" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0ea5e9" />
-                <stop offset="100%" stopColor="#38bdf8" />
-              </linearGradient>
-            </defs>
-          </BarChart>
+          </AreaChart>
         </ResponsiveContainer>
       </motion.div>
 
-      {/* Pie Chart */}
+      {/* Donut Chart - Job Status (1/3 width) */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 
-                 p-6 shadow-xl shadow-blue-900/5"
+        className="rounded-xl bg-white border border-gray-100 p-6 shadow-sm"
       >
-        <h3 className="text-secondary-900 font-bold text-lg mb-2 flex items-center gap-2">
-          <span className="w-1 h-6 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full" />
-          Commission Distribution
+        <h3 className="text-gray-800 font-bold text-lg mb-1 flex items-center gap-2">
+          <span className="w-1 h-6 bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-full" />
+          Job Status
         </h3>
-        <p className="text-secondary-600 text-sm mb-6">Revenue Share Split</p>
+        <p className="text-gray-500 text-sm mb-4">Current job distribution</p>
 
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={200}>
           <PieChart>
             <Pie
-              data={pieData}
+              data={statusData}
               cx="50%"
               cy="50%"
-              labelLine={false}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              outerRadius={100}
-              fill="#8884d8"
+              innerRadius={50}
+              outerRadius={75}
+              paddingAngle={3}
               dataKey="value"
-              animationDuration={1000}
+              animationDuration={800}
             >
-              {pieData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={entry.color}
-                />
+              {statusData?.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                border: '1px solid rgba(59, 130, 246, 0.2)',
+                backgroundColor: 'white',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
-                color: '#1e293b',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
             />
-            <Legend
-              wrapperStyle={{ color: '#64748b', fontSize: '12px' }}
-              iconType="circle"
-            />
           </PieChart>
         </ResponsiveContainer>
+
+        {/* Legend */}
+        <div className="mt-2 space-y-2">
+          {statusData?.map((item, index) => (
+            <div key={index} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="text-gray-600">{item.name}</span>
+              </div>
+              <span className="font-medium text-gray-800">{item.value}</span>
+            </div>
+          ))}
+        </div>
       </motion.div>
     </div>
   );
 }
-
-
-
-
 
 
 

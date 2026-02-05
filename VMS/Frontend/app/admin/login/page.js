@@ -111,7 +111,7 @@ export default function AdminLogin() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    placeholder="admin@a2zstaffs.com"
+                                    placeholder="Enter admin email"
                                     className="w-full pl-11 pr-4 py-3 bg-white/90 border border-white/20 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     style={{ color: 'black' }}
                                 />
