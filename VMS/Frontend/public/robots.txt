@@ -1,0 +1,34 @@
+# A2Z Staffs - Robots.txt
+# https://a2zstaffs.com
+
+User-agent: *
+Allow: /
+
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /kam/
+Disallow: /recruiter/
+Disallow: /recruiter-manager/
+Disallow: /client/
+Disallow: /candidate/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /forgot-password/
+Disallow: /reset-password/
+Disallow: /verify-otp/
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /services
+Allow: /contact
+Allow: /blog
+Allow: /blog/*
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /cookie-policy
+Allow: /login
+Allow: /signup/*
+
+# Sitemap location
+Sitemap: https://a2zstaffs.com/sitemap.xml
