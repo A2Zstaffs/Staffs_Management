@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users, ArrowLeft, Search } from 'lucide-react';
 import * as recruiterManagerAPI from '@/lib/recruiterManagerApi';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function RecruitersPage() {
     const [recruiters, setRecruiters] = useState([]);
@@ -101,7 +102,9 @@ export default function RecruitersPage() {
                 {/* Recruiters List */}
                 <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
                     {isLoading ? (
-                        <div className="p-8 text-center text-gray-600">Loading recruiters...</div>
+                        <div className="p-8">
+                            <LoadingSpinner size="md" message="Loading recruiters..." />
+                        </div>
                     ) : error ? (
                         <div className="p-8 text-center text-red-400">Error: {error}</div>
                     ) : filteredRecruiters.length === 0 ? (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Download, Mail, Phone, Briefcase, MapPin, Calendar, Award, FileText } from 'lucide-react';
 import * as recruiterManagerAPI from '@/lib/recruiterManagerApi';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function ProfileDetailPage() {
     const params = useParams();
@@ -43,7 +44,7 @@ export default function ProfileDetailPage() {
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
-                <div className="text-gray-900 text-xl">Loading profile...</div>
+                <LoadingSpinner size="lg" message="Loading profile..." />
             </div>
         );
     }

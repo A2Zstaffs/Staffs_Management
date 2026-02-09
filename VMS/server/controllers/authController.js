@@ -217,9 +217,10 @@ const login = async (req, res) => {
 
     // Check if role matches (if provided)
     if (role && user.role !== role) {
+      console.log('⚠️ [Login] Role mismatch - Expected:', role, 'Got:', user.role);
       return res.status(401).json({
         success: false,
-        message: `Invalid credentials for ${role} role`
+        message: 'Invalid credentials'
       });
     }
 
