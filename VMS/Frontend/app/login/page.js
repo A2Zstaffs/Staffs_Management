@@ -68,7 +68,6 @@ export default function LoginPage() {
                     recruiter: '/recruiter/dashboard',
                     candidate: '/candidate/dashboard',
                     client: '/client/dashboard',
-                    consultancy: '/consultancy/dashboard',
                     kam: '/kam', // KAM dashboard route
                     recruiter_manager: '/recruiter-manager/dashboard' // RM dashboard route
                 };
@@ -103,7 +102,6 @@ export default function LoginPage() {
                     recruiter: '/recruiter/dashboard',
                     candidate: '/candidate/dashboard',
                     client: '/client/dashboard',
-                    consultancy: '/consultancy/dashboard',
                     kam: '/kam',
                     recruiter_manager: '/recruiter-manager/dashboard'
                 };
@@ -190,7 +188,7 @@ export default function LoginPage() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="name@example.com"
+                                placeholder="Enter your email"
                                 className={`w-full px-4 py-2.5 bg-white/50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 ${errors.email ? 'border-red-300 bg-red-50' : ''}`}
                                 required
                             />
@@ -293,7 +291,6 @@ export default function LoginPage() {
                                 <option value="recruiter">Login as Recruiter</option>
                                 <option value="candidate">Login as Candidate</option>
                                 <option value="client">Login as Client</option>
-                                <option value="consultancy">Login as Consultancy</option>
                                 <option value="kam">Login as KAM</option>
                                 <option value="recruiter_manager">Login as Recruiter Manager</option>
                             </select>

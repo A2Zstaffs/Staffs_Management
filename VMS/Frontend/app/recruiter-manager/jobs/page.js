@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Briefcase, ArrowLeft, Search, MapPin, DollarSign, Calendar, Building2 } from 'lucide-react';
 import * as recruiterManagerAPI from '@/lib/recruiterManagerApi';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function JobsPage() {
     const [jobs, setJobs] = useState([]);
@@ -90,10 +91,7 @@ export default function JobsPage() {
                 {/* Jobs List */}
                 <div className="space-y-4">
                     {isLoading ? (
-                        <div className="p-8 text-center text-gray-600">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                            Loading jobs...
-                        </div>
+                        <LoadingSkeleton type="card" count={4} />
                     ) : error ? (
                         <div className="p-8 text-center text-red-400">Error: {error}</div>
                     ) : filteredJobs.length === 0 ? (

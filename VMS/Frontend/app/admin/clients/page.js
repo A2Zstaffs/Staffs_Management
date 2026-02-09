@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { adminAPI } from '@/lib/api';
 import { Search, X, Building2, User, MapPin, Briefcase, Mail, Phone, Calendar, Users, ChevronDown, ChevronRight, Shield } from 'lucide-react';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function ClientsPage() {
   const [clients, setClients] = useState([]);
@@ -478,13 +479,9 @@ export default function ClientsPage() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
           {isLoading ? (
-            <div className="p-8 text-center text-secondary-600">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-              <p>Loading clients...</p>
-            </div>
+            <LoadingSkeleton type="table" count={8} />
           ) : error ? (
             <div className="p-8 text-center text-red-600">{error}</div>
           ) : filteredClients.length === 0 ? (

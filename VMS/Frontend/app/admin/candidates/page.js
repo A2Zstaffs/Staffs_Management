@@ -6,6 +6,7 @@ import { adminAPI } from '@/lib/api';
 import { candidatesMock } from '../data/adminData';
 import CandidateModal from './CandidateModal';
 import { Search, X, AlertTriangle } from 'lucide-react';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function CandidatesPage() {
     const [candidates, setCandidates] = useState([]);
@@ -365,7 +366,7 @@ export default function CandidatesPage() {
 
                 <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 shadow-xl shadow-blue-900/5 overflow-hidden">
                     {isLoading ? (
-                        <div className="p-8 text-center text-secondary-600">Loading candidates...</div>
+                        <LoadingSkeleton type="table" count={8} />
                     ) : error ? (
                         <div className="p-8 text-center text-red-600">{error}</div>
                     ) : (

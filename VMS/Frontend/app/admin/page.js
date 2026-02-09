@@ -10,6 +10,7 @@ import RecentActivityFeed from './components/RecentActivityFeed';
 import QuickActionsGrid from './components/QuickActionsGrid';
 import { adminAPI, notificationAPI } from '@/lib/api';
 import { quickActions } from './data/adminData';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -144,14 +145,7 @@ export default function AdminDashboard() {
   ].filter(s => s.value > 0);
 
   if (authLoading || !isAuthenticated || user?.role !== 'admin') {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner variant="logo" size="xl" message="Loading admin dashboard..." fullScreen />;
   }
 
   return (
