@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function FeaturedJobs() {
   const [featuredJobs, setFeaturedJobs] = useState([]);
@@ -29,7 +30,21 @@ export default function FeaturedJobs() {
   };
 
   if (loading) {
-    return <div className="py-16 text-center text-gray-500">Loading jobs...</div>;
+    return (
+      <section className="py-16 bg-secondary-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-primary-500 mb-4">
+              Featured Jobs
+            </h2>
+            <p className="text-lg text-secondary-600 max-w-2xl mx-auto">
+              Discover the latest opportunities from top companies
+            </p>
+          </div>
+          <LoadingSkeleton type="card" count={6} />
+        </div>
+      </section>
+    );
   }
 
   if (featuredJobs.length === 0) {

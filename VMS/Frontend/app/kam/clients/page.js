@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { kamAPI } from '@/lib/api';
 import { Building2, Mail, Briefcase } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function KAMClientsPage() {
     const router = useRouter();
@@ -28,7 +29,11 @@ export default function KAMClientsPage() {
     };
 
     if (isLoading) {
-        return <div className="p-8">Loading clients...</div>;
+        return (
+            <div className="p-8">
+                <LoadingSpinner size="lg" message="Loading clients..." />
+            </div>
+        );
     }
 
     return (
