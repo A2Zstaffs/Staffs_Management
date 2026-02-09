@@ -7,6 +7,7 @@ import * as recruiterManagerAPI from '@/lib/recruiterManagerApi';
 import { useAuth } from '@/contexts/AuthContext';
 import PerformanceChart from '../components/PerformanceChart';
 import ActivityFeed from '../components/ActivityFeed';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const getGreeting = () => {
     const hour = new Date().getHours();
@@ -40,11 +41,7 @@ export default function RecruiterManagerDashboard() {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-secondary-900 text-xl">Loading dashboard...</div>
-            </div>
-        );
+        return <LoadingSpinner variant="logo" size="xl" message="Loading your dashboard..." fullScreen />;
     }
 
     if (error) {

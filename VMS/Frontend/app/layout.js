@@ -68,6 +68,10 @@ export const metadata = {
   alternates: {
     canonical: 'https://a2zstaffs.com',
   },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 // JSON-LD Structured Data for Organization (enables logo in Google search)
@@ -115,10 +119,8 @@ const websiteSchema = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/image/a2zstaff logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/image/a2zstaff logo.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

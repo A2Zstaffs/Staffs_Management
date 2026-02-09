@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getMyJobs } from '@/lib/clientApi';
 import { authAPI } from '@/lib/api';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function MyJobsPage() {
   const router = useRouter();
@@ -116,10 +117,7 @@ export default function MyJobsPage() {
       {/* Jobs Table */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden backdrop-blur-sm">
         {isLoading ? (
-          <div className="p-16 text-center">
-            <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-gray-100 border-t-blue-600 mb-4"></div>
-            <p className="text-gray-500 font-medium text-lg">Loading your workspace...</p>
-          </div>
+          <LoadingSkeleton type="table" count={5} />
         ) : error ? (
           <div className="p-12 text-center">
             <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-xl mb-6 inline-block font-medium">

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ClientLayout from '@/components/client/ClientLayout';
 import { getHiringDetails, markAsClosed } from '@/lib/clientApi';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 function HiringClosureContent() {
   const router = useRouter();
@@ -46,7 +47,7 @@ function HiringClosureContent() {
   const loadHiringDetails = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await getHiringDetails(candidateId, jobId);
       if (response.success) {
@@ -88,13 +89,7 @@ function HiringClosureContent() {
     return (
       <ClientLayout>
         <div className="max-w-4xl mx-auto">
-          <div className="p-12 text-center">
-            <svg className="animate-spin h-12 w-12 text-primary-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p className="text-gray-600">Loading hiring details...</p>
-          </div>
+          <LoadingSpinner size="lg" message="Loading hiring details..." />
         </div>
       </ClientLayout>
     );
@@ -230,17 +225,17 @@ function HiringClosureContent() {
 
         {/* Action Button */}
         <div className="flex justify-end space-x-4">
-            <button
-              onClick={() => router.push('/client/my-jobs')}
-              className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleMarkAsClosed}
-              disabled={isSubmitting}
-              className="px-6 py-3 bg-[#1A73FF] hover:bg-[#0047CC] disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors duration-200 flex items-center"
-            >
+          <button
+            onClick={() => router.push('/client/my-jobs')}
+            className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleMarkAsClosed}
+            disabled={isSubmitting}
+            className="px-6 py-3 bg-[#1A73FF] hover:bg-[#0047CC] disabled:bg-gray-300 text-white font-medium rounded-lg transition-colors duration-200 flex items-center"
+          >
             {isSubmitting ? (
               <>
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -264,13 +259,7 @@ export default function HiringClosurePage() {
     <Suspense fallback={
       <ClientLayout>
         <div className="max-w-4xl mx-auto">
-          <div className="p-12 text-center">
-            <svg className="animate-spin h-12 w-12 text-primary-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p className="text-secondary-600">Loading...</p>
-          </div>
+          <LoadingSpinner size="lg" message="Loading..." />
         </div>
       </ClientLayout>
     }>

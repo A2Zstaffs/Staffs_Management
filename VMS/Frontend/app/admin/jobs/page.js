@@ -9,6 +9,7 @@ import {
     Building2, Calendar, Filter, MoreHorizontal,
     ArrowUpRight, ShieldCheck, IndianRupee
 } from 'lucide-react';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function JobsPage() {
     const [jobs, setJobs] = useState([]);
@@ -299,7 +300,7 @@ export default function JobsPage() {
                 {/* Job Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {isLoading ? (
-                        <div className="col-span-full py-20 text-center text-secondary-500">Loading live inventory...</div>
+                        <LoadingSkeleton type="card" count={6} />
                     ) : filteredJobs.length === 0 ? (
                         <div className="col-span-full py-20 text-center text-secondary-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                             No jobs found matching your criteria
