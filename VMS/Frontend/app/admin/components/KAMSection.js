@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { adminAPI } from '@/lib/api';
 import { Users, UserCheck, Building2, ChevronDown, ChevronUp, Plus, X, UserPlus } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function KAMSection() {
     const [kams, setKams] = useState([]);
@@ -199,10 +200,7 @@ export default function KAMSection() {
             </div>
 
             {isLoading ? (
-                <div className="p-8 text-center text-gray-600">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                    Loading KAMs...
-                </div>
+                <LoadingSpinner variant="logo" size="md" message="Loading KAMs..." />
             ) : error ? (
                 <div className="p-8 text-center text-red-600">{error}</div>
             ) : (

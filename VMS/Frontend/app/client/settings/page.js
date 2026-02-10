@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function ClientSettings() {
   const { user: contextUser } = useAuth();
@@ -134,12 +135,7 @@ export default function ClientSettings() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading settings...</p>
-        </div>
-      </div>
+      <LoadingSpinner variant="logo" size="lg" message="Loading settings..." fullScreen />
     );
   }
 

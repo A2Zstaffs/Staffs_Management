@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import RecruiterNavbar from '@/components/common/RecruiterNavbar';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 
 export default function TrackStatusPage() {
@@ -141,6 +142,15 @@ export default function TrackStatusPage() {
         }
     ];
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <RecruiterNavbar />
+                <LoadingSpinner variant="logo" size="lg" message="Loading applications..." fullScreen />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
             <RecruiterNavbar />
@@ -199,13 +209,7 @@ export default function TrackStatusPage() {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
-                                {isLoading ? (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-12 text-center text-gray-500 font-medium animate-pulse">
-                                            Loading submissions...
-                                        </td>
-                                    </tr>
-                                ) : submissions.length === 0 ? (
+                                {submissions.length === 0 ? (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
                                             <div className="flex flex-col items-center">
