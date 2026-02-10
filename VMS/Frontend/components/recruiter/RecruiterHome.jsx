@@ -19,12 +19,14 @@ import {
   LabelList
 } from 'recharts';
 import ProfileBanner from '@/components/common/ProfileBanner';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function RecruiterHome() {
   const { user } = useAuth();
   const router = useRouter();
 
   const [displayName, setDisplayName] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const resolveName = () => {
@@ -101,6 +103,8 @@ export default function RecruiterHome() {
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
     }
   }, [user]);
 
@@ -254,6 +258,14 @@ export default function RecruiterHome() {
   };
 
   const currentNotification = notifications[currentNotificationIndex];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <LoadingSpinner variant="logo" size="lg" message="Loading your dashboard..." fullScreen />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

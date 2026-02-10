@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CandidateNavbar from '@/components/candidate/CandidateNavbar';
 import { authAPI, dashboardAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function CandidateHomePage() {
   const router = useRouter();
@@ -50,9 +51,7 @@ export default function CandidateHomePage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
+      <LoadingSpinner variant="logo" size="lg" message="Loading..." fullScreen />
     );
   }
 

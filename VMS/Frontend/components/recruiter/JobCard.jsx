@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import UploadProfileModal from './UploadProfileModal';
 import { profileAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -210,9 +211,7 @@ const JobCard = ({ job, user, submittedCandidates = new Set(), onProfileUploaded
                             Your Submitted Candidates
                         </h4>
                         {loadingProfiles ? (
-                            <div className="flex justify-center py-8">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                            </div>
+                            <LoadingSpinner variant="logo" size="md" message="Loading profiles..." />
                         ) : submittedProfiles.length > 0 ? (
                             <div className="overflow-x-auto rounded-lg border border-gray-200">
                                 <table className="min-w-full text-sm">

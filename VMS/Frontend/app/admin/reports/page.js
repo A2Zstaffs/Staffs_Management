@@ -8,6 +8,7 @@ import {
   Building2, TrendingUp, Calendar, Loader2
 } from 'lucide-react';
 import { adminAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend
@@ -344,9 +345,7 @@ export default function ReportsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
+          <LoadingSpinner variant="logo" size="lg" message="Loading reports..." />
         ) : (
           <>
             {/* Summary Cards */}
