@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function UploadProfileModal({ isOpen, onClose, job, submittedCandidates = new Set(), onSuccess }) {
     const [formData, setFormData] = useState({
@@ -169,7 +170,12 @@ export default function UploadProfileModal({ isOpen, onClose, job, submittedCand
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+                {loading && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+                        <LoadingSpinner variant="logo" size="lg" message="Uploading profile..." />
+                    </div>
+                )}
                 <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-900">Upload Candidate Profile</h2>
                     <button

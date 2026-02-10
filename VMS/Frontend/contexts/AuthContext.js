@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { authAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Initial state
 const initialState = {
@@ -276,9 +277,7 @@ export const withAuth = (WrappedComponent) => {
 
     if (isLoading) {
       return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-        </div>
+        <LoadingSpinner variant="logo" size="lg" message="Authenticating..." fullScreen />
       );
     }
 

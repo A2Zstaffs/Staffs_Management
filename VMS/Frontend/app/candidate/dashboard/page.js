@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { authAPI, dashboardAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import {
   Search,
   FileText,
@@ -342,15 +343,7 @@ export default function CandidateDashboardPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600 mx-auto" />
-            <Sparkles className="w-6 h-6 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <p className="mt-4 text-slate-600 font-medium">Loading your dashboard...</p>
-        </div>
-      </div>
+      <LoadingSpinner variant="logo" size="lg" message="Loading your dashboard..." fullScreen />
     );
   }
 

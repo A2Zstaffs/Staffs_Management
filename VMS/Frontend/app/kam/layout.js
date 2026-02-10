@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { LayoutDashboard, Users, Briefcase, FileText, LogOut, Menu, X } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function KAMLayout({ children }) {
     const router = useRouter();
@@ -70,12 +71,7 @@ export default function KAMLayout({ children }) {
     // Show loading state while checking authentication
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading...</p>
-                </div>
-            </div>
+            <LoadingSpinner variant="logo" size="lg" message="Loading..." fullScreen />
         );
     }
 

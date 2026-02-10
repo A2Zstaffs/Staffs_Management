@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { adminAPI } from '@/lib/api';
 import { Search, X, Download, FileText, MapPin, Briefcase, Calendar, CheckSquare, Square, User, Building2, ChevronDown, ChevronRight, Users } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function PipelinePage() {
     const [cvs, setCvs] = useState([]);
@@ -574,10 +575,7 @@ export default function PipelinePage() {
                 {/* Main Content */}
                 <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
                     {isLoading ? (
-                        <div className="p-8 text-center text-secondary-600">
-                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                            <p>Loading CVs...</p>
-                        </div>
+                        <LoadingSpinner variant="logo" size="lg" message="Loading CVs..." />
                     ) : error ? (
                         <div className="p-8 text-center text-red-600">{error}</div>
                     ) : filteredCvs.length === 0 ? (
