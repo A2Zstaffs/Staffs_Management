@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from './components/AdminSidebar';
 import '../globals.css';
 import GradientHeader from './components/GradientHeader';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
@@ -40,9 +41,7 @@ export default function AdminLayout({ children }) {
   // Show loading spinner while checking auth (except on login page)
   if (isLoading && !isLoginPage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      <LoadingSpinner variant="logo" size="lg" message="Loading admin panel..." fullScreen />
     );
   }
 
