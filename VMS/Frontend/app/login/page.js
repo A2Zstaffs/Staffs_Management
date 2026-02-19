@@ -16,6 +16,7 @@ export default function LoginPage() {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [infoMessage, setInfoMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -90,12 +91,23 @@ export default function LoginPage() {
     const handleGoogleLogin = async (credentialResponse) => {
         setIsLoading(true);
         setErrors({});
+        setInfoMessage('');
 
         try {
             const response = await authAPI.googleAuth(credentialResponse.credential, formData.role);
 
             if (response.success) {
+                // Use the actual role from the backend response (user's DB role)
                 const userRole = response.data?.role || response.user?.role || formData.role;
+
+                const roleLabels = {
+                    admin: 'Admin',
+                    recruiter: 'Recruiter',
+                    candidate: 'Candidate',
+                    client: 'Client',
+                    kam: 'KAM',
+                    recruiter_manager: 'Recruiter Manager'
+                };
 
                 const dashboardRoutes = {
                     admin: '/admin/dashboard',
@@ -107,7 +119,14 @@ export default function LoginPage() {
                 };
 
                 const targetRoute = dashboardRoutes[userRole] || '/';
-                router.push(targetRoute);
+
+                // If user's actual role differs from selected role, show info and redirect to correct dashboard
+                if (userRole !== formData.role) {
+                    setInfoMessage(`Welcome back! Signing you in as ${roleLabels[userRole] || userRole}...`);
+                    setTimeout(() => router.push(targetRoute), 1500);
+                } else {
+                    router.push(targetRoute);
+                }
             } else {
                 setErrors({ general: response.message || 'Google login failed' });
             }
@@ -127,7 +146,6 @@ export default function LoginPage() {
             console.log('Google One Tap failed');
         },
     });
-    console.log("hey this is ajay")
     return (
         <div className="min-h-screen w-full animated-background-light flex items-center justify-center p-4 relative overflow-hidden font-sans">
             {/* Layer 1: Animated Background Blobs (Light Theme - Soft Blue/Violet) */}
@@ -165,6 +183,16 @@ export default function LoginPage() {
                         <h1 className="text-2xl font-bold text-slate-800 mb-1 tracking-tight">Welcome Back</h1>
                         <p className="text-slate-500 text-xs">Sign in to your account</p>
                     </div>
+
+                    {/* Info Message - Role redirect notice */}
+                    {infoMessage && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg text-xs flex items-center">
+                            <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {infoMessage}
+                        </div>
+                    )}
 
                     {/* Error Message - Light Theme */}
                     {errors.general && (

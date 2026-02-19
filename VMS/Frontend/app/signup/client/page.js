@@ -106,12 +106,24 @@ export default function ClientSignupPage() {
       const response = await authAPI.googleAuth(credentialResponse.credential, 'client');
 
       if (response.success) {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('userRole', 'client');
+        // Use actual role from backend response (handles existing accounts with different roles)
+        const actualRole = response.data?.role || response.user?.role || 'client';
+        const dashboardRoutes = {
+          client: '/client/dashboard',
+          recruiter: '/recruiter/home',
+          candidate: '/candidate/home',
+          kam: '/kam',
+          recruiter_manager: '/recruiter-manager/dashboard',
+          consultancy: '/dashboard'
+        };
+
+        if (actualRole !== 'client') {
+          setError(`Welcome back! Your account is registered as ${actualRole}. Redirecting...`);
         }
+
         setTimeout(() => {
-          router.push('/client/dashboard');
-        }, 100);
+          router.push(dashboardRoutes[actualRole] || '/client/dashboard');
+        }, actualRole !== 'client' ? 1500 : 100);
       } else {
         setError(response.error || response.message || 'Google signup failed. Please try again.');
       }

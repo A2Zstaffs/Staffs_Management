@@ -168,10 +168,17 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
 
       const response = await authAPI.signup(userData);
-      
+
       if (response.success) {
-        // Backend returns 'user' field, not 'data'
         const user = response.user || response.data;
+
+        // If email verification is required, don't log the user in yet
+        if (user?.requiresVerification) {
+          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+          return { success: true, data: user };
+        }
+
+        // Only dispatch LOGIN_SUCCESS when we have a valid token and user with role
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: {

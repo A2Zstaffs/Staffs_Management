@@ -93,7 +93,7 @@ export default function ReceivedCVsPage() {
       {/* CVs Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {isLoading ? (
-          <LoadingSkeleton type="table" count={6} />
+          <table className="w-full"><LoadingSkeleton type="table" count={6} /></table>
         ) : error ? (
           <div className="p-12 text-center">
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">

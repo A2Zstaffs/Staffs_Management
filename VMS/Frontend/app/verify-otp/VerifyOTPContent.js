@@ -109,12 +109,12 @@ export default function VerifyOTPContent() {
                     const userData = data.data || data.user;
 
                     if (data.token && userData) {
-                        // Store token and user data with correct keys that match API client
+                        // Store token and user data in sessionStorage (consistent with API client defaults)
                         if (typeof window !== 'undefined') {
-                            localStorage.setItem('authToken', data.token); // API client looks for 'authToken'
-                            localStorage.setItem('userData', JSON.stringify(userData)); // API client looks for 'userData'
-                            localStorage.setItem('userRole', userData.role);
-                            localStorage.setItem('userName', userData.fullName || userData.email);
+                            sessionStorage.setItem('authToken', data.token);
+                            sessionStorage.setItem('userData', JSON.stringify(userData));
+                            sessionStorage.setItem('userRole', userData.role);
+                            sessionStorage.setItem('userName', userData.fullName || userData.email);
                         }
 
                         // Redirect to role-specific dashboard
