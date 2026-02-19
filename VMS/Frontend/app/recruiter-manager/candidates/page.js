@@ -92,7 +92,7 @@ export default function CandidatesPage() {
                 {/* Compact Table/List View */}
                 <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
                     {isLoading ? (
-                        <LoadingSkeleton type="table" count={8} />
+                        <table className="w-full"><LoadingSkeleton type="table" count={8} /></table>
                     ) : error ? (
                         <div className="p-8 text-center text-red-400">Error: {error}</div>
                     ) : filteredProfiles.length === 0 ? (

@@ -366,7 +366,7 @@ export default function CandidatesPage() {
 
                 <div className="rounded-xl bg-white/50 backdrop-blur-md border border-white/60 shadow-xl shadow-blue-900/5 overflow-hidden">
                     {isLoading ? (
-                        <LoadingSkeleton type="table" count={8} />
+                        <table className="w-full"><LoadingSkeleton type="table" count={8} /></table>
                     ) : error ? (
                         <div className="p-8 text-center text-red-600">{error}</div>
                     ) : (
