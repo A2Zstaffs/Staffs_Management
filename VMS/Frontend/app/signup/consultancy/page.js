@@ -107,12 +107,24 @@ export default function ConsultancySignupPage() {
       const response = await authAPI.googleAuth(credentialResponse.credential, 'consultancy');
 
       if (response.success) {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('userRole', 'consultancy');
+        // Use actual role from backend response (handles existing accounts with different roles)
+        const actualRole = response.data?.role || response.user?.role || 'consultancy';
+        const dashboardRoutes = {
+          consultancy: '/dashboard',
+          recruiter: '/recruiter/home',
+          candidate: '/candidate/home',
+          client: '/client/dashboard',
+          kam: '/kam',
+          recruiter_manager: '/recruiter-manager/dashboard'
+        };
+
+        if (actualRole !== 'consultancy') {
+          setError(`Welcome back! Your account is registered as ${actualRole}. Redirecting...`);
         }
+
         setTimeout(() => {
-          router.push('/dashboard');
-        }, 100);
+          router.push(dashboardRoutes[actualRole] || '/dashboard');
+        }, actualRole !== 'consultancy' ? 1500 : 100);
       } else {
         setError(response.error || response.message || 'Google signup failed. Please try again.');
       }

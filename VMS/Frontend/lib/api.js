@@ -236,9 +236,9 @@ export const authAPI = {
   async signup(userData) {
     const response = await apiClient.post('/auth/signup', userData, { skipAuth: true });
 
-    if (response.success) {
+    if (response.success && response.token) {
+      // Only store token/user when verification is not required (auto-login flow)
       apiClient.setToken(response.token);
-      // Backend returns 'user' field, not 'data'
       apiClient.setUser(response.user || response.data);
     }
 
@@ -298,6 +298,16 @@ export const authAPI = {
 
   // Google OAuth login/signup
   async googleAuth(idToken, role = 'candidate') {
+    // Clear all previous auth data before new Google login to prevent stale data
+    if (typeof window !== 'undefined') {
+      apiClient.removeToken();
+      apiClient.removeUser();
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      sessionStorage.removeItem('userName');
+      sessionStorage.removeItem('userRole');
+    }
+
     const response = await apiClient.post('/auth/google', { idToken, role }, { skipAuth: true });
 
     if (response.success) {
@@ -305,13 +315,13 @@ export const authAPI = {
       const userData = response.user || response.data;
       apiClient.setUser(userData);
 
-      // Save user name and role in localStorage
+      // Save user name and role in sessionStorage (consistent with token/userData storage)
       if (userData && typeof window !== 'undefined') {
         if (userData.fullName) {
-          localStorage.setItem('userName', userData.fullName);
+          sessionStorage.setItem('userName', userData.fullName);
         }
         if (userData.role) {
-          localStorage.setItem('userRole', userData.role);
+          sessionStorage.setItem('userRole', userData.role);
         }
       }
     }
