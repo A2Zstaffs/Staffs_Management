@@ -117,7 +117,9 @@ export default function MyJobsPage() {
       {/* Jobs Table */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden backdrop-blur-sm">
         {isLoading ? (
-          <LoadingSkeleton type="table" count={5} />
+          <table className="w-full">
+            <LoadingSkeleton type="table" count={5} />
+          </table>
         ) : error ? (
           <div className="p-12 text-center">
             <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-xl mb-6 inline-block font-medium">

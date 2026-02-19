@@ -416,7 +416,7 @@ export default function RecruitersPage() {
 
         <div className="rounded-xl bg-white border border-gray-200 shadow-sm overflow-hidden">
           {isLoading ? (
-            <LoadingSkeleton type="table" count={8} />
+            <table className="w-full"><LoadingSkeleton type="table" count={8} /></table>
           ) : error ? (
             <div className="p-8 text-center text-red-600">{error}</div>
           ) : filteredRecruiters.length === 0 ? (

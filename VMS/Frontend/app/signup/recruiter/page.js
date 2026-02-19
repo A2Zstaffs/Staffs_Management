@@ -100,12 +100,24 @@ export default function RecruiterSignupPage() {
       const response = await authAPI.googleAuth(credentialResponse.credential, 'recruiter');
 
       if (response.success) {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('userRole', 'recruiter');
+        // Use actual role from backend response (handles existing accounts with different roles)
+        const actualRole = response.data?.role || response.user?.role || 'recruiter';
+        const dashboardRoutes = {
+          recruiter: '/recruiter/home',
+          candidate: '/candidate/home',
+          client: '/client/dashboard',
+          kam: '/kam',
+          recruiter_manager: '/recruiter-manager/dashboard',
+          consultancy: '/dashboard'
+        };
+
+        if (actualRole !== 'recruiter') {
+          setError(`Welcome back! Your account is registered as ${actualRole}. Redirecting...`);
         }
+
         setTimeout(() => {
-          router.push('/recruiter/home');
-        }, 100);
+          router.push(dashboardRoutes[actualRole] || '/recruiter/home');
+        }, actualRole !== 'recruiter' ? 1500 : 100);
       } else {
         setError(response.error || response.message || 'Google signup failed. Please try again.');
       }
