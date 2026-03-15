@@ -91,3 +91,6 @@ VMS/server/uploads/
 logs/
 SECURITY.md/
 abhishek-test/
+.env
+*.env
+.env.*
