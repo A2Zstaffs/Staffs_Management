@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+const helmet = require('helmet').default;
+const { rateLimit } = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -29,26 +29,6 @@ connectDB();
 app.use(helmet());
 app.use(cookieParser());
 
-// Rate limiting - more permissive in development
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-
-  max: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : (process.env.NODE_ENV === 'production' ? 5000 : 1000), // Default 5000 in production if not set
-  message: {
-    success: false,
-    message: 'Too many requests from this IP, please try again later.'
-  },
-  skip: (req) => {
-    // Skip rate limiting for health checks
-    return req.path === '/api/health';
-  }
-});
-
-// Only apply rate limiting in production
-if (process.env.NODE_ENV === 'production') {
-  app.use('/api/', limiter);
-}
-
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
@@ -72,6 +52,27 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 app.use(cors(corsOptions));
+
+// Rate limiting - more permissive in development
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === 'production' ? 3000 : 1000, // 1000 requests in dev, 3000 in production
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  skip: (req) => {
+    // Skip rate limiting for health checks
+    return req.path === '/api/health';
+  }
+});
+
+// Only apply rate limiting in production
+if (process.env.NODE_ENV === 'production') {
+  app.use('/api/', limiter);
+}
+
+
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -130,6 +131,8 @@ const kamRoutes = require('./routes/kamRoutes');
 app.use('/api/kam', kamRoutes);
 const recruiterManagerRoutes = require('./routes/recruiterManagerRoutes');
 app.use('/api/recruiter-manager', recruiterManagerRoutes);
+const notificationRoutes = require('./routes/notifications');
+app.use('/api/notifications', notificationRoutes);
 
 // Handle 404 routes
 app.all('*', (req, res) => {
@@ -144,7 +147,8 @@ app.use(errorHandler);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`⚠️ Unhandled Rejection: ${err.message}`);
+  const message = err instanceof Error ? err.message : String(err);
+  console.log(`⚠️ Unhandled Rejection: ${message}`);
   // Only close server & exit process in production
   if (process.env.NODE_ENV === 'production') {
     server.close(() => {
@@ -155,7 +159,8 @@ process.on('unhandledRejection', (err, promise) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log(`⚠️ Uncaught Exception: ${err.message}`);
+  const message = err instanceof Error ? err.message : String(err);
+  console.log(`⚠️ Uncaught Exception: ${message}`);
   if (process.env.NODE_ENV === 'production') {
     console.log('Shutting down the server due to uncaught exception');
     process.exit(1);

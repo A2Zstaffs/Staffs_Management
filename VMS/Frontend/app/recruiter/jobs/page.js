@@ -5,6 +5,7 @@ import RecruiterNavbar from '@/components/common/RecruiterNavbar';
 import { jobsAPI, profileAPI } from '@/lib/api';
 import JobCard from '@/components/recruiter/JobCard';
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function RecruiterJobsPage() {
     const { user } = useAuth();
@@ -62,8 +63,10 @@ export default function RecruiterJobsPage() {
                 setSubmissionsByJob(submissionsMap);
             }
         } catch (err) {
-            setError('An error occurred while fetching data');
-            console.error(err);
+            console.error('Error fetching data:', err);
+            console.error('Error message:', err.message);
+            console.error('Error stack:', err.stack);
+            setError(`An error occurred while fetching data: ${err.message || 'Unknown error'}`);
         } finally {
             setLoading(false);
         }
@@ -335,9 +338,7 @@ export default function RecruiterJobsPage() {
 
                 {/* Jobs List */}
                 {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                    </div>
+                    <LoadingSpinner variant="logo" size="lg" message="Loading jobs..." />
                 ) : error ? (
                     <div className="bg-red-50 text-red-600 p-4 rounded-lg">
                         {error}

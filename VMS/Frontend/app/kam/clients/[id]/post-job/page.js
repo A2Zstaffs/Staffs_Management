@@ -7,6 +7,7 @@ import InputField from '@/components/InputField';
 import TextareaField from '@/components/TextareaField';
 import Toast from '@/components/Toast';
 import { kamAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function KAMPostJobPage() {
     const params = useParams();
@@ -67,6 +68,7 @@ export default function KAMPostJobPage() {
                 skills,
                 salary_min: data.salary_min ? parseFloat(data.salary_min) : 0,
                 salary_max: data.salary_max ? parseFloat(data.salary_max) : 0,
+                salary_type: data.salary_type || 'per_annum',
                 experience_min: data.experience_min ? parseInt(data.experience_min) : 0,
                 experience_max: data.experience_max ? parseInt(data.experience_max) : 0,
                 notice_period: data.notice_period ? parseInt(data.notice_period) : 0,
@@ -111,15 +113,7 @@ export default function KAMPostJobPage() {
 
     if (!client) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <svg className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p className="text-gray-600">Loading client details...</p>
-                </div>
-            </div>
+            <LoadingSpinner variant="logo" size="lg" message="Loading client details..." fullScreen />
         );
     }
 
@@ -182,6 +176,8 @@ export default function KAMPostJobPage() {
                                     placeholder={client.company || "Enter company name"}
                                     defaultValue={client.company || ''}
                                     required
+                                    readOnly={!!client.company}
+                                    className={client.company ? "bg-gray-100 cursor-not-allowed" : ""}
                                 />
                                 <InputField
                                     label="Job Title"
@@ -248,7 +244,7 @@ export default function KAMPostJobPage() {
                             </div>
                         </div>
                         <div className="p-6 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <InputField
                                     label="Minimum Salary (₹)"
                                     name="salary_min"
@@ -267,6 +263,22 @@ export default function KAMPostJobPage() {
                                     placeholder="e.g., 150000"
                                     required
                                 />
+                                <div>
+                                    <label htmlFor="salary_type" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Salary Type <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="salary_type"
+                                        {...register('salary_type', { required: 'Salary type is required' })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    >
+                                        <option value="per_annum">Per Annum (Yearly)</option>
+                                        <option value="per_month">Per Month</option>
+                                    </select>
+                                    {errors.salary_type && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.salary_type.message}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

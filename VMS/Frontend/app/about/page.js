@@ -50,15 +50,15 @@ export default function About() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">5000+</div>
+              <div className="text-4xl font-bold text-primary-600 mb-2">50+</div>
               <div className="text-secondary-600">Active Jobs</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">10k+</div>
+              <div className="text-4xl font-bold text-primary-600 mb-2">1000+</div>
               <div className="text-secondary-600">Candidates</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">500+</div>
+              <div className="text-4xl font-bold text-primary-600 mb-2">50+</div>
               <div className="text-secondary-600">Companies</div>
             </div>
             <div className="text-center">
@@ -155,20 +155,20 @@ export default function About() {
 
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-4">10K+</div>
-              <div className="text-primary-200 text-lg">Active Users</div>
+              <div className="text-5xl font-bold text-white mb-4">50+</div>
+              <div className="text-primary-200 text-lg">Active Jobs</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-4">500+</div>
+              <div className="text-5xl font-bold text-white mb-4">10+</div>
               <div className="text-primary-200 text-lg">Companies</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-4">50K+</div>
-              <div className="text-primary-200 text-lg">Jobs Posted</div>
+              <div className="text-5xl font-bold text-white mb-4">100+</div>
+              <div className="text-primary-200 text-lg">Candidates Hired</div>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-white mb-4">95%</div>
-              <div className="text-primary-200 text-lg">Success Rate</div>
+              <div className="text-5xl font-bold text-white mb-4">5+</div>
+              <div className="text-primary-200 text-lg">Cities</div>
             </div>
           </div>
         </div>

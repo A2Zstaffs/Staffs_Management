@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import RecruiterNavbar from '@/components/common/RecruiterNavbar';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 
 export default function TrackStatusPage() {
@@ -22,10 +23,15 @@ export default function TrackStatusPage() {
 
     const fetchSubmissions = async () => {
         try {
-            const token = localStorage.getItem('authToken');
-            // Re-using dashboard endpoint for now as it contains all data
-            // Ideally should be a dedicated endpoint /api/recruiter/submissions
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/recruiter`, {
+            // Check sessionStorage first (default), then localStorage (rememberMe)
+            const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+            if (!token) {
+                console.error('No auth token found');
+                setIsLoading(false);
+                return;
+            }
+            // Use optimized endpoint that only fetches submissions (faster)
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/recruiter/submissions`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -33,43 +39,23 @@ export default function TrackStatusPage() {
             const result = await response.json();
 
             if (result.success) {
-                const { submittedCandidates, uploadedProfiles } = result.data;
+                const { submissions = [], stats: serverStats = {} } = result.data || {};
 
-                // Combine and format data
-                const combined = [
-                    ...submittedCandidates.map(c => ({
-                        id: c._id,
-                        name: c.candidate.fullName,
-                        email: c.candidate.email,
-                        jobTitle: c.job.title,
-                        company: c.job.postedBy.company,
-                        status: c.status,
-                        date: c.createdAt,
-                        type: 'Application'
-                    })),
-                    ...uploadedProfiles.map(p => ({
-                        id: p._id,
-                        name: p.candidate_name,
-                        email: p.email,
-                        jobTitle: p.job_id?.job_title || 'N/A',
-                        company: p.job_id?.company_name || 'N/A',
-                        status: p.status,
-                        date: p.createdAt,
-                        type: 'Uploaded Profile'
-                    }))
-                ].sort((a, b) => new Date(b.date) - new Date(a.date));
+                console.log('Track Status - Data received:', {
+                    submissionsCount: submissions.length
+                });
 
-                setSubmissions(combined);
-
-                // Calculate stats
-                const newStats = {
-                    total: combined.length,
-                    shortlisted: combined.filter(s => ['shortlisted', 'interview_scheduled'].includes(s.status?.toLowerCase())).length,
-                    interview: combined.filter(s => ['interview_scheduled', 'interviewed'].includes(s.status?.toLowerCase())).length,
-                    hired: combined.filter(s => ['hired', 'placed', 'joined', 'selected'].includes(s.status?.toLowerCase())).length,
-                    rejected: combined.filter(s => ['rejected'].includes(s.status?.toLowerCase())).length
-                };
-                setStats(newStats);
+                // Data is already formatted by server
+                setSubmissions(submissions);
+                setStats({
+                    total: serverStats.total || 0,
+                    shortlisted: serverStats.shortlisted || 0,
+                    interview: serverStats.interview || 0,
+                    hired: serverStats.hired || 0,
+                    rejected: serverStats.rejected || 0
+                });
+            } else {
+                console.error('Track Status - API returned error:', result.message);
             }
         } catch (error) {
             console.error('Error fetching submissions:', error);
@@ -87,84 +73,123 @@ export default function TrackStatusPage() {
         return 'bg-yellow-100 text-yellow-800';
     };
 
-    // Specific icons for better visibility
+    // Professional stat card configurations with gradient backgrounds and clear icons
     const statCards = [
         {
-            label: 'Total Applications',
+            label: 'Total Submissions',
             value: stats.total,
-            color: 'text-blue-700',
-            bg: 'bg-blue-100',
-            border: 'border-blue-200',
-            gradient: 'from-blue-50 to-white',
-            icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2h-1'
+            iconBg: 'bg-gradient-to-br from-blue-500 to-blue-600',
+            cardBg: 'bg-white',
+            iconColor: 'text-white',
+            valueColor: 'text-gray-900',
+            icon: (
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                </svg>
+            )
         },
         {
             label: 'Shortlisted',
             value: stats.shortlisted,
-            color: 'text-amber-700',
-            bg: 'bg-amber-100',
-            border: 'border-amber-200',
-            gradient: 'from-amber-50 to-white',
-            icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'
+            iconBg: 'bg-gradient-to-br from-amber-500 to-orange-500',
+            cardBg: 'bg-white',
+            iconColor: 'text-white',
+            valueColor: 'text-gray-900',
+            icon: (
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+            )
         },
         {
             label: 'Interviews',
             value: stats.interview,
-            color: 'text-purple-700',
-            bg: 'bg-purple-100',
-            border: 'border-purple-200',
-            gradient: 'from-purple-50 to-white',
-            icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
+            iconBg: 'bg-gradient-to-br from-purple-500 to-purple-600',
+            cardBg: 'bg-white',
+            iconColor: 'text-white',
+            valueColor: 'text-gray-900',
+            icon: (
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                </svg>
+            )
         },
         {
-            label: 'Hires',
+            label: 'Hired',
             value: stats.hired,
-            color: 'text-emerald-700',
-            bg: 'bg-emerald-100',
-            border: 'border-emerald-200',
-            gradient: 'from-emerald-50 to-white',
-            icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'
+            iconBg: 'bg-gradient-to-br from-emerald-500 to-green-600',
+            cardBg: 'bg-white',
+            iconColor: 'text-white',
+            valueColor: 'text-gray-900',
+            icon: (
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+            )
         },
         {
             label: 'Rejected',
             value: stats.rejected,
-            color: 'text-red-700',
-            bg: 'bg-red-100',
-            border: 'border-red-200',
-            gradient: 'from-red-50 to-white',
-            icon: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+            iconBg: 'bg-gradient-to-br from-red-500 to-rose-600',
+            cardBg: 'bg-white',
+            iconColor: 'text-white',
+            valueColor: 'text-gray-900',
+            icon: (
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" />
+                </svg>
+            )
         }
     ];
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <RecruiterNavbar />
+                <LoadingSpinner variant="logo" size="lg" message="Loading applications..." fullScreen />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
             <RecruiterNavbar />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+                {/* Header Section */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Track Applications</h1>
-                    <p className="mt-2 text-gray-600">Monitor status of all your submitted candidates in real-time.</p>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-900">Track Applications</h1>
+                    </div>
+                    <p className="mt-2 text-gray-600 ml-11">Monitor status of all your submitted candidates in real-time.</p>
                 </div>
 
-                {/* Stats Cards */}
+                {/* Stats Cards - Professional Design */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-10">
                     {statCards.map((s, idx) => (
                         <div
                             key={idx}
-                            className={`relative overflow-hidden bg-gradient-to-br ${s.gradient} border ${s.border} rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group`}
+                            className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                         >
-                            <div className="flex flex-col h-full justify-between">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className={`p-3 rounded-xl ${s.bg} ${s.color} group-hover:scale-110 transition-transform duration-300`}>
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={s.icon} />
-                                        </svg>
-                                    </div>
+                            {/* Decorative background element */}
+                            <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-gray-50 opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+
+                            <div className="relative flex flex-col h-full">
+                                {/* Icon */}
+                                <div className={`w-12 h-12 ${s.iconBg} rounded-xl flex items-center justify-center mb-4 shadow-lg ${s.iconColor} group-hover:scale-110 transition-transform duration-300`}>
+                                    {s.icon}
                                 </div>
-                                <div>
-                                    <p className="text-3xl font-bold text-gray-900 mb-1">{s.value}</p>
-                                    <p className="text-sm font-medium text-gray-500">{s.label}</p>
-                                </div>
+
+                                {/* Value */}
+                                <p className={`text-3xl font-bold ${s.valueColor} mb-1`}>{s.value}</p>
+
+                                {/* Label */}
+                                <p className="text-sm font-medium text-gray-500">{s.label}</p>
                             </div>
                         </div>
                     ))}
@@ -184,13 +209,7 @@ export default function TrackStatusPage() {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-100">
-                                {isLoading ? (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-12 text-center text-gray-500 font-medium animate-pulse">
-                                            Loading submissions...
-                                        </td>
-                                    </tr>
-                                ) : submissions.length === 0 ? (
+                                {submissions.length === 0 ? (
                                     <tr>
                                         <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
                                             <div className="flex flex-col items-center">

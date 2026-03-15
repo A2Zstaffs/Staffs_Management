@@ -5,10 +5,7 @@ require('dotenv').config();
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vms', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vms');
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Database connection error:', error);
@@ -116,21 +113,21 @@ const testUsers = [
 const createTestUsers = async () => {
   try {
     await connectDB();
-    
+
     console.log('Creating test users...');
-    
+
     // Clear existing test users (optional - remove this if you want to keep existing data)
     await User.deleteMany({
       email: { $in: testUsers.map(user => user.email) }
     });
-    
+
     // Create new test users
     for (const userData of testUsers) {
       const user = new User(userData);
       await user.save();
       console.log(`✅ Created user: ${user.fullName} (${user.email}) - ${user.role}`);
     }
-    
+
     console.log('\n🎉 Test users created successfully!');
     console.log('\nYou can now login with any of these credentials:');
     console.log('=====================================');
@@ -140,7 +137,7 @@ const createTestUsers = async () => {
       console.log(`Role: ${user.role}`);
       console.log('---');
     });
-    
+
     process.exit(0);
   } catch (error) {
     console.error('Error creating test users:', error);
@@ -149,7 +146,3 @@ const createTestUsers = async () => {
 };
 
 createTestUsers();
-
-
-
-

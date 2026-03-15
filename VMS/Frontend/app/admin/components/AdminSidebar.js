@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
   Users,
@@ -14,7 +15,8 @@ import {
   Settings,
   Menu,
   X,
-  UserCheck
+  UserCheck,
+  Bell
 } from 'lucide-react';
 
 const menuItems = [
@@ -26,6 +28,7 @@ const menuItems = [
   { icon: Users, label: 'Recruiter Manager', href: '/admin/recruiter-manager' },
   { icon: Briefcase, label: 'Jobs', href: '/admin/jobs' },
   { icon: GitPullRequest, label: 'CV Pipeline', href: '/admin/pipeline' },
+  { icon: Bell, label: 'Notifications', href: '/admin/notifications' },
   { icon: Wallet, label: 'Payouts', href: '/admin/payouts' },
   { icon: BarChart3, label: 'Reports', href: '/admin/reports' },
   { icon: Settings, label: 'Settings', href: '/admin/settings' }
@@ -33,6 +36,7 @@ const menuItems = [
 
 export default function AdminSidebar({ isOpen, onClose }) {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   // Close sidebar when route changes - REMOVE this redundant effect
   // useEffect(() => {
@@ -104,11 +108,11 @@ export default function AdminSidebar({ isOpen, onClose }) {
           <div className="p-4 border-t border-white/20 bg-white/5">
             <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/10">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
-                <span className="text-white font-bold">A</span>
+                <span className="text-white font-bold">{user?.fullName?.charAt(0)?.toUpperCase() || 'A'}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm truncate">Admin User</p>
-                <p className="text-blue-200 text-xs truncate">admin@a2z.com</p>
+                <p className="text-white font-semibold text-sm truncate">{user?.fullName || 'Admin User'}</p>
+                <p className="text-blue-200 text-xs truncate">{user?.email || 'Admin'}</p>
               </div>
             </div>
           </div>
@@ -116,8 +120,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
       </aside>
     </>
   );
-
-
 
 
 

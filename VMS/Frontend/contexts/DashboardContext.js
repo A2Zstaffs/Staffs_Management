@@ -56,7 +56,7 @@ const dashboardReducer = (state, action) => {
 
     case DASHBOARD_ACTIONS.UPDATE_APPLICATION_STATUS:
       if (!state.dashboardData) return state;
-      
+
       return {
         ...state,
         dashboardData: {
@@ -71,7 +71,7 @@ const dashboardReducer = (state, action) => {
 
     case DASHBOARD_ACTIONS.ADD_APPLICATION:
       if (!state.dashboardData) return state;
-      
+
       return {
         ...state,
         dashboardData: {
@@ -122,6 +122,12 @@ export const DashboardProvider = ({ children }) => {
         case 'consultancy':
           response = await dashboardAPI.getConsultancyDashboard();
           break;
+        case 'admin':
+        case 'kam':
+        case 'recruiter_manager':
+          // These roles have their own dedicated dashboards, skip generic dashboard fetch
+          dispatch({ type: DASHBOARD_ACTIONS.SET_LOADING, payload: false });
+          return;
         default:
           throw new Error('Invalid user role');
       }
@@ -156,7 +162,7 @@ export const DashboardProvider = ({ children }) => {
   const updateApplicationStatus = async (applicationId, statusData) => {
     try {
       const response = await dashboardAPI.updateApplicationStatus(applicationId, statusData);
-      
+
       if (response.success) {
         dispatch({
           type: DASHBOARD_ACTIONS.UPDATE_APPLICATION_STATUS,
@@ -178,7 +184,7 @@ export const DashboardProvider = ({ children }) => {
   const applyToJob = async (jobId, applicationData) => {
     try {
       const response = await dashboardAPI.applyToJob(jobId, applicationData);
-      
+
       if (response.success) {
         dispatch({
           type: DASHBOARD_ACTIONS.ADD_APPLICATION,
@@ -197,7 +203,7 @@ export const DashboardProvider = ({ children }) => {
   const createJob = async (jobData) => {
     try {
       const response = await dashboardAPI.createJob(jobData);
-      
+
       if (response.success) {
         // Refresh dashboard data to include new job
         await refreshData();
@@ -244,11 +250,11 @@ export const DashboardProvider = ({ children }) => {
 // Custom hook to use dashboard context
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
-  
+
   if (!context) {
     throw new Error('useDashboard must be used within a DashboardProvider');
   }
-  
+
   return context;
 };
 

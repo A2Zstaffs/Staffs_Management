@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FileText, ArrowLeft, Search, Download, Eye, ChevronRight } from 'lucide-react';
 import * as recruiterManagerAPI from '@/lib/recruiterManagerApi';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 export default function CandidatesPage() {
     const [profiles, setProfiles] = useState([]);
@@ -91,10 +92,7 @@ export default function CandidatesPage() {
                 {/* Compact Table/List View */}
                 <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
                     {isLoading ? (
-                        <div className="p-8 text-center text-gray-600">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-                            Loading profiles...
-                        </div>
+                        <table className="w-full"><LoadingSkeleton type="table" count={8} /></table>
                     ) : error ? (
                         <div className="p-8 text-center text-red-400">Error: {error}</div>
                     ) : filteredProfiles.length === 0 ? (

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function ProfileCompletionModal({ isOpen, onClose, onComplete }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +32,8 @@ export default function ProfileCompletionModal({ isOpen, onClose, onComplete }) 
         setIsLoading(true);
 
         try {
-            const token = localStorage.getItem('authToken');
+            // Check sessionStorage first (default), then localStorage (rememberMe)
+            const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
             const profileData = {
@@ -81,7 +83,12 @@ export default function ProfileCompletionModal({ isOpen, onClose, onComplete }) 
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+                {isLoading && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+                        <LoadingSpinner variant="logo" size="lg" message="Saving profile..." />
+                    </div>
+                )}
                 {/* Header */}
                 <div className="sticky top-0 bg-gradient-to-r from-[#1A73FF] to-[#0047CC] text-white p-6 rounded-t-2xl">
                     <div className="flex items-center justify-between">

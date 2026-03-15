@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function ClientSettings() {
   const { user: contextUser } = useAuth();
@@ -28,7 +29,8 @@ export default function ClientSettings() {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      // Check sessionStorage first (default), then localStorage (rememberMe)
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api'}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -80,7 +82,8 @@ export default function ClientSettings() {
     setMessage({ type: '', text: '' });
 
     try {
-      const token = localStorage.getItem('authToken');
+      // Check sessionStorage first (default), then localStorage (rememberMe)
+      const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
       const profileData = {
         phoneNumber: formData.phoneNumber,
         company: formData.company,
@@ -132,12 +135,7 @@ export default function ClientSettings() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading settings...</p>
-        </div>
-      </div>
+      <LoadingSpinner variant="logo" size="lg" message="Loading settings..." fullScreen />
     );
   }
 

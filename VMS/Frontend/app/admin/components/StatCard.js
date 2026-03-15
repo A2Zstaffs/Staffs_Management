@@ -1,13 +1,19 @@
 'use client';
 
-import { Users, Building2, Briefcase, DollarSign } from 'lucide-react';
+import { Users, Building2, Briefcase, DollarSign, IndianRupee, TrendingUp, UserCheck, Activity, Users2, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const iconMap = {
   Users: Users,
+  Users2: Users2,
   Building2: Building2,
   Briefcase: Briefcase,
-  DollarSign: DollarSign
+  DollarSign: DollarSign,
+  IndianRupee: IndianRupee,
+  TrendingUp: TrendingUp,
+  UserCheck: UserCheck,
+  Activity: Activity,
+  FileText: FileText
 };
 
 export default function StatCard({ title, value, icon, color, delay = 0, isLoading = false }) {

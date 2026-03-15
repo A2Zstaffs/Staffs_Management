@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AdminSidebar from './components/AdminSidebar';
 import '../globals.css';
 import GradientHeader from './components/GradientHeader';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
@@ -16,11 +17,17 @@ export default function AdminLayout({ children }) {
   // Check if current page is login page
   const isLoginPage = pathname === '/admin/login';
 
-  // Auto-close sidebar on route change
+  // Auto-close sidebar on route change & Check Auth
   useEffect(() => {
     setIsSidebarOpen(false);
-  }, [pathname]);
 
+    // Protected route check
+    if (!isLoading && !isAuthenticated && !isLoginPage) {
+      router.push('/admin/login');
+    }
+  }, [pathname, isLoading, isAuthenticated, isLoginPage, router]);
+
+  // Callbacks must be defined before any conditional returns
   const handleToggleSidebar = useCallback(() => {
     console.log('Toggle sidebar clicked, current state:', isSidebarOpen);
     setIsSidebarOpen(prev => !prev);
@@ -30,6 +37,13 @@ export default function AdminLayout({ children }) {
     console.log('Closing sidebar');
     setIsSidebarOpen(false);
   }, []);
+
+  // Show loading spinner while checking auth (except on login page)
+  if (isLoading && !isLoginPage) {
+    return (
+      <LoadingSpinner variant="logo" size="lg" message="Loading admin panel..." fullScreen />
+    );
+  }
 
   // If it's the login page, render without sidebar and header
   if (isLoginPage) {

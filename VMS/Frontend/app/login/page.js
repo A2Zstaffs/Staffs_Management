@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { GoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import { authAPI } from '../../lib/api';
 import { ArrowLeft } from 'lucide-react';
 
@@ -10,10 +11,12 @@ export default function LoginPage() {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        role: 'recruiter' // Default role
+        role: 'recruiter', // Default role
+        rememberMe: false
     });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [infoMessage, setInfoMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -66,7 +69,6 @@ export default function LoginPage() {
                     recruiter: '/recruiter/dashboard',
                     candidate: '/candidate/dashboard',
                     client: '/client/dashboard',
-                    consultancy: '/consultancy/dashboard',
                     kam: '/kam', // KAM dashboard route
                     recruiter_manager: '/recruiter-manager/dashboard' // RM dashboard route
                 };
@@ -85,7 +87,65 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
-    console.log("hey this is ajay")
+
+    const handleGoogleLogin = async (credentialResponse) => {
+        setIsLoading(true);
+        setErrors({});
+        setInfoMessage('');
+
+        try {
+            const response = await authAPI.googleAuth(credentialResponse.credential, formData.role);
+
+            if (response.success) {
+                // Use the actual role from the backend response (user's DB role)
+                const userRole = response.data?.role || response.user?.role || formData.role;
+
+                const roleLabels = {
+                    admin: 'Admin',
+                    recruiter: 'Recruiter',
+                    candidate: 'Candidate',
+                    client: 'Client',
+                    kam: 'KAM',
+                    recruiter_manager: 'Recruiter Manager'
+                };
+
+                const dashboardRoutes = {
+                    admin: '/admin/dashboard',
+                    recruiter: '/recruiter/dashboard',
+                    candidate: '/candidate/dashboard',
+                    client: '/client/dashboard',
+                    kam: '/kam',
+                    recruiter_manager: '/recruiter-manager/dashboard'
+                };
+
+                const targetRoute = dashboardRoutes[userRole] || '/';
+
+                // If user's actual role differs from selected role, show info and redirect to correct dashboard
+                if (userRole !== formData.role) {
+                    setInfoMessage(`Welcome back! Signing you in as ${roleLabels[userRole] || userRole}...`);
+                    setTimeout(() => router.push(targetRoute), 1500);
+                } else {
+                    router.push(targetRoute);
+                }
+            } else {
+                setErrors({ general: response.message || 'Google login failed' });
+            }
+        } catch (error) {
+            console.error('Google login error:', error);
+            setErrors({
+                general: error.message || 'An error occurred during Google login. Please try again.'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useGoogleOneTapLogin({
+        onSuccess: handleGoogleLogin,
+        onError: () => {
+            console.log('Google One Tap failed');
+        },
+    });
     return (
         <div className="min-h-screen w-full animated-background-light flex items-center justify-center p-4 relative overflow-hidden font-sans">
             {/* Layer 1: Animated Background Blobs (Light Theme - Soft Blue/Violet) */}
@@ -124,6 +184,16 @@ export default function LoginPage() {
                         <p className="text-slate-500 text-xs">Sign in to your account</p>
                     </div>
 
+                    {/* Info Message - Role redirect notice */}
+                    {infoMessage && (
+                        <div className="mb-4 p-3 bg-blue-50 border border-blue-100 text-blue-700 rounded-lg text-xs flex items-center">
+                            <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {infoMessage}
+                        </div>
+                    )}
+
                     {/* Error Message - Light Theme */}
                     {errors.general && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-xs flex items-center">
@@ -146,7 +216,7 @@ export default function LoginPage() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="name@example.com"
+                                placeholder="Enter your email"
                                 className={`w-full px-4 py-2.5 bg-white/50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 ${errors.email ? 'border-red-300 bg-red-50' : ''}`}
                                 required
                             />
@@ -192,6 +262,22 @@ export default function LoginPage() {
                             )}
                         </div>
 
+                        {/* Remember Me Checkbox */}
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    name="rememberMe"
+                                    checked={formData.rememberMe}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
+                                    className="w-4 h-4 text-blue-600 bg-white/50 border-slate-300 rounded focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                                />
+                                <span className="ml-2 text-xs text-slate-600 group-hover:text-slate-800 transition-colors">
+                                    Remember me
+                                </span>
+                            </label>
+                        </div>
+
                         <div className="pt-2">
                             <button
                                 type="submit"
@@ -210,15 +296,13 @@ export default function LoginPage() {
                                     'Sign In'
                                 )}
                             </button>
-                        </div>
 
-                        <div className="flex justify-between items-center text-xs mt-4">
-                            <Link href="#" className="text-blue-600/80 hover:text-blue-700 transition-colors">
-                                Forgot Password?
-                            </Link>
-                            <Link href="/signup" className="text-blue-600/80 hover:text-blue-700 transition-colors">
-                                Create Account
-                            </Link>
+                            {/* Forgot Password Link */}
+                            <div className="text-center mt-4">
+                                <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-800 transition-colors">
+                                    Forgot Password?
+                                </Link>
+                            </div>
                         </div>
                     </form>
 
@@ -235,7 +319,6 @@ export default function LoginPage() {
                                 <option value="recruiter">Login as Recruiter</option>
                                 <option value="candidate">Login as Candidate</option>
                                 <option value="client">Login as Client</option>
-                                <option value="consultancy">Login as Consultancy</option>
                                 <option value="kam">Login as KAM</option>
                                 <option value="recruiter_manager">Login as Recruiter Manager</option>
                             </select>
@@ -247,8 +330,32 @@ export default function LoginPage() {
                         </div>
                     </div>
 
+                    {/* Google Sign In */}
+                    <div className="mt-6">
+                        <div className="relative mb-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-slate-200/50"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                                <span className="px-2 bg-white/60 text-slate-500">or</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-center">
+                            <GoogleLogin
+                                onSuccess={handleGoogleLogin}
+                                onError={() => {
+                                    setErrors({ general: 'Google Sign In failed' });
+                                }}
+                                theme="outline"
+                                size="large"
+                                text="continue_with"
+                                shape="rectangular"
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+
+            </div >
+        </div >
     );
 }

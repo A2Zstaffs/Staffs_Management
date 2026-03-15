@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { authAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Initial state
 const initialState = {
@@ -167,10 +168,17 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
 
       const response = await authAPI.signup(userData);
-      
+
       if (response.success) {
-        // Backend returns 'user' field, not 'data'
         const user = response.user || response.data;
+
+        // If email verification is required, don't log the user in yet
+        if (user?.requiresVerification) {
+          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+          return { success: true, data: user };
+        }
+
+        // Only dispatch LOGIN_SUCCESS when we have a valid token and user with role
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: {
@@ -276,9 +284,7 @@ export const withAuth = (WrappedComponent) => {
 
     if (isLoading) {
       return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-        </div>
+        <LoadingSpinner variant="logo" size="lg" message="Authenticating..." fullScreen />
       );
     }
 

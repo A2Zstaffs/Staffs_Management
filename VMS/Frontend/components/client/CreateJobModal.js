@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Briefcase, MapPin, DollarSign, Users, Calendar } from 'lucide-react';
+import { authAPI } from '@/lib/api';
 
-export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
-    const [formData, setFormData] = useState({
+export default function CreateJobModal({ isOpen, onClose, onSuccess, jobToEdit = null }) {
+    const initialFormState = {
         job_title: '',
         locations: [''],
         salary_min: '',
         salary_max: '',
+        salary_type: 'per_annum',
         experience_min: '',
         experience_max: '',
         notice_period: '',
@@ -24,10 +26,45 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
         description: '',
         requirements: '',
         skills: ['']
-    });
+    };
 
+    const [formData, setFormData] = useState(initialFormState);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (isOpen) {
+            if (jobToEdit) {
+                // Populate form for editing
+                setFormData({
+                    job_title: jobToEdit.job_title || '',
+                    locations: Array.isArray(jobToEdit.locations) && jobToEdit.locations.length > 0 ? jobToEdit.locations : (jobToEdit.location ? [jobToEdit.location] : ['']),
+                    salary_min: jobToEdit.salary_min || '',
+                    salary_max: jobToEdit.salary_max || '',
+                    salary_type: jobToEdit.salary_type || 'per_annum',
+                    experience_min: jobToEdit.experience_min || '',
+                    experience_max: jobToEdit.experience_max || '',
+                    notice_period: jobToEdit.notice_period || '',
+                    num_positions: jobToEdit.num_positions || 1,
+                    applications_required: jobToEdit.applications_required || '',
+                    commission_percent: jobToEdit.commission_percent || '',
+                    commission_amount_min: jobToEdit.commission_amount_min || '',
+                    commission_amount_max: jobToEdit.commission_amount_max || '',
+                    commission_payment_terms: jobToEdit.commission_payment_terms || '',
+                    r1_bonus_amount: jobToEdit.r1_bonus_amount || 0,
+                    r1_bonus_payment_terms: jobToEdit.r1_bonus_payment_terms || '',
+                    sourcing_status: jobToEdit.sourcing_status || 'Priority',
+                    description: jobToEdit.description || '',
+                    requirements: jobToEdit.requirements || '',
+                    skills: Array.isArray(jobToEdit.skills) && jobToEdit.skills.length > 0 ? jobToEdit.skills : ['']
+                });
+            } else {
+                // Reset for creation
+                setFormData(initialFormState);
+            }
+            setError('');
+        }
+    }, [isOpen, jobToEdit]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -102,11 +139,17 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                 r1_bonus_amount: Number(formData.r1_bonus_amount) || 0
             };
 
-            const token = localStorage.getItem('authToken');
+            const token = authAPI.getToken();
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
-            const response = await fetch(`${apiUrl}/jobs`, {
-                method: 'POST',
+            const url = jobToEdit
+                ? `${apiUrl}/client/jobs/${jobToEdit._id}`
+                : `${apiUrl}/client/jobs/create`;
+
+            const method = jobToEdit ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -117,7 +160,7 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to create job');
+                throw new Error(data.message || `Failed to ${jobToEdit ? 'update' : 'create'} job`);
             }
 
             // Success!
@@ -125,32 +168,9 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                 onSuccess(data.data);
             }
             onClose();
-
-            // Reset form
-            setFormData({
-                job_title: '',
-                locations: [''],
-                salary_min: '',
-                salary_max: '',
-                experience_min: '',
-                experience_max: '',
-                notice_period: '',
-                num_positions: 1,
-                applications_required: '',
-                commission_percent: '',
-                commission_amount_min: '',
-                commission_amount_max: '',
-                commission_payment_terms: '',
-                r1_bonus_amount: 0,
-                r1_bonus_payment_terms: '',
-                sourcing_status: 'Priority',
-                description: '',
-                requirements: '',
-                skills: ['']
-            });
         } catch (err) {
-            console.error('Error creating job:', err);
-            setError(err.message || 'Failed to create job. Please try again.');
+            console.error('Error saving job:', err);
+            setError(err.message || 'Failed to save job. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -168,8 +188,8 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                             <Briefcase className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-white">Create New Job</h2>
-                            <p className="text-sm text-gray-400">Fill in the details to post a new job</p>
+                            <h2 className="text-2xl font-bold text-white">{jobToEdit ? 'Edit Job' : 'Create New Job'}</h2>
+                            <p className="text-sm text-gray-400">{jobToEdit ? 'Update existing job details' : 'Fill in the details to post a new job'}</p>
                         </div>
                     </div>
                     <button
@@ -280,7 +300,7 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                             <DollarSign className="w-5 h-5 mr-2 text-blue-400" />
                             Salary Range (Lakhs) *
                         </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-2">Minimum</label>
                                 <input
@@ -308,6 +328,19 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="e.g., 15"
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Salary Type *</label>
+                                <select
+                                    name="salary_type"
+                                    value={formData.salary_type}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="per_annum">Per Annum (Yearly)</option>
+                                    <option value="per_month">Per Month</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -511,12 +544,12 @@ export default function CreateJobModal({ isOpen, onClose, onSuccess }) {
                             {isSubmitting ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    <span>Creating...</span>
+                                    <span>{jobToEdit ? 'Updating...' : 'Creating...'}</span>
                                 </>
                             ) : (
                                 <>
                                     <Briefcase className="w-5 h-5" />
-                                    <span>Create Job</span>
+                                    <span>{jobToEdit ? 'Update Job' : 'Create Job'}</span>
                                 </>
                             )}
                         </button>

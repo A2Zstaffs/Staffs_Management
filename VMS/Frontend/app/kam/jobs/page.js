@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getClientJobs } from '@/lib/kamApi';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function KAMJobsPage() {
     const router = useRouter();
@@ -64,9 +65,10 @@ export default function KAMJobsPage() {
         );
     };
 
-    const formatSalary = (min, max) => {
+    const formatSalary = (min, max, salaryType) => {
         if (!min && !max) return 'Not specified';
-        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'}`;
+        const suffix = salaryType === 'per_month' ? '/month' : '/year';
+        return `₹${min?.toLocaleString() || '0'} - ₹${max?.toLocaleString() || '0'} ${suffix}`;
     };
 
     const formatDate = (dateString) => {
@@ -134,12 +136,8 @@ export default function KAMJobsPage() {
             {/* Jobs Table */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 {isLoading ? (
-                    <div className="p-12 text-center">
-                        <svg className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <p className="text-gray-600">Loading jobs...</p>
+                    <div className="p-12">
+                        <LoadingSpinner size="lg" message="Loading jobs..." />
                     </div>
                 ) : error ? (
                     <div className="p-12 text-center">
@@ -240,7 +238,7 @@ export default function KAMJobsPage() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-medium text-gray-900">
-                                                {formatSalary(job.salary_min, job.salary_max)}
+                                                {formatSalary(job.salary_min, job.salary_max, job.salary_type)}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -257,6 +255,15 @@ export default function KAMJobsPage() {
                                                 View Details
                                                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={() => router.push(`/kam/jobs/edit/${job._id}`)}
+                                                className="ml-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors inline-flex items-center"
+                                            >
+                                                Edit
+                                                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                             </button>
                                         </td>
