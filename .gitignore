@@ -74,10 +74,19 @@ lerna-debug.log*
 *.db
 
 # Temporary files
-manoj-kushwaha
 *.tmp
 *.temp
 .cache
 VMS/Frontend/.next/
 VMS/server/.env
-README.md
+
+# Frontend env files — .env.local is for local dev only, never commit
+VMS/Frontend/.env.local
+VMS/Frontend/.env*.local
+
+# Server uploads (user-uploaded files like resumes)
+VMS/server/uploads/
+
+# PM2 logs
+logs/
+SECURITY.md/
