@@ -77,15 +77,18 @@ lerna-debug.log*
 *.tmp
 *.temp
 .cache
-VMS/Frontend/.next/
-VMS/server/.env
+frontend/.next/
+backend/.env
 
 # Frontend env files — .env.local is for local dev only, never commit
-VMS/Frontend/.env.local
-VMS/Frontend/.env*.local
+frontend/.env.local
+frontend/.env*.local
 
 # Server uploads (user-uploaded files like resumes)
-VMS/server/uploads/
+backend/uploads/
+
+# Root env (docker-compose public vars)
+.env
 
 # PM2 logs
 logs/
