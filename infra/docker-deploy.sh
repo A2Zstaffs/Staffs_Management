@@ -29,6 +29,10 @@ docker run -d \
   --memory-swap="600m" \
   $IMAGE_NAME
 
+echo "==> Updating Nginx config..."
+sudo cp ./infra/nginx/a2zstaffs.conf /etc/nginx/conf.d/a2zstaffs.conf
+sudo nginx -t && sudo systemctl reload nginx
+
 echo "==> Waiting for health check..."
 sleep 5
 docker ps | grep $CONTAINER_NAME
