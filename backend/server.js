@@ -32,7 +32,10 @@ app.use(cookieParser());
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://127.0.0.1:3000',
+  'https://a2zstaffs.com',
+  'https://www.a2zstaffs.com',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 

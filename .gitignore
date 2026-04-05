@@ -87,13 +87,10 @@ frontend/.env*.local
 # Server uploads (user-uploaded files like resumes)
 backend/uploads/
 
-# Root env (docker-compose public vars)
+# Root env (docker-compose public vars — contains no secrets)
 .env
 
 # PM2 logs
 logs/
 SECURITY.md/
 abhishek-test/
-.env
-*.env
-.env.*
