@@ -1,5 +1,25 @@
 import Image from 'next/image';
 
+export const metadata = {
+  title: 'About Us — A2Z Staffs | Our Story, Mission & Values',
+  description: 'Learn about A2Z Staffs — our mission to transform recruitment in India, our values, and the team behind the platform connecting talent with opportunity.',
+  keywords: ['about A2Z Staffs', 'recruitment company India', 'staffing agency', 'our mission', 'talent management'],
+  alternates: { canonical: 'https://a2zstaffs.com/about' },
+  openGraph: {
+    title: 'About A2Z Staffs | Our Story, Mission & Values',
+    description: 'Learn about our mission to transform recruitment in India and the team connecting talent with opportunity.',
+    url: 'https://a2zstaffs.com/about',
+    type: 'website',
+    images: [{ url: 'https://a2zstaffs.com/image/a2zstaff logo.png', width: 1200, height: 630, alt: 'About A2Z Staffs' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About A2Z Staffs | Our Story & Mission',
+    description: 'Learn about our mission to transform recruitment in India.',
+    images: ['https://a2zstaffs.com/image/a2zstaff logo.png'],
+  },
+};
+
 export default function About() {
   return (
     <div className="min-h-screen bg-secondary-50">

@@ -1,5 +1,25 @@
 import Link from 'next/link';
 
+export const metadata = {
+  title: 'Our Services — A2Z Staffs | Recruitment & Talent Management Solutions',
+  description: 'Explore A2Z Staffs services: Talent Sourcing, Candidate Management, Interview Scheduling, and Analytics & Reports. End-to-end recruitment solutions for businesses.',
+  keywords: ['recruitment services', 'talent sourcing', 'candidate management', 'interview scheduling', 'hiring analytics', 'staffing solutions India'],
+  alternates: { canonical: 'https://a2zstaffs.com/services' },
+  openGraph: {
+    title: 'Our Services — A2Z Staffs | Recruitment Solutions',
+    description: 'End-to-end recruitment solutions: Talent Sourcing, Candidate Management, Interview Scheduling, and Analytics.',
+    url: 'https://a2zstaffs.com/services',
+    type: 'website',
+    images: [{ url: 'https://a2zstaffs.com/image/homepage.png', width: 1200, height: 630, alt: 'A2Z Staffs Services' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Our Services — A2Z Staffs',
+    description: 'End-to-end recruitment and talent management solutions.',
+    images: ['https://a2zstaffs.com/image/homepage.png'],
+  },
+};
+
 export default function ServicesPage() {
     const services = [
         {

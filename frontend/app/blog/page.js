@@ -2,14 +2,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export const metadata = {
-    title: 'Blog - A2Z Staffs | Recruitment Insights & Industry News',
+    title: 'Blog — A2Z Staffs | Recruitment Insights & Industry News',
     description: 'Stay updated with the latest recruitment trends, hiring tips, and industry insights from A2Z Staffs. Expert advice for employers and job seekers.',
     keywords: ['recruitment blog', 'hiring tips', 'staffing insights', 'job market trends', 'A2Z Staffs'],
+    alternates: { canonical: 'https://a2zstaffs.com/blog' },
     openGraph: {
-        title: 'Blog - A2Z Staffs | Recruitment Insights & Industry News',
+        title: 'Blog — A2Z Staffs | Recruitment Insights & Industry News',
         description: 'Stay updated with the latest recruitment trends, hiring tips, and industry insights from A2Z Staffs.',
         type: 'website',
         url: 'https://a2zstaffs.com/blog',
+        images: [{ url: 'https://a2zstaffs.com/image/homepage.png', width: 1200, height: 630, alt: 'A2Z Staffs Blog' }],
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'Blog — A2Z Staffs | Recruitment Insights',
+        description: 'Latest recruitment trends, hiring tips, and industry insights.',
+        images: ['https://a2zstaffs.com/image/homepage.png'],
     },
 };
 
