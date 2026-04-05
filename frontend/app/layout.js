@@ -37,10 +37,10 @@ export const metadata = {
     description: 'A2Z Staffs connects top talent with leading employers. Professional recruitment services and staffing solutions.',
     images: [
       {
-        url: '/image/a2zstaff logo.png',
-        width: 150,
-        height: 50,
-        alt: 'A2Z Staffs Logo',
+        url: '/image/homepage.png',
+        width: 1200,
+        height: 630,
+        alt: 'A2Z Staffs — Professional Recruitment & Staffing Solutions',
       },
     ],
   },
@@ -48,7 +48,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'A2Z Staffs - Professional Recruitment & Staffing Solutions',
     description: 'Connecting top talent with leading employers. Professional recruitment and staffing solutions.',
-    images: ['/image/a2zstaff logo.png'],
+    images: ['/image/homepage.png'],
   },
   robots: {
     index: true,
@@ -62,8 +62,11 @@ export const metadata = {
     },
   },
   verification: {
-    // Add your Google Search Console verification code when available
-    // google: 'your-verification-code',
+    // 1. Go to search.google.com/search-console
+    // 2. Add property → https://a2zstaffs.com
+    // 3. Choose "HTML tag" verification → copy the content value
+    // 4. Paste it below and uncomment:
+    // google: 'paste-your-code-here',
   },
   alternates: {
     canonical: 'https://a2zstaffs.com',

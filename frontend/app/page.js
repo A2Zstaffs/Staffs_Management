@@ -29,9 +29,52 @@ import Testimonials from '@/components/homepage/Testimonials';
 import FAQSection from '@/components/homepage/FAQSection';
 import CallToAction from '@/components/homepage/CallToAction';
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How do I apply for jobs?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Simply create an account, upload your resume, and browse our job listings. When you find a role you like, click "Apply Now" to submit your application instantly.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Is it free for job seekers?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes! Our platform is 100% free for candidates. You can browse jobs, apply, and get interviewed without any cost.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How can companies hire talent?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Companies can sign up as a Client, post job openings, and search our database of qualified candidates. We also offer KAM support for premium hiring needs.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I track my application status?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Absolutely. Your dashboard tracks every application in real-time, showing you when you are shortlisted, interviewed, or hired.',
+      },
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <HeroSection />
       <TrustedCompanies />
       <StatsSection />

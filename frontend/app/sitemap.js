@@ -34,12 +34,6 @@ export default function sitemap() {
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/login`,
-            lastModified: new Date(),
-            changeFrequency: 'yearly',
-            priority: 0.5,
-        },
-        {
             url: `${baseUrl}/signup/user`,
             lastModified: new Date(),
             changeFrequency: 'yearly',
@@ -47,6 +41,12 @@ export default function sitemap() {
         },
         {
             url: `${baseUrl}/signup/client`,
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.6,
+        },
+        {
+            url: `${baseUrl}/signup/consultancy`,
             lastModified: new Date(),
             changeFrequency: 'yearly',
             priority: 0.6,
