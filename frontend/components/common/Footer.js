@@ -133,10 +133,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="mt-12 pt-8 border-t border-gray-100">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-gray-600 text-lg">
               © {new Date().getFullYear()} A2Z Staffs. All rights reserved.
+            </div>
+            <div className="flex items-center gap-1.5 text-gray-400 text-sm">
+              <span>Designed with</span>
+              <span className="text-red-500 animate-pulse">♥</span>
+              <span>by</span>
+              <a
+                href="https://www.linkedin.com/in/abhishekagi/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-gray-600 hover:text-primary-600 transition-colors duration-200 underline underline-offset-2 decoration-dotted"
+              >
+                Abhishek
+              </a>
             </div>
             <div className="flex space-x-8 mt-6 md:mt-0">
               <a href="/privacy-policy" className="text-gray-600 hover:text-primary-600 text-lg transition-colors duration-200">

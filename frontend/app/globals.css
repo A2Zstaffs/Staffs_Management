@@ -153,6 +153,10 @@
     animation: scroll 20s linear infinite;
   }
 
+  .animate-scroll-reverse {
+    animation: scroll 25s linear infinite reverse;
+  }
+
   .pause-on-hover:hover {
     animation-play-state: paused;
   }

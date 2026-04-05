@@ -12,7 +12,7 @@ export default function Testimonials() {
     },
     {
       id: 2,
-      content: 'As a recruiter, I\'ve found the best talent through A2Z Staffs. The quality of candidates and the ease of the hiring process is unmatched.',
+      content: "As a recruiter, I've found the best talent through A2Z Staffs. The quality of candidates and the ease of the hiring process is unmatched.",
       author: 'Priya Patel',
       role: 'HR Manager, TechCorp',
       rating: 5,
@@ -33,65 +33,80 @@ export default function Testimonials() {
       role: 'UX Designer',
       rating: 5,
       color: 'bg-orange-100 text-orange-600'
+    },
+    {
+      id: 5,
+      content: 'Exceptional service! Got placed within a month. The recruiters are very professional and understand what you need.',
+      author: 'Vikram Nair',
+      role: 'Product Manager',
+      rating: 5,
+      color: 'bg-pink-100 text-pink-600'
+    },
+    {
+      id: 6,
+      content: 'Best recruitment platform in India. Highly recommend to anyone looking for top-tier talent or exciting opportunities.',
+      author: 'Ananya Rao',
+      role: 'Marketing Head',
+      rating: 5,
+      color: 'bg-teal-100 text-teal-600'
     }
   ];
 
+  // Duplicate for seamless infinite scroll
+  const marqueeTestimonials = [...testimonials, ...testimonials];
+
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Success Stories
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Success Stories</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Trusted by thousands of professionals and companies across India
           </p>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {testimonials.map((testimonial) => (
+      {/* Scrolling marquee right to left — full width */}
+      <div className="relative overflow-hidden w-full">
+        {/* Gradient masks */}
+        <div className="absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r from-white to-transparent pointer-events-none" />
+        <div className="absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+
+        <div className="flex w-max animate-scroll-reverse pause-on-hover">
+          {marqueeTestimonials.map((testimonial, index) => (
             <div
-              key={testimonial.id}
-              className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-shadow duration-300 border border-gray-100 relative group"
+              key={index}
+              className="mx-4 bg-gray-50 rounded-2xl p-8 w-80 flex-shrink-0 border border-gray-100 hover:shadow-xl transition-shadow duration-300 relative group"
             >
               {/* Quote Icon */}
-              <div className="absolute top-8 right-8 text-gray-200 group-hover:text-gray-300 transition-colors">
-                <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
+              <div className="absolute top-6 right-6 text-gray-200 group-hover:text-gray-300 transition-colors">
+                <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" />
                 </svg>
               </div>
 
               {/* Stars */}
-              <div className="flex mb-6">
+              <div className="flex mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg key={i} className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
 
               {/* Content */}
-              <p className="text-gray-600 text-lg leading-relaxed mb-8 relative z-10">
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 relative z-10">
                 "{testimonial.content}"
               </p>
 
-              {/* Author Info */}
+              {/* Author */}
               <div className="flex items-center">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mr-4 ${testimonial.color}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base font-bold mr-3 ${testimonial.color}`}>
                   {testimonial.author.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-lg">
-                    {testimonial.author}
-                  </h4>
-                  <p className="text-sm text-gray-500 font-medium">
-                    {testimonial.role}
-                  </p>
+                  <h4 className="font-bold text-gray-900 text-sm">{testimonial.author}</h4>
+                  <p className="text-xs text-gray-500">{testimonial.role}</p>
                 </div>
               </div>
             </div>

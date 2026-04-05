@@ -1,3 +1,4 @@
+// @ts-nocheck
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet').default;
@@ -148,11 +149,18 @@ app.all('*', (req, res) => {
 // Error handler middleware (must be last)
 app.use(errorHandler);
 
+// Start server
+const PORT = process.env.PORT || 5001;
+const server = app.listen(PORT, () => {
+  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 API: http://localhost:${PORT}/api`);
+  console.log(`🌐 Frontend: ${process.env.FRONTEND_URL || 'http://localhost:3000'}\n`);
+});
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   const message = err instanceof Error ? err.message : String(err);
   console.log(`⚠️ Unhandled Rejection: ${message}`);
-  // Only close server & exit process in production
   if (process.env.NODE_ENV === 'production') {
     server.close(() => {
       process.exit(1);
@@ -168,14 +176,6 @@ process.on('uncaughtException', (err) => {
     console.log('Shutting down the server due to uncaught exception');
     process.exit(1);
   }
-});
-
-// Start server
-const PORT = process.env.PORT || 5001;
-const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 API: http://localhost:${PORT}/api`);
-  console.log(`🌐 Frontend: ${process.env.FRONTEND_URL || 'http://localhost:3000'}\n`);
 });
 
 // Graceful shutdown
