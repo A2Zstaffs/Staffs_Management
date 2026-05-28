@@ -34,8 +34,18 @@ docker run -d \
   --memory-swap="600m" \
   $IMAGE_NAME
 
-echo "==> Updating Nginx config..."
-sudo cp ./infra/nginx/a2zstaffs.conf /etc/nginx/conf.d/a2zstaffs.conf
+echo "==> Checking Nginx config..."
+# Don't blindly overwrite the live nginx config — certbot appends its HTTPS server block
+# into /etc/nginx/conf.d/a2zstaffs.conf when 'sudo certbot --nginx -d api.a2zstaffs.com' runs,
+# and the in-repo template is HTTP-only. Copying every deploy would wipe certbot's edits
+# and re-break TLS until someone re-runs certbot.
+if sudo grep -q "ssl_certificate.*api\.a2zstaffs\.com" /etc/nginx/conf.d/a2zstaffs.conf 2>/dev/null; then
+  echo "    Live nginx config already has certbot's SSL block — skipping cp (preserving HTTPS)."
+else
+  echo "    No SSL block detected — installing HTTP-only config from repo."
+  sudo cp ./infra/nginx/a2zstaffs.conf /etc/nginx/conf.d/a2zstaffs.conf
+  echo "    NEXT STEP: run 'sudo certbot --nginx -d api.a2zstaffs.com' to enable HTTPS."
+fi
 sudo nginx -t && sudo systemctl reload nginx
 
 echo "==> Waiting for health check..."
