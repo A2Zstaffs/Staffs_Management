@@ -1,9 +1,14 @@
 #!/bin/bash
 # Deploy backend Docker container on EC2
-# Usage: ./infra/docker-deploy.sh  (run from project root)
+# Usage: ./infra/docker-deploy.sh  (works from any directory)
 # Requires: backend/.env file to exist on the server
 
 set -e
+
+# Resolve project root from the script's own location so the script works
+# regardless of which directory the user runs it from.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
 
 IMAGE_NAME="vms-backend"
 CONTAINER_NAME="vms-backend"
