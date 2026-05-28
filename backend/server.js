@@ -71,10 +71,7 @@ const limiter = rateLimit({
   }
 });
 
-// Only apply rate limiting in production
-if (process.env.NODE_ENV === 'production') {
-  app.use('/api/', limiter);
-}
+app.use('/api/', limiter);
 
 
 
@@ -113,9 +110,7 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'A2ZStaffs VMS Backend Server is running!',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    version: '1.0.0',
-    cors: allowedOrigins
+    version: '1.0.0'
   });
 });
 

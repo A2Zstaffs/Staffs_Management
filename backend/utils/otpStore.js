@@ -21,7 +21,7 @@ const storeOTP = (email, otp) => {
         attempts: 0
     });
 
-    console.log(`🔑 OTP stored for ${emailKey}: ${otp} (expires in 10 mins)`);
+    console.log(`🔑 OTP stored for ${emailKey} (expires in 10 mins)`);
     console.log(`📊 Current OTP store has ${otpStore.size} entries`);
 
     // Auto-delete after expiry
@@ -39,9 +39,8 @@ const verifyOTP = (email, inputOTP) => {
     console.log(`🔍 Verifying OTP for email: "${emailKey}"`);
 
     // CHECK FOR TEST OTP (FOR DEVELOPMENT/TESTING ONLY)
-    // This allows using a default OTP for any email during testing
-    // To disable: Set ENABLE_TEST_OTP=false in .env
-    const isTestMode = process.env.ENABLE_TEST_OTP === 'true';
+    // Hard-gated on NODE_ENV !== 'production' so a stray ENABLE_TEST_OTP=true in a prod env cannot enable the bypass.
+    const isTestMode = process.env.NODE_ENV !== 'production' && process.env.ENABLE_TEST_OTP === 'true';
     const testOTP = process.env.TEST_OTP || '123456';
 
     if (isTestMode && inputOTP === testOTP) {

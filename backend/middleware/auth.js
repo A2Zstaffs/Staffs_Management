@@ -13,9 +13,6 @@ const protect = async (req, res, next) => {
       token = req.cookies.token;
     }
 
-    console.log('🔐 Auth Middleware - Token present:', !!token);
-    console.log('🔐 Auth Middleware - Headers:', req.headers.authorization?.substring(0, 20) + '...');
-
     // Make sure token exists
     if (!token) {
       console.log('❌ Auth failed: No token provided');

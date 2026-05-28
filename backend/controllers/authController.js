@@ -344,7 +344,10 @@ const googleAuth = async (req, res) => {
 
   try {
     const { OAuth2Client } = require('google-auth-library');
-    const { idToken, role = 'candidate' } = req.body;
+    const { idToken } = req.body;
+    // Always default new Google signups to 'candidate'. Privileged roles (admin/kam/recruiter_manager/recruiter)
+    // must be promoted by an admin via the admin user-management flow, never accepted from the client.
+    const role = 'candidate';
 
     if (!idToken) {
       return res.status(400).json({

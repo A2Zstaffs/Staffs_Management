@@ -58,11 +58,12 @@ exports.getProfiles = async (req, res, next) => {
     try {
         const { job_id, status, uploaded_by } = req.query;
 
-        // Build filter object
+        // Build filter object — coerce to strings to neutralize MongoDB operator injection
+        // (e.g. ?status[$ne]=rejected would otherwise be parsed by Express as { $ne: 'rejected' }).
         const filter = {};
-        if (job_id) filter.job_id = job_id;
-        if (status) filter.status = status;
-        if (uploaded_by) filter.uploaded_by = uploaded_by;
+        if (job_id) filter.job_id = String(job_id);
+        if (status) filter.status = String(status);
+        if (uploaded_by) filter.uploaded_by = String(uploaded_by);
 
         const profiles = await Profile.find(filter)
             .populate('job_id', 'job_title company_name job_id')
