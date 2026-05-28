@@ -96,18 +96,9 @@ const testUsers = [
     skills: ['Python', 'Django', 'PostgreSQL', 'AWS'],
     experience: '6-10'
   },
-  {
-    fullName: 'Admin User',
-    email: 'admin@a2zstaffs.com',
-    password: 'admin123',
-    phoneNumber: '+1-555-0000',
-    role: 'admin',
-    location: {
-      city: 'New York',
-      state: 'NY',
-      country: 'USA'
-    }
-  }
+  // NOTE: Admin user is intentionally NOT seeded here.
+  // Admins must be created via `backend/scripts/createAdmin.js` with an explicit
+  // ADMIN_PASSWORD env var, so a hardcoded admin credential never reaches GitHub history.
 ];
 
 const createTestUsers = async () => {

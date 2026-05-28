@@ -40,11 +40,21 @@ const User = mongoose.model('User', userSchema);
 // Create Admin User
 const createAdminUser = async () => {
     try {
+        // Password MUST be supplied via env var — never hardcoded. A literal in this file
+        // would ship to GitHub history and become the de-facto admin password forever.
+        const password = process.env.ADMIN_PASSWORD;
+        if (!password || password.length < 12) {
+            console.error('❌ ADMIN_PASSWORD env var is required and must be at least 12 characters.');
+            console.error('   Generate one with: openssl rand -base64 24');
+            console.error('   Then: ADMIN_PASSWORD=<value> node backend/scripts/createAdmin.js');
+            process.exit(2);
+        }
+
         // Admin credentials
         const adminData = {
             fullName: 'Admin',
-            email: 'admin@a2zstaffs.com',
-            password: 'Admin@123', // Change this password after first login!
+            email: process.env.ADMIN_EMAIL || 'admin@a2zstaffs.com',
+            password,
             role: 'admin',
             phoneNumber: '+1234567890',
             company: 'A2Z Staffs',
@@ -70,10 +80,9 @@ const createAdminUser = async () => {
 
         console.log('\n✅ Admin user created successfully!');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('📧 Email:    admin@a2zstaffs.com');
-        console.log('🔑 Password: Admin@123');
+        console.log(`📧 Email:    ${adminData.email}`);
+        console.log('🔑 Password: (the value you supplied via ADMIN_PASSWORD — keep it in a password manager)');
         console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log('⚠️  IMPORTANT: Change this password after first login!');
         console.log('🔗 Login at: http://localhost:3000/admin/login\n');
 
     } catch (error) {
