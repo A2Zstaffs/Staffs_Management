@@ -5,8 +5,8 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-indigo-50 via-white to-sky-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Main Grid - Updated to 5 columns */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Company Info */}
           <div className="md:col-span-1">
             <div className="flex items-center mb-6">
@@ -30,7 +30,7 @@ export default function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </a>
-              <a href="tel:9110492256" className="text-gray-600 hover:text-primary-600 transition-colors duration-200" title="Call us">
+              <a href="tel:9214093346" className="text-gray-600 hover:text-primary-600 transition-colors duration-200" title="Call us">
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
@@ -58,9 +58,9 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="/login" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
-                  Dashboard
-                </Link>
+                <a href="/services" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                  Services
+                </a>
               </li>
               <li>
                 <a href="/contact" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
@@ -97,26 +97,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Join Now */}
+          {/* Explore */}
           <div>
-            <h4 className="text-xl font-semibold text-gray-900 mb-6">Join Now</h4>
-            <ul className="space-y-4">
-              <li>
-                <a href="/signup/client" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
-                  Join as Client
-                </a>
-              </li>
-              <li>
-                <a href="/signup/consultancy" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
-                  Join as Consultancy
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* For Candidates */}
-          <div>
-            <h4 className="text-xl font-semibold text-gray-900 mb-6">For Candidates</h4>
+            <h4 className="text-xl font-semibold text-gray-900 mb-6">Explore</h4>
             <ul className="space-y-4">
               <li>
                 <a href="/candidate/explore-jobs" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
@@ -124,8 +107,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/signup/user" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
-                  Sign Up
+                <a href="/contact" className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-lg">
+                  Get in Touch
                 </a>
               </li>
             </ul>

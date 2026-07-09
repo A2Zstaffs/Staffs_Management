@@ -15,6 +15,8 @@ import {
 
 export default function HeroSection() {
   const [activeMetric, setActiveMetric] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [reduced, setReduced] = useState(false);
 
   // Animated metrics for enterprise feel
   const metrics = [
@@ -30,6 +32,26 @@ export default function HeroSection() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Staggered entrance animation on mount (reduced-motion safe).
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setReduced(true);
+      setMounted(true);
+      return;
+    }
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const rise = (order) =>
+    reduced
+      ? {}
+      : {
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? 'none' : 'translateY(22px)',
+          transition: `opacity 0.6s ease-out ${order * 110}ms, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${order * 110}ms`,
+        };
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white">
@@ -52,7 +74,7 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 lg:pt-36 pb-20">
         {/* Enterprise Badge */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-8" style={rise(0)}>
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-primary-200 rounded-full shadow-sm">
             <Award className="w-4 h-4 text-primary-500" />
             <span className="text-primary-600 text-sm font-semibold">Enterprise Recruitment Solutions</span>
@@ -60,7 +82,7 @@ export default function HeroSection() {
         </div>
 
         {/* Main Headline */}
-        <div className="text-center max-w-4xl mx-auto">
+        <div className="text-center max-w-4xl mx-auto" style={rise(1)}>
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">
             <span className="text-secondary-900">Powering Your</span>
             <br />
@@ -76,7 +98,7 @@ export default function HeroSection() {
         </div>
 
         {/* Dynamic Metrics Display */}
-        <div className="mt-16 max-w-4xl mx-auto">
+        <div className="mt-16 max-w-4xl mx-auto" style={rise(2)}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {metrics.map((metric, i) => {
               const Icon = metric.icon;
@@ -103,7 +125,7 @@ export default function HeroSection() {
         </div>
 
         {/* Value Proposition Cards */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto" style={rise(3)}>
           {/* For Clients Card */}
           <div className="group relative bg-white rounded-3xl border border-secondary-200 p-8 shadow-lg hover:shadow-xl hover:border-primary-200 transition-all duration-300 hover:-translate-y-1">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -124,10 +146,10 @@ export default function HeroSection() {
                 ))}
               </ul>
               <Link
-                href="/signup/client"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors group-hover:shadow-lg"
+                href="/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 hover:scale-[1.03] active:scale-95 group-hover:shadow-lg"
               >
-                Partner With Us
+                Talk to Our Team
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -153,10 +175,10 @@ export default function HeroSection() {
                 ))}
               </ul>
               <Link
-                href="/signup/recruiter"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-colors group-hover:shadow-lg"
+                href="/contact"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-200 hover:scale-[1.03] active:scale-95 group-hover:shadow-lg"
               >
-                Join as Recruiter
+                Get in Touch
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -164,7 +186,7 @@ export default function HeroSection() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 text-center">
+        <div className="mt-16 text-center" style={rise(4)}>
           <p className="text-secondary-500 text-sm mb-4">Ready to transform your recruitment operations?</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

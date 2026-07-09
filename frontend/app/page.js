@@ -28,6 +28,8 @@ import WhyChooseUs from '@/components/homepage/WhyChooseUs';
 import Testimonials from '@/components/homepage/Testimonials';
 import FAQSection from '@/components/homepage/FAQSection';
 import CallToAction from '@/components/homepage/CallToAction';
+import RolesTicker from '@/components/homepage/RolesTicker';
+import Reveal from '@/components/common/Reveal';
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -75,16 +77,22 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
+      {/* Hero renders immediately (above the fold, no reveal). */}
       <HeroSection />
-      <TrustedCompanies />
-      <StatsSection />
-      <JobCategories />
-      <HowItWorks />
-      <FeaturedJobs />
-      <WhyChooseUs />
-      <Testimonials />
-      <FAQSection />
-      <CallToAction />
+
+      {/* Momentum strip: roles the agency fills. */}
+      <RolesTicker />
+
+      {/* Below-the-fold sections fade + slide in on scroll (reduced-motion safe). */}
+      <Reveal><TrustedCompanies /></Reveal>
+      <Reveal><StatsSection /></Reveal>
+      <Reveal><JobCategories /></Reveal>
+      <Reveal><HowItWorks /></Reveal>
+      <Reveal><FeaturedJobs /></Reveal>
+      <Reveal><WhyChooseUs /></Reveal>
+      <Reveal><Testimonials /></Reveal>
+      <Reveal><FAQSection /></Reveal>
+      <Reveal><CallToAction /></Reveal>
     </div>
   );
 }

@@ -94,11 +94,11 @@ export default function ServicesPage() {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6">Ready to get started?</h2>
                     <div className="flex justify-center space-x-4">
-                        <Link href="/signup/client" className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                            For Employers
+                        <Link href="/contact" className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            Talk to Our Team
                         </Link>
-                        <Link href="/signup/user" className="px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                            For Candidates
+                        <Link href="/candidate/explore-jobs" className="px-8 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                            Browse Jobs
                         </Link>
                     </div>
                 </div>

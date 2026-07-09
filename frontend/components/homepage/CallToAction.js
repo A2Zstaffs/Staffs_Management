@@ -43,10 +43,10 @@ export default function CallToAction() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/signup/client"
+                href="/contact"
                 className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-md"
               >
-                Partner With Us
+                Talk to Our Team
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
@@ -75,10 +75,10 @@ export default function CallToAction() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/signup/recruiter"
+                href="/contact"
                 className="flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-md"
               >
-                Join Our Network
+                Get in Touch
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

@@ -109,8 +109,8 @@ export default function FeaturedJobs() {
                 <span className="text-xs text-secondary-500">
                   {new Date(job.createdAt).toLocaleDateString()}
                 </span>
-                <Link href={`/login?redirect=/candidate/jobs/${job._id}`} className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200">
-                  Apply Now
+                <Link href="/contact" className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200">
+                  Enquire Now
                 </Link>
               </div>
             </div>

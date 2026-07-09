@@ -4,14 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import Logo from './Logo';
-import { Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Building2, Briefcase } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSignupDropdownOpen, setIsSignupDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const dropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -27,9 +25,6 @@ export default function Header() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsSignupDropdownOpen(false);
-      }
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
         setIsUserDropdownOpen(false);
       }
@@ -124,60 +119,14 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-sm font-medium transition-colors duration-200 text-secondary-700 hover:text-primary-500"
-                >
-                  Login
-                </Link>
-
-                {/* Partner Dropdown */}
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setIsSignupDropdownOpen(!isSignupDropdownOpen)}
-                    className="flex items-center gap-1 px-5 py-2.5 text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 bg-primary-500 hover:bg-primary-600 text-white"
-                  >
-                    Get Started
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {isSignupDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-secondary-200 py-2 z-50">
-                      <div className="px-4 py-2 border-b border-secondary-100">
-                        <p className="text-xs text-secondary-500 font-medium">Join our network</p>
-                      </div>
-                      <Link
-                        href="/signup/client"
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-500 transition-colors"
-                        onClick={() => setIsSignupDropdownOpen(false)}
-                      >
-                        <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-                          <Building2 className="w-4 h-4 text-primary-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">I'm a Client</p>
-                          <p className="text-xs text-secondary-400">Hire through A2Z</p>
-                        </div>
-                      </Link>
-                      <Link
-                        href="/signup/recruiter"
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary-700 hover:bg-primary-50 hover:text-primary-500 transition-colors"
-                        onClick={() => setIsSignupDropdownOpen(false)}
-                      >
-                        <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-                          <Briefcase className="w-4 h-4 text-primary-600" />
-                        </div>
-                        <div>
-                          <p className="font-medium">I'm a Recruiter</p>
-                          <p className="text-xs text-secondary-400">Join as partner</p>
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </>
+              /* Client-facing visibility site: no public Login / Get Started CTAs.
+                 Staff reach the app by navigating to /login directly. */
+              <Link
+                href="/contact"
+                className="px-5 py-2.5 text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 bg-primary-500 hover:bg-primary-600 text-white"
+              >
+                Contact Us
+              </Link>
             )}
           </div>
 
@@ -226,32 +175,14 @@ export default function Header() {
                     </button>
                   </>
                 ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      className="block px-4 py-3 text-secondary-700 hover:bg-primary-50 hover:text-primary-500 rounded-lg font-medium transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Login
-                    </Link>
-                    <div className="mt-3 space-y-2 px-4">
-                      <p className="text-xs text-secondary-500 font-medium">Get Started</p>
-                      <Link
-                        href="/signup/client"
-                        className="block py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium text-center transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        I'm a Client
-                      </Link>
-                      <Link
-                        href="/signup/recruiter"
-                        className="block py-3 bg-secondary-100 hover:bg-secondary-200 text-secondary-700 rounded-lg font-medium text-center transition-colors"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        I'm a Recruiter
-                      </Link>
-                    </div>
-                  </>
+                  /* Client-facing visibility site: single Contact CTA, no Login / signup. */
+                  <Link
+                    href="/contact"
+                    className="block py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium text-center transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Contact Us
+                  </Link>
                 )}
               </div>
             </div>

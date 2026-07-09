@@ -27,7 +27,7 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const whatsappNumber = '919110492256'; // Added country code 91
+    const whatsappNumber = '919214093346'; // Added country code 91
     const text = `Hello, I have an inquiry from the website.%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Subject:* ${formData.subject}%0A*Message:* ${formData.message}`;
 
     // Redirect to WhatsApp
@@ -216,7 +216,7 @@ export default function Contact() {
                     <div>
                       <h3 className="text-lg font-semibold text-secondary-900 mb-2">Call Us</h3>
                       <p className="text-secondary-500 mb-1">Monday - Saturday, 9AM - 6PM</p>
-                      <p className="text-primary-500 font-semibold">9110492256</p>
+                      <p className="text-primary-500 font-semibold">9214093346</p>
                     </div>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ export default function Contact() {
                     <Mail className="w-5 h-5" />
                   </a>
                   {/* Phone */}
-                  <a href="tel:9110492256" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200 text-primary-600">
+                  <a href="tel:9214093346" className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-200 transition-colors duration-200 text-primary-600">
                     <Phone className="w-5 h-5" />
                   </a>
                 </div>
