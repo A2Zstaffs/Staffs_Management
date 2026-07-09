@@ -3,35 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Users,
   Building2,
-  TrendingUp,
   ArrowRight,
   CheckCircle2,
   Briefcase,
   Award,
-  Globe
 } from 'lucide-react';
 
 export default function HeroSection() {
-  const [activeMetric, setActiveMetric] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [reduced, setReduced] = useState(false);
-
-  // Animated metrics for enterprise feel
-  const metrics = [
-    { label: 'Successful Placements', icon: CheckCircle2, color: 'text-accent-500' },
-    { label: 'Client Companies', icon: Building2, color: 'text-primary-500' },
-    { label: 'Recruitment Partners', icon: Users, color: 'text-purple-500' },
-    { label: 'Industries Served', icon: Globe, color: 'text-warm-400' }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveMetric((prev) => (prev + 1) % metrics.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Staggered entrance animation on mount (reduced-motion safe).
   useEffect(() => {
@@ -97,35 +78,8 @@ export default function HeroSection() {
           </p>
         </div>
 
-        {/* Dynamic Metrics Display */}
-        <div className="mt-16 max-w-4xl mx-auto" style={rise(2)}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {metrics.map((metric, i) => {
-              const Icon = metric.icon;
-              return (
-                <div
-                  key={i}
-                  className={`relative p-6 rounded-2xl border bg-white transition-all duration-500 ${activeMetric === i
-                      ? 'border-primary-300 shadow-lg shadow-primary-100 scale-105'
-                      : 'border-secondary-200 shadow-sm'
-                    }`}
-                >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${activeMetric === i ? 'bg-primary-100' : 'bg-secondary-100'
-                    }`}>
-                    <Icon className={`w-5 h-5 ${metric.color}`} />
-                  </div>
-                  <p className="text-secondary-700 text-sm font-medium">{metric.label}</p>
-                  {activeMetric === i && (
-                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 to-primary-400 rounded-b-2xl" />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Value Proposition Cards */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto" style={rise(3)}>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto" style={rise(2)}>
           {/* For Clients Card */}
           <div className="group relative bg-white rounded-3xl border border-secondary-200 p-8 shadow-lg hover:shadow-xl hover:border-primary-200 transition-all duration-300 hover:-translate-y-1">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-50 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -186,7 +140,7 @@ export default function HeroSection() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 text-center" style={rise(4)}>
+        <div className="mt-16 text-center" style={rise(3)}>
           <p className="text-secondary-500 text-sm mb-4">Ready to transform your recruitment operations?</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
