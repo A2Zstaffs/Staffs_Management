@@ -22,7 +22,6 @@ import HeroSection from '@/components/homepage/HeroSection';
 import TrustedCompanies from '@/components/homepage/TrustedCompanies';
 import StatsSection from '@/components/homepage/StatsSection';
 import JobCategories from '@/components/homepage/JobCategories';
-import FeaturedJobs from '@/components/homepage/FeaturedJobs';
 import HowItWorks from '@/components/homepage/HowItWorks';
 import WhyChooseUs from '@/components/homepage/WhyChooseUs';
 import Testimonials from '@/components/homepage/Testimonials';
@@ -88,7 +87,6 @@ export default function Home() {
       <Reveal><StatsSection /></Reveal>
       <Reveal><JobCategories /></Reveal>
       <Reveal><HowItWorks /></Reveal>
-      <Reveal><FeaturedJobs /></Reveal>
       <Reveal><WhyChooseUs /></Reveal>
       <Reveal><Testimonials /></Reveal>
       <Reveal><FAQSection /></Reveal>
