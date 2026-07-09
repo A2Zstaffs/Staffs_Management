@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'About Us — A2Z Staffs | Our Story, Mission & Values',
@@ -65,32 +66,8 @@ export default function About() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-secondary-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">50+</div>
-              <div className="text-secondary-600">Active Jobs</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">1000+</div>
-              <div className="text-secondary-600">Candidates</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">50+</div>
-              <div className="text-secondary-600">Companies</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">98%</div>
-              <div className="text-secondary-600">Success Rate</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Values Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-secondary-900 mb-4">Our Core Values</h2>
@@ -173,10 +150,10 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="text-5xl font-bold text-white mb-4">50+</div>
-              <div className="text-primary-200 text-lg">Active Jobs</div>
+              <div className="text-primary-200 text-lg">Active Roles</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-white mb-4">10+</div>
@@ -184,11 +161,11 @@ export default function About() {
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-white mb-4">100+</div>
-              <div className="text-primary-200 text-lg">Candidates Hired</div>
+              <div className="text-primary-200 text-lg">Placements Made</div>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-white mb-4">5+</div>
-              <div className="text-primary-200 text-lg">Cities</div>
+              <div className="text-primary-200 text-lg">Cities Covered</div>
             </div>
           </div>
         </div>
@@ -197,17 +174,23 @@ export default function About() {
       {/* CTA Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-secondary-800 mb-6">Ready to Get Started?</h2>
+          <h2 className="text-3xl font-bold text-secondary-800 mb-6">Ready to build your team?</h2>
           <p className="text-xl text-secondary-500 mb-12 max-w-3xl mx-auto">
-            Join thousands of professionals who trust A2Z Staffs for their career and hiring needs.
+            Tell us the roles you're hiring for — our team will handle sourcing, screening, and shortlisting end to end.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <button className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg">
-              Start Your Journey
-            </button>
-            <button className="bg-white hover:bg-primary-50 text-primary-500 border-2 border-primary-500 px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg">
-              Learn More
-            </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:scale-[1.02] active:scale-95"
+            >
+              Talk to Our Team
+            </Link>
+            <Link
+              href="/services"
+              className="inline-flex items-center justify-center bg-white hover:bg-primary-50 text-primary-500 border-2 border-primary-500 px-8 py-4 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg"
+            >
+              Explore Services
+            </Link>
           </div>
         </div>
       </section>
